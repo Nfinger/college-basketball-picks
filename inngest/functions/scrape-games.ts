@@ -1,5 +1,6 @@
 import { inngest } from '../client'
 import { createClient } from '@supabase/supabase-js'
+import { normalizeTeamName } from './team-mapping'
 
 export const scrapeGames = inngest.createFunction(
   {
@@ -49,21 +50,27 @@ export const scrapeGames = inngest.createFunction(
           const awayTeam = game.away_team
           const gameDate = new Date(game.commence_time)
 
+          // Normalize team names from API format to database format
+          const normalizedHomeTeam = normalizeTeamName(homeTeam)
+          const normalizedAwayTeam = normalizeTeamName(awayTeam)
+
           // Find teams in database
-          const { data: homeTeamData } = await supabase
+          const { data: homeTeamData, error: homeError } = await supabase
             .from('teams')
             .select('id')
-            .eq('name', homeTeam)
+            .eq('name', normalizedHomeTeam)
             .single()
 
-          const { data: awayTeamData } = await supabase
+          const { data: awayTeamData, error: awayError } = await supabase
             .from('teams')
             .select('id')
-            .eq('name', awayTeam)
+            .eq('name', normalizedAwayTeam)
             .single()
 
           if (!homeTeamData || !awayTeamData) {
-            errors.push(`Teams not found: ${homeTeam} vs ${awayTeam}`)
+            errors.push(
+              `Teams not found - API: "${homeTeam}" vs "${awayTeam}" | Normalized: "${normalizedHomeTeam}" vs "${normalizedAwayTeam}"`
+            )
             continue
           }
 

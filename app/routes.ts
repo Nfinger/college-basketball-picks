@@ -9,10 +9,8 @@ export default [
   route("signup", "routes/signup.tsx"),
   route("logout", "routes/logout.tsx"),
 
-  // Games routes
-  layout("routes/games._index.tsx", [
-    route("games/:date", "routes/games.$date.tsx"),
-  ]),
+  // Games route
+  route("games", "routes/games.tsx"),
 
   // Metrics route
   route("metrics", "routes/metrics.tsx"),

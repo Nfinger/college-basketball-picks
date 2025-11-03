@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react'
-import { useLoaderData, useNavigate, useNavigation, useActionData } from 'react-router'
-import type { Route } from './+types/games.$date'
+import { useLoaderData, useNavigate, useNavigation, useActionData, useSearchParams } from 'react-router'
+import type { Route } from './+types/games'
 import { requireAuth } from '~/lib/auth.server'
 import { AppLayout } from '~/components/AppLayout'
 import { GameCard } from '~/components/GameCard'
@@ -27,11 +27,12 @@ type GameWithRelations = {
   picks?: { id: string; picked_team_id: string; spread_at_pick_time: number; result: 'won' | 'lost' | 'push' | 'pending' | null; locked_at: string | null }[]
 }
 
-export async function loader({ request, params }: Route.LoaderArgs) {
+export async function loader({ request }: Route.LoaderArgs) {
   const { user, supabase, headers } = await requireAuth(request)
 
-  // Parse and validate date parameter
-  const dateParam = params.date
+  // Parse and validate date from query parameter
+  const url = new URL(request.url)
+  const dateParam = url.searchParams.get('date')
   let targetDate: Date
 
   if (dateParam) {
@@ -119,8 +120,15 @@ export async function action({ request }: Route.ActionArgs) {
   return { success: true, headers }
 }
 
-export function meta({ params }: Route.MetaArgs) {
-  const date = params.date ? parseISO(params.date) : new Date()
+export function meta({ data }: Route.MetaArgs) {
+  if (!data?.date) {
+    return [
+      { title: 'Games - College Basketball Picks' },
+      { name: 'description', content: 'Make your picks for college basketball games' },
+    ]
+  }
+
+  const date = parseISO(data.date)
   const formattedDate = isValid(date) ? format(date, 'MMMM d, yyyy') : 'Games'
 
   return [
@@ -129,7 +137,7 @@ export function meta({ params }: Route.MetaArgs) {
   ]
 }
 
-export default function GamesDate() {
+export default function Games() {
   const { user, games, conferences, date } = useLoaderData<typeof loader>()
   const navigate = useNavigate()
   const navigation = useNavigation()
@@ -212,7 +220,7 @@ export default function GamesDate() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => navigate(`/games/${previousDay}`)}
+                onClick={() => navigate(`/games?date=${previousDay}`)}
               >
                 <ChevronLeft className="h-4 w-4 mr-1" />
                 Previous
@@ -222,7 +230,7 @@ export default function GamesDate() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => navigate('/')}
+                  onClick={() => navigate('/games')}
                 >
                   <Calendar className="h-4 w-4 mr-1" />
                   Today
@@ -232,7 +240,7 @@ export default function GamesDate() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => navigate(`/games/${nextDay}`)}
+                onClick={() => navigate(`/games?date=${nextDay}`)}
               >
                 Next
                 <ChevronRight className="h-4 w-4 ml-1" />

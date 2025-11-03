@@ -1,16 +1,13 @@
 import { type RouteConfig, index, route } from "@react-router/dev/routes";
 
 export default [
-  // Index route (today's games)
+  // Index route (games with date filtering)
   index("routes/_index.tsx"),
 
   // Auth routes
   route("login", "routes/login.tsx"),
   route("signup", "routes/signup.tsx"),
   route("logout", "routes/logout.tsx"),
-
-  // Games route
-  route("games", "routes/games.tsx"),
 
   // Metrics route
   route("metrics", "routes/metrics.tsx"),

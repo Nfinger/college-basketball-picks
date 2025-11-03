@@ -7,7 +7,33 @@ import { Label } from '~/components/ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover'
 import { ToggleGroup, ToggleGroupItem } from '~/components/ui/toggle-group'
 import { ListFilter } from 'lucide-react'
-import { isEqual } from 'lodash'
+
+// Simple deep equality check for filter objects
+function isEqual(a: any, b: any): boolean {
+  if (a === b) return true
+  if (typeof a !== 'object' || typeof b !== 'object' || a === null || b === null) return false
+
+  const keysA = Object.keys(a)
+  const keysB = Object.keys(b)
+
+  if (keysA.length !== keysB.length) return false
+
+  for (const key of keysA) {
+    if (!keysB.includes(key)) return false
+
+    const valA = a[key]
+    const valB = b[key]
+
+    if (Array.isArray(valA) && Array.isArray(valB)) {
+      if (valA.length !== valB.length) return false
+      if (valA.some((item, i) => item !== valB[i])) return false
+    } else if (valA !== valB) {
+      return false
+    }
+  }
+
+  return true
+}
 
 interface Conference {
   id: string

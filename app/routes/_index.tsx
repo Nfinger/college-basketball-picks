@@ -1,12 +1,16 @@
 import { useState, useMemo, useEffect } from 'react'
-import { useLoaderData, useNavigation, useActionData } from 'react-router'
+import { useLoaderData, useNavigate, useNavigation, useActionData } from 'react-router'
 import type { Route } from './+types/_index'
 import { requireAuth } from '~/lib/auth.server'
 import { AppLayout } from '~/components/AppLayout'
 import { GameCard } from '~/components/GameCard'
 import { GameCardSkeleton } from '~/components/GameCardSkeleton'
+import { DatePicker } from '~/components/DatePicker'
 import { GameFilters, type FilterState } from '~/components/GameFilters'
 import { Card, CardContent } from '~/components/ui/card'
+import { Button } from '~/components/ui/button'
+import { format, addDays, subDays, parseISO, isValid } from 'date-fns'
+import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react'
 import { toast } from 'sonner'
 
 type GameWithRelations = {
@@ -26,10 +30,21 @@ type GameWithRelations = {
 export async function loader({ request }: Route.LoaderArgs) {
   const { user, supabase, headers } = await requireAuth(request)
 
-  // Get today's date in YYYY-MM-DD format
-  const today = new Date().toISOString().split('T')[0]
+  // Parse and validate date from query parameter
+  const url = new URL(request.url)
+  const dateParam = url.searchParams.get('date')
+  let targetDate: Date
 
-  // Fetch today's games with user picks
+  if (dateParam) {
+    const parsed = parseISO(dateParam)
+    targetDate = isValid(parsed) ? parsed : new Date()
+  } else {
+    targetDate = new Date()
+  }
+
+  const dateStr = format(targetDate, 'yyyy-MM-dd')
+
+  // Fetch games for the specified date with user picks
   const { data: games, error } = await supabase
     .from('games')
     .select(`
@@ -39,8 +54,8 @@ export async function loader({ request }: Route.LoaderArgs) {
       conference:conferences(id, name, short_name, is_power_conference),
       picks(id, picked_team_id, spread_at_pick_time, result, locked_at)
     `)
-    .gte('game_date', `${today}T00:00:00`)
-    .lt('game_date', `${today}T23:59:59`)
+    .gte('game_date', `${dateStr}T00:00:00`)
+    .lt('game_date', `${dateStr}T23:59:59`)
     .eq('picks.user_id', user.id)
     .order('game_date', { ascending: true })
 
@@ -54,7 +69,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     .select('id, name, short_name, is_power_conference')
     .order('name', { ascending: true })
 
-  return { user, games: games || [], conferences: conferences || [], headers }
+  return { user, games: games || [], conferences: conferences || [], date: dateStr, headers }
 }
 
 export async function action({ request }: Route.ActionArgs) {
@@ -105,20 +120,39 @@ export async function action({ request }: Route.ActionArgs) {
   return { success: true, headers }
 }
 
-export function meta(_: Route.MetaArgs) {
+export function meta({ data }: Route.MetaArgs) {
+  if (!data?.date) {
+    return [
+      { title: 'Games - College Basketball Picks' },
+      { name: 'description', content: 'Make your picks for college basketball games' },
+    ]
+  }
+
+  const date = parseISO(data.date)
+  const today = format(new Date(), 'yyyy-MM-dd')
+  const isToday = data.date === today
+  const formattedDate = isValid(date) ? format(date, 'MMMM d, yyyy') : 'Games'
+
   return [
-    { title: "Today's Games - College Basketball Picks" },
-    { name: 'description', content: 'Make your picks for today\'s college basketball games' },
+    { title: `${isToday ? "Today's Games" : formattedDate} - College Basketball Picks` },
+    { name: 'description', content: `Make your picks for ${isToday ? "today's" : formattedDate} college basketball games` },
   ]
 }
 
 export default function Index() {
-  const { user, games, conferences } = useLoaderData<typeof loader>()
+  const { user, games, conferences, date } = useLoaderData<typeof loader>()
+  const navigate = useNavigate()
   const navigation = useNavigation()
   const actionData = useActionData<typeof action>()
   const [filterState, setFilterState] = useState<FilterState | null>(null)
 
   const isLoading = navigation.state === 'loading'
+
+  const currentDate = parseISO(date)
+  const previousDay = format(subDays(currentDate, 1), 'yyyy-MM-dd')
+  const nextDay = format(addDays(currentDate, 1), 'yyyy-MM-dd')
+  const today = format(new Date(), 'yyyy-MM-dd')
+  const isToday = date === today
 
   // Show toast notifications for pick results
   useEffect(() => {
@@ -171,18 +205,53 @@ export default function Index() {
   return (
     <AppLayout user={user}>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
-            Today's Games
-          </h1>
-          <p className="mt-2 text-base font-medium text-slate-600 dark:text-slate-400">
-            {new Date().toLocaleDateString('en-US', {
-              weekday: 'long',
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            })}
-          </p>
+        {/* Date Navigation */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
+                {isToday ? "Today's Games" : format(currentDate, 'MMMM d, yyyy')}
+              </h1>
+              <p className="mt-2 text-base font-medium text-slate-600 dark:text-slate-400">
+                {format(currentDate, 'EEEE')}
+              </p>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate(`/?date=${previousDay}`)}
+              >
+                <ChevronLeft className="h-4 w-4 mr-1" />
+                Previous
+              </Button>
+
+              {!isToday && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate('/')}
+                >
+                  <Calendar className="h-4 w-4 mr-1" />
+                  Today
+                </Button>
+              )}
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate(`/?date=${nextDay}`)}
+              >
+                Next
+                <ChevronRight className="h-4 w-4 ml-1" />
+              </Button>
+            </div>
+          </div>
+
+          <div>
+            <DatePicker currentDate={currentDate} />
+          </div>
         </div>
 
         {/* Filters */}
@@ -198,14 +267,15 @@ export default function Index() {
           <Card>
             <CardContent className="pt-6">
               <div className="text-center py-12">
+                <Calendar className="mx-auto h-12 w-12 text-gray-400 mb-4" />
                 <p className="text-gray-500 dark:text-gray-400">
                   {games.length === 0
-                    ? 'No games scheduled for today.'
+                    ? 'No games scheduled for this date.'
                     : 'No games match your filters.'}
                 </p>
                 <p className="text-sm text-gray-400 dark:text-gray-500 mt-2">
                   {games.length === 0
-                    ? 'Games will appear here once the scraping job is set up.'
+                    ? 'Try selecting a different date.'
                     : 'Try adjusting your filters.'}
                 </p>
               </div>

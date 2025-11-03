@@ -23,8 +23,7 @@ export function AppLayout({ children, user }: AppLayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const navigation = [
-    { name: 'Today\'s Games', href: '/' },
-    { name: 'Browse Dates', href: '/games' },
+    { name: 'Games', href: '/' },
     { name: 'Metrics', href: '/metrics' },
   ]
 

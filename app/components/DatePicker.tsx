@@ -24,7 +24,7 @@ export function DatePicker({ currentDate }: DatePickerProps) {
     if (selectedDate) {
       setDate(selectedDate)
       const formattedDate = format(selectedDate, 'yyyy-MM-dd')
-      navigate(`/games?date=${formattedDate}`)
+      navigate(`/?date=${formattedDate}`)
       setOpen(false)
     }
   }

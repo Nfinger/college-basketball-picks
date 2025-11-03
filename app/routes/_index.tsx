@@ -67,6 +67,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   const powerOnly = url.searchParams.get("power") === "true";
   const midMajorOnly = url.searchParams.get("midmajor") === "true";
   const picksOnly = url.searchParams.get("picks") === "true";
+  const excitingOnly = url.searchParams.get("exciting") === "true";
 
   // Create date boundaries in Eastern Time, then convert to UTC for the query
   // This ensures we get all games that occur on the selected date in EST/EDT
@@ -157,6 +158,20 @@ export async function loader({ request }: Route.LoaderArgs) {
     // Picks only filter
     if (picksOnly && (!game.picks || game.picks.length === 0)) {
       return false;
+    }
+
+    // Exciting games filter - close spreads in power conferences OR very close spreads anywhere
+    if (excitingOnly) {
+      if (game.spread === null) {
+        return false; // No spread data means we can't determine if it's exciting
+      }
+
+      const isPowerConferenceCloseGame = game.conference.is_power_conference && game.spread <= 5;
+      const isVeryCloseGame = game.spread <= 2.5;
+
+      if (!isPowerConferenceCloseGame && !isVeryCloseGame) {
+        return false;
+      }
     }
 
     return true;

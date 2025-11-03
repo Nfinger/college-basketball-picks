@@ -57,9 +57,10 @@ export interface FilterState {
   powerOnly: boolean
   midMajorOnly: boolean
   picksOnly: boolean
+  excitingOnly: boolean
 }
 
-type Preset = 'all' | 'power' | 'midmajor' | 'picks' | 'custom'
+type Preset = 'all' | 'power' | 'midmajor' | 'picks' | 'exciting' | 'custom'
 
 export function GameFilters({ conferences, onFilterChange }: GameFiltersProps) {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -74,10 +75,11 @@ export function GameFilters({ conferences, onFilterChange }: GameFiltersProps) {
   }, [conferences])
 
   const presets = useMemo<Record<Exclude<Preset, 'custom'>, Partial<FilterState>>>(() => ({
-    all: { conferences: [], powerOnly: false, midMajorOnly: false, picksOnly: false },
-    power: { conferences: POWER_CONFERENCE_IDS, powerOnly: true, midMajorOnly: false, picksOnly: false },
-    midmajor: { conferences: MID_MAJOR_CONFERENCE_IDS, powerOnly: false, midMajorOnly: true, picksOnly: false },
-    picks: { conferences: [], powerOnly: false, midMajorOnly: false, picksOnly: true },
+    all: { conferences: [], powerOnly: false, midMajorOnly: false, picksOnly: false, excitingOnly: false },
+    power: { conferences: POWER_CONFERENCE_IDS, powerOnly: true, midMajorOnly: false, picksOnly: false, excitingOnly: false },
+    midmajor: { conferences: MID_MAJOR_CONFERENCE_IDS, powerOnly: false, midMajorOnly: true, picksOnly: false, excitingOnly: false },
+    picks: { conferences: [], powerOnly: false, midMajorOnly: false, picksOnly: true, excitingOnly: false },
+    exciting: { conferences: [], powerOnly: false, midMajorOnly: false, picksOnly: false, excitingOnly: true },
   }), [POWER_CONFERENCE_IDS, MID_MAJOR_CONFERENCE_IDS])
 
   // Derive all state directly from searchParams - single source of truth
@@ -87,6 +89,7 @@ export function GameFilters({ conferences, onFilterChange }: GameFiltersProps) {
     const power = searchParams.get('power') === 'true'
     const midmajor = searchParams.get('midmajor') === 'true'
     const picks = searchParams.get('picks') === 'true'
+    const exciting = searchParams.get('exciting') === 'true'
 
     const currentFilters: FilterState = {
       search,
@@ -94,6 +97,7 @@ export function GameFilters({ conferences, onFilterChange }: GameFiltersProps) {
       powerOnly: power,
       midMajorOnly: midmajor,
       picksOnly: picks,
+      excitingOnly: exciting,
     }
 
     // Determine the active preset from the derived filter state
@@ -102,6 +106,7 @@ export function GameFilters({ conferences, onFilterChange }: GameFiltersProps) {
       powerOnly: currentFilters.powerOnly,
       midMajorOnly: currentFilters.midMajorOnly,
       picksOnly: currentFilters.picksOnly,
+      excitingOnly: currentFilters.excitingOnly,
     }
 
     let currentPreset: Preset = 'custom'
@@ -111,6 +116,7 @@ export function GameFilters({ conferences, onFilterChange }: GameFiltersProps) {
         powerOnly: presetValues.powerOnly || false,
         midMajorOnly: presetValues.midMajorOnly || false,
         picksOnly: presetValues.picksOnly || false,
+        excitingOnly: presetValues.excitingOnly || false,
       }
       if (isEqual(currentFilterStateForPresetCheck, comparablePreset)) {
         currentPreset = presetName as Preset
@@ -164,11 +170,13 @@ export function GameFilters({ conferences, onFilterChange }: GameFiltersProps) {
     newSearchParams.delete('power')
     newSearchParams.delete('midmajor')
     newSearchParams.delete('picks')
+    newSearchParams.delete('exciting')
 
     presetState.conferences?.forEach(conf => newSearchParams.append('conf', conf))
     if (presetState.powerOnly) newSearchParams.set('power', 'true')
     if (presetState.midMajorOnly) newSearchParams.set('midmajor', 'true')
     if (presetState.picksOnly) newSearchParams.set('picks', 'true')
+    if (presetState.excitingOnly) newSearchParams.set('exciting', 'true')
 
     setSearchParams(newSearchParams, { replace: true })
   }
@@ -203,7 +211,8 @@ export function GameFilters({ conferences, onFilterChange }: GameFiltersProps) {
     filters.conferences.length > 0 ||
     filters.powerOnly ||
     filters.midMajorOnly ||
-    filters.picksOnly
+    filters.picksOnly ||
+    filters.excitingOnly
 
   return (
     <div className="space-y-4">
@@ -225,6 +234,10 @@ export function GameFilters({ conferences, onFilterChange }: GameFiltersProps) {
           <ToggleGroupItem value="all">
             {activePreset === 'all' && <Check className="h-3 w-3 mr-1" />}
             All
+          </ToggleGroupItem>
+          <ToggleGroupItem value="exciting">
+            {activePreset === 'exciting' && <Check className="h-3 w-3 mr-1" />}
+            Exciting
           </ToggleGroupItem>
           <ToggleGroupItem value="power">
             {activePreset === 'power' && <Check className="h-3 w-3 mr-1" />}

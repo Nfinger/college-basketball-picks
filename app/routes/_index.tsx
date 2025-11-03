@@ -67,6 +67,12 @@ export async function loader({ request }: Route.LoaderArgs) {
   const midMajorOnly = url.searchParams.get("midmajor") === "true";
   const picksOnly = url.searchParams.get("picks") === "true";
 
+  // Create proper date boundaries in UTC
+  const startOfDay = new Date(targetDate);
+  startOfDay.setHours(0, 0, 0, 0);
+  const endOfDay = new Date(targetDate);
+  endOfDay.setHours(23, 59, 59, 999);
+
   // Fetch games, conferences, and POTD status in parallel
   const [gamesResult, conferencesResult, potdResult] = await Promise.all([
     supabase
@@ -80,8 +86,8 @@ export async function loader({ request }: Route.LoaderArgs) {
         picks(id, picked_team_id, spread_at_pick_time, result, locked_at, is_pick_of_day)
       `
       )
-      .gte("game_date", `${dateStr}T00:00:00`)
-      .lt("game_date", `${dateStr}T23:59:59`)
+      .gte("game_date", startOfDay.toISOString())
+      .lte("game_date", endOfDay.toISOString())
       .eq("picks.user_id", user.id)
       .order("game_date", { ascending: true }),
     supabase

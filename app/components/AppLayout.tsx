@@ -33,7 +33,8 @@ export function AppLayout({ children, user }: AppLayoutProps) {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 justify-between">
             <div className="flex">
-              <div className="flex flex-shrink-0 items-center">
+              <div className="flex flex-shrink-0 items-center gap-3">
+                <img src="/logo.svg" alt="Basketball" className="h-8 w-8" />
                 <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                   CBB Picks
                 </span>

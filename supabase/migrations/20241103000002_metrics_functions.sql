@@ -119,20 +119,30 @@ BEGIN
   UPDATE picks p
   SET result = CASE
     -- Team picked is favorite and covered the spread
-    WHEN p.picked_team_id = g.favorite_team_id AND
-         (g.home_team_id = p.picked_team_id AND g.home_score + p.spread_at_pick_time > g.away_score) OR
-         (g.away_team_id = p.picked_team_id AND g.away_score + p.spread_at_pick_time > g.home_score)
+    -- Favorites must overcome the spread, so we SUBTRACT it from their score
+    WHEN p.picked_team_id = g.favorite_team_id AND (
+         (g.home_team_id = p.picked_team_id AND g.home_score - p.spread_at_pick_time > g.away_score) OR
+         (g.away_team_id = p.picked_team_id AND g.away_score - p.spread_at_pick_time > g.home_score)
+    )
     THEN 'won'::pick_result
 
     -- Team picked is underdog and covered the spread
-    WHEN p.picked_team_id != g.favorite_team_id AND
-         (g.home_team_id = p.picked_team_id AND g.home_score - p.spread_at_pick_time > g.away_score) OR
-         (g.away_team_id = p.picked_team_id AND g.away_score - p.spread_at_pick_time > g.home_score)
+    -- Underdogs get the benefit of the spread, so we ADD it to their score
+    WHEN p.picked_team_id != g.favorite_team_id AND (
+         (g.home_team_id = p.picked_team_id AND g.home_score + p.spread_at_pick_time > g.away_score) OR
+         (g.away_team_id = p.picked_team_id AND g.away_score + p.spread_at_pick_time > g.home_score)
+    )
     THEN 'won'::pick_result
 
-    -- Push (exactly the spread)
-    WHEN (g.home_team_id = p.picked_team_id AND g.home_score + p.spread_at_pick_time = g.away_score) OR
-         (g.away_team_id = p.picked_team_id AND g.away_score + p.spread_at_pick_time = g.home_score)
+    -- Push (exactly the spread) - check both favorite and underdog formulas
+    WHEN (p.picked_team_id = g.favorite_team_id AND (
+           (g.home_team_id = p.picked_team_id AND g.home_score - p.spread_at_pick_time = g.away_score) OR
+           (g.away_team_id = p.picked_team_id AND g.away_score - p.spread_at_pick_time = g.home_score)
+         )) OR
+         (p.picked_team_id != g.favorite_team_id AND (
+           (g.home_team_id = p.picked_team_id AND g.home_score + p.spread_at_pick_time = g.away_score) OR
+           (g.away_team_id = p.picked_team_id AND g.away_score + p.spread_at_pick_time = g.home_score)
+         ))
     THEN 'push'::pick_result
 
     -- Otherwise, lost

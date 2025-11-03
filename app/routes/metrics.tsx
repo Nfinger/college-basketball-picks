@@ -1,8 +1,7 @@
-import { useLoaderData, useNavigation } from 'react-router'
+import { useLoaderData, useSearchParams } from 'react-router'
 import type { Route } from './+types/metrics'
 import { requireAuth } from '~/lib/auth.server'
 import { AppLayout } from '~/components/AppLayout'
-import { MetricsCardSkeleton } from '~/components/MetricsSkeleton'
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
@@ -14,8 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from '~/components/ui/table'
-import { TrendingUp, TrendingDown, Trophy, Target, Star } from 'lucide-react'
-import { useState } from 'react'
+import { TrendingUp, TrendingDown, Trophy, Star } from 'lucide-react'
 
 type UserStats = {
   user_id: string
@@ -44,6 +42,10 @@ type ComparisonStats = {
 export async function loader({ request }: Route.LoaderArgs) {
   const { user, supabase, headers } = await requireAuth(request)
 
+  // Parse URL search parameters
+  const url = new URL(request.url)
+  const conferenceFilter = url.searchParams.get('conf') || 'all'
+
   // Get all stats in parallel for performance
   const [
     { data: overallStats },
@@ -71,43 +73,16 @@ export async function loader({ request }: Route.LoaderArgs) {
       stats,
     }))
 
-  return {
-    user,
-    overallStats: overallStats?.[0] || null,
-    conferenceStats: conferenceStats || [],
-    streak: streak?.[0] || null,
-    comparisonStats,
-    potdStats: potdStats?.[0] || null,
-    potdStreak: potdStreak?.[0] || null,
-    potdComparison: potdComparison || [],
-    headers,
-  }
-}
-
-export function meta(_: Route.MetaArgs) {
-  return [
-    { title: 'Metrics - College Basketball Picks' },
-    { name: 'description', content: 'View your picking statistics and performance' },
-  ]
-}
-
-export default function Metrics() {
-  const { user, overallStats, conferenceStats, streak, comparisonStats, potdStats, potdStreak, potdComparison } =
-    useLoaderData<typeof loader>()
-  const navigation = useNavigation()
-  const [conferenceFilter, setConferenceFilter] = useState<'all' | 'power' | 'midmajor'>('all')
-
-  const isLoading = navigation.state === 'loading'
-
-  const filteredConferenceStats = conferenceStats.filter((conf: ConferenceStats) => {
+  // Apply conference filter server-side
+  const filteredConferenceStats = (conferenceStats || []).filter((conf: ConferenceStats) => {
     if (conferenceFilter === 'power') return conf.is_power_conference
     if (conferenceFilter === 'midmajor') return !conf.is_power_conference
     return true
   })
 
   // Calculate power vs mid-major stats
-  const powerStats = conferenceStats.filter((c: ConferenceStats) => c.is_power_conference)
-  const midMajorStats = conferenceStats.filter((c: ConferenceStats) => !c.is_power_conference)
+  const powerStats = (conferenceStats || []).filter((c: ConferenceStats) => c.is_power_conference)
+  const midMajorStats = (conferenceStats || []).filter((c: ConferenceStats) => !c.is_power_conference)
 
   const powerTotals = powerStats.reduce(
     (acc: { picks: number; wins: number; losses: number }, curr: ConferenceStats) => ({
@@ -135,6 +110,58 @@ export default function Metrics() {
     ? ((midMajorTotals.wins / (midMajorTotals.wins + midMajorTotals.losses)) * 100).toFixed(2)
     : '0.00'
 
+  // Sort comparison stats by win rate
+  const sortedComparisonStats = comparisonStats.sort(
+    (a: ComparisonStats, b: ComparisonStats) =>
+      Number(b.stats.win_rate || 0) - Number(a.stats.win_rate || 0)
+  )
+
+  return {
+    user,
+    overallStats: overallStats?.[0] || null,
+    conferenceStats: filteredConferenceStats,
+    allConferenceStats: conferenceStats || [],
+    powerTotals,
+    midMajorTotals,
+    powerWinRate,
+    midMajorWinRate,
+    streak: streak?.[0] || null,
+    comparisonStats: sortedComparisonStats,
+    potdStats: potdStats?.[0] || null,
+    potdStreak: potdStreak?.[0] || null,
+    potdComparison: potdComparison || [],
+    headers,
+  }
+}
+
+export function meta(_: Route.MetaArgs) {
+  return [
+    { title: 'Metrics - College Basketball Picks' },
+    { name: 'description', content: 'View your picking statistics and performance' },
+  ]
+}
+
+export default function Metrics() {
+  const {
+    user,
+    overallStats,
+    conferenceStats,
+    allConferenceStats,
+    powerTotals,
+    midMajorTotals,
+    powerWinRate,
+    midMajorWinRate,
+    streak,
+    comparisonStats,
+    potdStats,
+    potdStreak,
+    potdComparison,
+  } = useLoaderData<typeof loader>()
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  // Get current filter from URL params
+  const conferenceFilter = searchParams.get('conf') || 'all'
+
   return (
     <AppLayout user={user}>
       <div className="space-y-6">
@@ -148,80 +175,61 @@ export default function Metrics() {
         </div>
 
         {/* Overall Stats */}
-        {isLoading ? (
-          <div className="grid gap-4 md:grid-cols-4">
-            <MetricsCardSkeleton />
-            <MetricsCardSkeleton />
-            <MetricsCardSkeleton />
-            <MetricsCardSkeleton />
-          </div>
-        ) : overallStats ? (
-          <div className="grid gap-6 md:grid-cols-4">
-            <Card className="hover:shadow-lg transition-shadow bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-900/50 border-slate-200 dark:border-slate-800">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide">
-                  Total Picks
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-4xl font-bold text-slate-900 dark:text-slate-100 tabular-nums">{overallStats.total_picks}</div>
-              </CardContent>
-            </Card>
+        
+        <div className="grid gap-6 md:grid-cols-4">
+          <Card className="hover:shadow-lg transition-shadow bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-900/50 border-slate-200 dark:border-slate-800">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide">
+                Total Picks
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-4xl font-bold text-slate-900 dark:text-slate-100 tabular-nums">{overallStats.total_picks}</div>
+            </CardContent>
+          </Card>
 
-            <Card className="hover:shadow-lg transition-shadow bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/30 border-green-200 dark:border-green-900">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold text-green-700 dark:text-green-400 uppercase tracking-wide">
-                  Wins
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-4xl font-bold text-green-600 dark:text-green-400 tabular-nums">{overallStats.wins}</div>
-              </CardContent>
-            </Card>
+          <Card className="hover:shadow-lg transition-shadow bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/30 border-green-200 dark:border-green-900">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-semibold text-green-700 dark:text-green-400 uppercase tracking-wide">
+                Wins
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-4xl font-bold text-green-600 dark:text-green-400 tabular-nums">{overallStats.wins}</div>
+            </CardContent>
+          </Card>
 
-            <Card className="hover:shadow-lg transition-shadow bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-950/30 dark:to-rose-950/30 border-red-200 dark:border-red-900">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold text-red-700 dark:text-red-400 uppercase tracking-wide">
-                  Losses
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-4xl font-bold text-red-600 dark:text-red-400 tabular-nums">{overallStats.losses}</div>
-              </CardContent>
-            </Card>
+          <Card className="hover:shadow-lg transition-shadow bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-950/30 dark:to-rose-950/30 border-red-200 dark:border-red-900">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-semibold text-red-700 dark:text-red-400 uppercase tracking-wide">
+                Losses
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-4xl font-bold text-red-600 dark:text-red-400 tabular-nums">{overallStats.losses}</div>
+            </CardContent>
+          </Card>
 
-            <Card className="hover:shadow-lg transition-shadow bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border-blue-200 dark:border-blue-900">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-semibold text-blue-700 dark:text-blue-400 uppercase tracking-wide">
-                  Win Rate
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center space-x-3">
-                  <div className="text-4xl font-bold text-blue-600 dark:text-blue-400 tabular-nums">
-                    {overallStats.win_rate || '0'}%
-                  </div>
-                  {overallStats.win_rate && Number(overallStats.win_rate) > 50 ? (
-                    <TrendingUp className="h-6 w-6 text-green-600 dark:text-green-400" />
-                  ) : (
-                    <TrendingDown className="h-6 w-6 text-red-600 dark:text-red-400" />
-                  )}
+          <Card className="hover:shadow-lg transition-shadow bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border-blue-200 dark:border-blue-900">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-semibold text-blue-700 dark:text-blue-400 uppercase tracking-wide">
+                Win Rate
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center space-x-3">
+                <div className="text-4xl font-bold text-blue-600 dark:text-blue-400 tabular-nums">
+                  {overallStats.win_rate || '0'}%
                 </div>
-              </CardContent>
-            </Card>
-          </div>
-        ) : (
-          <Card>
-            <CardContent className="pt-6">
-              <div className="text-center py-12">
-                <Target className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                <p className="text-gray-500 dark:text-gray-400">
-                  No picks yet. Start making picks to see your stats!
-                </p>
+                {overallStats.win_rate && Number(overallStats.win_rate) > 50 ? (
+                  <TrendingUp className="h-6 w-6 text-green-600 dark:text-green-400" />
+                ) : (
+                  <TrendingDown className="h-6 w-6 text-red-600 dark:text-red-400" />
+                )}
               </div>
             </CardContent>
           </Card>
-        )}
+        </div>
 
         {/* Streak */}
         {streak && (
@@ -457,7 +465,7 @@ export default function Metrics() {
         )}
 
         {/* Conference Breakdown */}
-        {conferenceStats.length > 0 && (
+        {allConferenceStats.length > 0 && (
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
@@ -466,21 +474,33 @@ export default function Metrics() {
                   <Button
                     variant={conferenceFilter === 'all' ? 'default' : 'outline'}
                     size="sm"
-                    onClick={() => setConferenceFilter('all')}
+                    onClick={() => {
+                      const newParams = new URLSearchParams(searchParams)
+                      newParams.delete('conf')
+                      setSearchParams(newParams, { replace: true })
+                    }}
                   >
                     All
                   </Button>
                   <Button
                     variant={conferenceFilter === 'power' ? 'default' : 'outline'}
                     size="sm"
-                    onClick={() => setConferenceFilter('power')}
+                    onClick={() => {
+                      const newParams = new URLSearchParams(searchParams)
+                      newParams.set('conf', 'power')
+                      setSearchParams(newParams, { replace: true })
+                    }}
                   >
                     Power
                   </Button>
                   <Button
                     variant={conferenceFilter === 'midmajor' ? 'default' : 'outline'}
                     size="sm"
-                    onClick={() => setConferenceFilter('midmajor')}
+                    onClick={() => {
+                      const newParams = new URLSearchParams(searchParams)
+                      newParams.set('conf', 'midmajor')
+                      setSearchParams(newParams, { replace: true })
+                    }}
                   >
                     Mid-Major
                   </Button>
@@ -499,7 +519,7 @@ export default function Metrics() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredConferenceStats.map((conf: ConferenceStats) => (
+                  {conferenceStats.map((conf: ConferenceStats) => (
                     <TableRow key={conf.conference_id}>
                       <TableCell className="font-medium">
                         <div className="flex items-center gap-2">
@@ -562,7 +582,6 @@ export default function Metrics() {
                   {/* Other users */}
                   {comparisonStats
                     .filter((comp: ComparisonStats) => comp.stats)
-                    .sort((a: ComparisonStats, b: ComparisonStats) => Number(b.stats.win_rate || 0) - Number(a.stats.win_rate || 0))
                     .map((comp: ComparisonStats) => (
                       <TableRow key={comp.user.id}>
                         <TableCell>{comp.user.username}</TableCell>

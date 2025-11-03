@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router'
 import { Input } from '~/components/ui/input'
 import { Button } from '~/components/ui/button'
@@ -6,7 +6,7 @@ import { Badge } from '~/components/ui/badge'
 import { Label } from '~/components/ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover'
 import { ToggleGroup, ToggleGroupItem } from '~/components/ui/toggle-group'
-import { ListFilter } from 'lucide-react'
+import { ListFilter, Check } from 'lucide-react'
 
 // Simple deep equality check for filter objects
 function isEqual(a: any, b: any): boolean {
@@ -60,16 +60,8 @@ type Preset = 'all' | 'power' | 'midmajor' | 'picks' | 'custom'
 export function GameFilters({ conferences, onFilterChange }: GameFiltersProps) {
   const [searchParams, setSearchParams] = useSearchParams()
 
-  // Initialize state from URL params
-  const [filters, setFilters] = useState<FilterState>({
-    search: searchParams.get('search') || '',
-    conferences: searchParams.getAll('conf') || [],
-    powerOnly: searchParams.get('power') === 'true',
-    midMajorOnly: searchParams.get('midmajor') === 'true',
-    picksOnly: searchParams.get('picks') === 'true',
-  })
-
-  const [activePreset, setActivePreset] = useState<Preset>('all')
+  // Local state for search input to enable debouncing
+  const [localSearch, setLocalSearch] = useState(searchParams.get('search') || '')
 
   const { POWER_CONFERENCE_IDS, MID_MAJOR_CONFERENCE_IDS } = useMemo(() => {
     const powerIds = conferences.filter(c => c.is_power_conference).map(c => c.id)
@@ -84,37 +76,31 @@ export function GameFilters({ conferences, onFilterChange }: GameFiltersProps) {
     picks: { conferences: [], powerOnly: false, midMajorOnly: false, picksOnly: true },
   }), [POWER_CONFERENCE_IDS, MID_MAJOR_CONFERENCE_IDS])
 
-  // Update URL params when filters change
-  useEffect(() => {
-    const params = new URLSearchParams()
+  // Derive all state directly from searchParams - single source of truth
+  const { filters, activePreset } = useMemo(() => {
+    const search = searchParams.get('search') || ''
+    const confs = searchParams.getAll('conf')
+    const power = searchParams.get('power') === 'true'
+    const midmajor = searchParams.get('midmajor') === 'true'
+    const picks = searchParams.get('picks') === 'true'
 
-    if (filters.search) params.set('search', filters.search)
-    filters.conferences.forEach(conf => params.append('conf', conf))
-    if (filters.powerOnly) params.set('power', 'true')
-    if (filters.midMajorOnly) params.set('midmajor', 'true')
-    if (filters.picksOnly) params.set('picks', 'true')
-
-    setSearchParams(params, { replace: true })
-    onFilterChange?.(filters)
-  }, [filters, onFilterChange, setSearchParams])
-
-  // Apply preset when activePreset changes
-  useEffect(() => {
-    if (activePreset !== 'custom') {
-      const presetState = presets[activePreset]
-      setFilters(prev => ({ ...prev, ...presetState }))
-    }
-  }, [activePreset, presets])
-
-  // Determine the active preset from the current filter state
-  useEffect(() => {
-    const currentFilterState = {
-      conferences: [...filters.conferences].sort(),
-      powerOnly: filters.powerOnly,
-      midMajorOnly: filters.midMajorOnly,
-      picksOnly: filters.picksOnly,
+    const currentFilters: FilterState = {
+      search,
+      conferences: confs,
+      powerOnly: power,
+      midMajorOnly: midmajor,
+      picksOnly: picks,
     }
 
+    // Determine the active preset from the derived filter state
+    const currentFilterStateForPresetCheck = {
+      conferences: [...currentFilters.conferences].sort(),
+      powerOnly: currentFilters.powerOnly,
+      midMajorOnly: currentFilters.midMajorOnly,
+      picksOnly: currentFilters.picksOnly,
+    }
+
+    let currentPreset: Preset = 'custom'
     for (const [presetName, presetValues] of Object.entries(presets)) {
       const comparablePreset = {
         conferences: [...(presetValues.conferences || [])].sort(),
@@ -122,29 +108,90 @@ export function GameFilters({ conferences, onFilterChange }: GameFiltersProps) {
         midMajorOnly: presetValues.midMajorOnly || false,
         picksOnly: presetValues.picksOnly || false,
       }
-      if (isEqual(currentFilterState, comparablePreset)) {
-        setActivePreset(presetName as Preset)
-        return
+      if (isEqual(currentFilterStateForPresetCheck, comparablePreset)) {
+        currentPreset = presetName as Preset
+        break
       }
     }
-    setActivePreset('custom')
-  }, [filters, presets])
 
-  const handleFilterChange = (newFilters: Partial<FilterState>) => {
-    setFilters(prev => ({ ...prev, ...newFilters }))
+    return { filters: currentFilters, activePreset: currentPreset }
+  }, [searchParams, presets])
+
+  // Sync local search with URL params when they change externally (e.g., clear filters)
+  useEffect(() => {
+    const urlSearch = searchParams.get('search') || ''
+    if (urlSearch !== localSearch) {
+      setLocalSearch(urlSearch)
+    }
+  }, [searchParams])
+
+  // Debounce search input - update URL params after 300ms of no typing
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const newSearchParams = new URLSearchParams(searchParams)
+      if (localSearch) {
+        newSearchParams.set('search', localSearch)
+      } else {
+        newSearchParams.delete('search')
+      }
+      // Only update if the search value actually changed
+      if (searchParams.get('search') !== (localSearch || null)) {
+        setSearchParams(newSearchParams, { replace: true })
+      }
+    }, 300)
+
+    return () => clearTimeout(timer)
+  }, [localSearch])
+
+  // Propagate filter changes to parent component (legitimate side effect)
+  useEffect(() => {
+    onFilterChange?.(filters)
+  }, [filters, onFilterChange])
+
+  // Event handlers directly update searchParams
+  const handlePresetChange = (value: Preset | '') => {
+    if (!value) return
+
+    const presetState = presets[value as Exclude<Preset, 'custom'>]
+    const newSearchParams = new URLSearchParams(searchParams)
+
+    // Clear all preset-related params before applying new ones
+    newSearchParams.delete('conf')
+    newSearchParams.delete('power')
+    newSearchParams.delete('midmajor')
+    newSearchParams.delete('picks')
+
+    presetState.conferences?.forEach(conf => newSearchParams.append('conf', conf))
+    if (presetState.powerOnly) newSearchParams.set('power', 'true')
+    if (presetState.midMajorOnly) newSearchParams.set('midmajor', 'true')
+    if (presetState.picksOnly) newSearchParams.set('picks', 'true')
+
+    setSearchParams(newSearchParams, { replace: true })
+  }
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Update local state immediately for responsive UI
+    setLocalSearch(e.target.value)
   }
 
   const toggleConference = (confId: string) => {
-    setFilters(prev => ({
-      ...prev,
-      conferences: prev.conferences.includes(confId)
-        ? prev.conferences.filter(id => id !== confId)
-        : [...prev.conferences, confId],
-    }))
+    const newSearchParams = new URLSearchParams(searchParams)
+    const currentConfs = newSearchParams.getAll('conf')
+    const isPresent = currentConfs.includes(confId)
+
+    const newConfs = isPresent
+      ? currentConfs.filter(id => id !== confId)
+      : [...currentConfs, confId]
+
+    newSearchParams.delete('conf')
+    newConfs.forEach(id => newSearchParams.append('conf', id))
+
+    setSearchParams(newSearchParams, { replace: true })
   }
 
   const clearFilters = () => {
-    setActivePreset('all')
+    // Clear all filters including search
+    setSearchParams({}, { replace: true })
   }
 
   const hasActiveFilters =
@@ -160,23 +207,33 @@ export function GameFilters({ conferences, onFilterChange }: GameFiltersProps) {
         <Input
           type="text"
           placeholder="Search teams..."
-          value={filters.search}
-          onChange={(e) => handleFilterChange({ search: e.target.value })}
+          value={localSearch}
+          onChange={handleSearchChange}
           className="flex-grow sm:flex-grow-0 sm:w-64"
         />
 
         <ToggleGroup
           type="single"
           value={activePreset}
-          onValueChange={(value: Preset) => {
-            if (value) setActivePreset(value)
-          }}
+          onValueChange={handlePresetChange}
           className="justify-start"
         >
-          <ToggleGroupItem value="all">All</ToggleGroupItem>
-          <ToggleGroupItem value="power">Power 5</ToggleGroupItem>
-          <ToggleGroupItem value="midmajor">Mid-Major</ToggleGroupItem>
-          <ToggleGroupItem value="picks">My Picks</ToggleGroupItem>
+          <ToggleGroupItem value="all">
+            {activePreset === 'all' && <Check className="h-3 w-3 mr-1" />}
+            All
+          </ToggleGroupItem>
+          <ToggleGroupItem value="power">
+            {activePreset === 'power' && <Check className="h-3 w-3 mr-1" />}
+            Power 5
+          </ToggleGroupItem>
+          <ToggleGroupItem value="midmajor">
+            {activePreset === 'midmajor' && <Check className="h-3 w-3 mr-1" />}
+            Mid-Major
+          </ToggleGroupItem>
+          <ToggleGroupItem value="picks">
+            {activePreset === 'picks' && <Check className="h-3 w-3 mr-1" />}
+            My Picks
+          </ToggleGroupItem>
         </ToggleGroup>
 
         <Popover>
@@ -191,7 +248,7 @@ export function GameFilters({ conferences, onFilterChange }: GameFiltersProps) {
               )}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-80" align="start">
+          <PopoverContent className="w-80 bg-white dark:bg-slate-900" align="start">
             <div className="space-y-4">
               <Label className="text-sm font-semibold">Conferences</Label>
               <div className="grid grid-cols-2 gap-2">

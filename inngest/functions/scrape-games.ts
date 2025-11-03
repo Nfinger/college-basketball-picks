@@ -170,10 +170,11 @@ export const scrapeGames = inngest.createFunction(
             )
           }
 
-          // Extract spread from bookmakers
+          // Extract spread from bookmakers          
           const spread = game.bookmakers?.[0]?.markets?.find(
             (m: { key: string }) => m.key === 'spreads'
-          )?.outcomes?.[0]?.point
+          )?.outcomes?.find((o: { point: number }) => o.point < 0)?.point
+
 
           // Determine favorite team (negative spread)
           let favoriteTeamId = null

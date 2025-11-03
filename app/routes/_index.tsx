@@ -37,6 +37,7 @@ type GameWithRelations = {
     spread_at_pick_time: number;
     result: "won" | "lost" | "push" | "pending" | null;
     locked_at: string | null;
+    is_pick_of_day: boolean;
   }[];
 };
 
@@ -66,8 +67,8 @@ export async function loader({ request }: Route.LoaderArgs) {
   const midMajorOnly = url.searchParams.get("midmajor") === "true";
   const picksOnly = url.searchParams.get("picks") === "true";
 
-  // Fetch games and conferences in parallel
-  const [gamesResult, conferencesResult] = await Promise.all([
+  // Fetch games, conferences, and POTD status in parallel
+  const [gamesResult, conferencesResult, potdResult] = await Promise.all([
     supabase
       .from("games")
       .select(
@@ -76,7 +77,7 @@ export async function loader({ request }: Route.LoaderArgs) {
         home_team:teams!games_home_team_id_fkey(id, name, short_name),
         away_team:teams!games_away_team_id_fkey(id, name, short_name),
         conference:conferences(id, name, short_name, is_power_conference),
-        picks(id, picked_team_id, spread_at_pick_time, result, locked_at)
+        picks(id, picked_team_id, spread_at_pick_time, result, locked_at, is_pick_of_day)
       `
       )
       .gte("game_date", `${dateStr}T00:00:00`)
@@ -87,6 +88,13 @@ export async function loader({ request }: Route.LoaderArgs) {
       .from("conferences")
       .select("id, name, short_name, is_power_conference")
       .order("name", { ascending: true }),
+    supabase
+      .from("picks")
+      .select("game_id")
+      .eq("user_id", user.id)
+      .eq("is_pick_of_day", true)
+      .eq("game_date_cache", dateStr)
+      .maybeSingle(),
   ]);
 
   // Log errors but don't fail - return empty arrays instead
@@ -95,6 +103,9 @@ export async function loader({ request }: Route.LoaderArgs) {
   }
   if (conferencesResult.error) {
     console.error("Error fetching conferences:", conferencesResult.error);
+  }
+  if (potdResult.error) {
+    console.error("Error fetching POTD status:", potdResult.error);
   }
 
   const allGames = gamesResult.data || [];
@@ -136,13 +147,29 @@ export async function loader({ request }: Route.LoaderArgs) {
     return true;
   });
 
+  // Sort games: upcoming games first (by start time), then completed games (by start time)
+  const sortedGames = filteredGames.sort((a: GameWithRelations, b: GameWithRelations) => {
+    const aIsFinished = ["completed", "postponed", "cancelled"].includes(a.status);
+    const bIsFinished = ["completed", "postponed", "cancelled"].includes(b.status);
+
+    // If one is finished and the other isn't, put finished at the bottom
+    if (aIsFinished && !bIsFinished) return 1;
+    if (!aIsFinished && bIsFinished) return -1;
+
+    // Both have same status category, sort by game_date (start time)
+    const aDate = new Date(a.game_date).getTime();
+    const bDate = new Date(b.game_date).getTime();
+    return aDate - bDate;
+  });
+
   return {
     user,
-    games: filteredGames,
+    games: sortedGames,
     allGamesCount: allGames.length,
     conferences: conferencesResult.data || [],
     date: dateStr,
     isToday,
+    potdGameId: potdResult.data?.game_id || null,
     headers,
   };
 }
@@ -154,6 +181,7 @@ export async function action({ request }: Route.ActionArgs) {
   const gameId = formData.get("gameId") as string;
   const pickedTeamId = formData.get("pickedTeamId") as string;
   const spread = formData.get("spread") as string;
+  const isPotd = formData.get("isPotd") === "true";
 
   if (!gameId || !pickedTeamId) {
     return { error: "Missing required fields", headers };
@@ -182,6 +210,7 @@ export async function action({ request }: Route.ActionArgs) {
       picked_team_id: pickedTeamId,
       spread_at_pick_time: parseFloat(spread) || 0,
       result: "pending",
+      is_pick_of_day: isPotd,
     },
     {
       onConflict: "user_id,game_id",
@@ -190,6 +219,15 @@ export async function action({ request }: Route.ActionArgs) {
 
   if (error) {
     console.error("Error saving pick:", error);
+
+    // Handle POTD constraint violation with user-friendly message
+    if (error.code === "23505" && error.message?.includes("idx_one_potd_per_user_per_day")) {
+      return {
+        error: "You already have a Pick of the Day for games on this date. Unmark your current POTD first.",
+        headers
+      };
+    }
+
     return { error: error.message, headers };
   }
 
@@ -221,7 +259,7 @@ export function meta({ data }: Route.MetaArgs) {
 }
 
 export default function Index() {
-  const { user, games, allGamesCount, conferences, date, isToday } =
+  const { user, games, allGamesCount, conferences, date, isToday, potdGameId } =
     useLoaderData<typeof loader>();
   const navigate = useNavigate();
   const actionData = useActionData<typeof action>();
@@ -297,6 +335,7 @@ export default function Index() {
               game={game}
               userPick={game.picks?.[0]}
               userId={user.id}
+              potdGameId={potdGameId}
             />
           ))}
         </div>

@@ -1,102 +1,168 @@
-import { useFetcher } from 'react-router'
-import { Card, CardContent } from '~/components/ui/card'
-import { Badge } from '~/components/ui/badge'
-import { format, isPast } from 'date-fns'
-import { cn } from '~/lib/utils'
-import { Loader2 } from 'lucide-react'
+import { useFetcher } from "react-router";
+import { Card, CardContent } from "~/components/ui/card";
+import { Badge } from "~/components/ui/badge";
+import { format, isPast } from "date-fns";
+import { cn } from "~/lib/utils";
+import { Loader2, Star } from "lucide-react";
 
 interface Team {
-  id: string
-  name: string
-  short_name: string
+  id: string;
+  name: string;
+  short_name: string;
 }
 
 interface Conference {
-  id: string
-  name: string
-  short_name: string
-  is_power_conference: boolean
+  id: string;
+  name: string;
+  short_name: string;
+  is_power_conference: boolean;
 }
 
 interface Pick {
-  id: string
-  picked_team_id: string
-  spread_at_pick_time: number
-  result: 'won' | 'lost' | 'push' | 'pending' | null
-  locked_at: string | null
+  id: string;
+  picked_team_id: string;
+  spread_at_pick_time: number;
+  result: "won" | "lost" | "push" | "pending" | null;
+  locked_at: string | null;
+  is_pick_of_day: boolean;
 }
 
 interface Game {
-  id: string
-  game_date: string
-  home_team: Team
-  away_team: Team
-  home_score: number | null
-  away_score: number | null
-  spread: number | null
-  favorite_team_id: string | null
-  status: 'scheduled' | 'in_progress' | 'completed' | 'postponed' | 'cancelled'
-  conference: Conference
-  picks?: Pick[]
+  id: string;
+  game_date: string;
+  home_team: Team;
+  away_team: Team;
+  home_score: number | null;
+  away_score: number | null;
+  spread: number | null;
+  favorite_team_id: string | null;
+  status: "scheduled" | "in_progress" | "completed" | "postponed" | "cancelled";
+  conference: Conference;
+  picks?: Pick[];
 }
 
 interface GameCardProps {
-  game: Game
-  userPick?: Pick
-  userId: string
+  game: Game;
+  userPick?: Pick;
+  userId: string;
+  potdGameId: string | null;
 }
 
-export function GameCard({ game, userPick, userId: _userId }: GameCardProps) {
-  const fetcher = useFetcher()
-  const gameDate = new Date(game.game_date)
-  const isLocked = game.status !== 'scheduled' || isPast(gameDate)
-  const isCompleted = game.status === 'completed'
+export function GameCard({
+  game,
+  userPick,
+  userId: _userId,
+  potdGameId,
+}: GameCardProps) {
+  const fetcher = useFetcher();
+  const gameDate = new Date(game.game_date);
+  const isLocked = game.status !== "scheduled" || isPast(gameDate);
+  const isCompleted = game.status === "completed";
 
   // Optimistic UI: check if we're submitting a pick for this game
-  const isSubmitting = fetcher.state === 'submitting'
-  const optimisticPickedTeamId = fetcher.formData?.get('pickedTeamId') as string | undefined
+  const isSubmitting = fetcher.state === "submitting";
+  const submittingForThisGame = fetcher.formData?.get("gameId") === game.id;
+  const optimisticPickedTeamId = fetcher.formData?.get("pickedTeamId") as string | undefined;
+
+  // POTD state - database as source of truth with optimistic UI
+  const dbIsPotd = userPick?.is_pick_of_day || false;
+  const optimisticIsPotd = submittingForThisGame && isSubmitting
+    ? fetcher.formData?.get("isPotd") === "true"
+    : dbIsPotd;
+
+  const hasPotdToday = potdGameId !== null;
+  const thisGameIsPotd = potdGameId === game.id;
+  const canTogglePotd = !isLocked && (!hasPotdToday || thisGameIsPotd) && userPick;
 
   // Determine which team is the favorite
-  const homeIsFavorite = game.favorite_team_id === game.home_team.id
-  const awayIsFavorite = game.favorite_team_id === game.away_team.id
+  const homeIsFavorite = game.favorite_team_id === game.home_team.id;
+  const awayIsFavorite = game.favorite_team_id === game.away_team.id;
 
   // Format spread display
   const getSpreadDisplay = (teamId: string) => {
-    if (!game.spread) return null
+    if (!game.spread) return null;
 
     if (teamId === game.favorite_team_id) {
-      return `-${game.spread}`
+      return `-${game.spread}`;
     } else if (game.favorite_team_id) {
-      return `+${game.spread}`
+      return `+${game.spread}`;
     }
-    return null
-  }
+    return null;
+  };
 
   // Check if user picked this team (with optimistic UI)
   const isUserPick = (teamId: string) => {
     if (isSubmitting && optimisticPickedTeamId) {
-      return optimisticPickedTeamId === teamId
+      return optimisticPickedTeamId === teamId;
     }
-    return userPick?.picked_team_id === teamId
-  }
+    return userPick?.picked_team_id === teamId;
+  };
 
   // Get result badge color
-  const getResultColor = (result: Pick['result']) => {
+  const getResultColor = (result: Pick["result"]) => {
     switch (result) {
-      case 'won':
-        return 'bg-green-500 text-white'
-      case 'lost':
-        return 'bg-red-500 text-white'
-      case 'push':
-        return 'bg-gray-500 text-white'
+      case "won":
+        return "bg-green-500 text-white";
+      case "lost":
+        return "bg-red-500 text-white";
+      case "push":
+        return "bg-gray-500 text-white";
       default:
-        return 'bg-blue-500 text-white'
+        return "bg-blue-500 text-white";
     }
-  }
+  };
 
   return (
-    <Card className="hover:shadow-lg transition-all duration-300 bg-white dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col h-[180px] pb-0">
-      <CardContent className="p-2 flex-1 flex flex-col">
+    <Card className="hover:shadow-lg transition-all duration-300 bg-white dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col h-[200px] pb-0">
+      <div className="relative">
+        {/* Pick of the Day Star - Top Right Corner */}
+        {userPick && (
+          <div className="absolute -top-4 right-2 flex justify-end">
+            {!isLocked ? (
+              <fetcher.Form method="post">
+                <input type="hidden" name="gameId" value={game.id} />
+                <input type="hidden" name="pickedTeamId" value={userPick.picked_team_id} />
+                <input type="hidden" name="spread" value={game.spread || ""} />
+                <input type="hidden" name="isPotd" value={(!optimisticIsPotd).toString()} />
+                <button
+                  type="submit"
+                  disabled={!canTogglePotd}
+                  className={cn(
+                    "transition-all duration-200 p-1 rounded-full",
+                    canTogglePotd &&
+                      "hover:scale-110 cursor-pointer hover:bg-yellow-50 dark:hover:bg-yellow-900/20",
+                    !canTogglePotd && "opacity-40 cursor-not-allowed"
+                  )}
+                  title={
+                    !canTogglePotd && hasPotdToday && !thisGameIsPotd
+                      ? "You already have a Pick of the Day"
+                      : optimisticIsPotd
+                        ? "Remove Pick of the Day"
+                        : "Mark as Pick of the Day"
+                  }
+                >
+                  <Star
+                    className={cn(
+                      "w-5 h-5 transition-all duration-200",
+                      optimisticIsPotd
+                        ? "fill-yellow-400 text-yellow-500 drop-shadow-md"
+                        : "text-slate-400 dark:text-slate-600"
+                    )}
+                  />
+                </button>
+              </fetcher.Form>
+            ) : (
+              userPick.is_pick_of_day && (
+                <Badge className="bg-yellow-500 text-white border-0 text-xs px-2 py-0.5 shadow-md">
+                  <Star className="w-3 h-3 fill-white inline mr-1" />
+                  POTD
+                </Badge>
+              )
+            )}
+          </div>
+        )}
+      </div>
+      <CardContent className="flex-1 flex flex-col">
         {/* Three Column Grid Layout */}
         <div className="grid grid-cols-[1fr_auto_1fr] gap-1.5 flex-1">
           {/* Left Column: Away Team */}
@@ -104,29 +170,44 @@ export function GameCard({ game, userPick, userId: _userId }: GameCardProps) {
             method="post"
             onClick={(e) => {
               if (!isLocked && !isSubmitting) {
-                e.currentTarget.requestSubmit()
+                e.currentTarget.requestSubmit();
               }
             }}
             className={cn(
-              'flex flex-col items-center justify-center p-1.5 rounded-lg transition-all duration-200 h-full',
-              !isLocked && 'cursor-pointer hover:scale-105 hover:shadow-md',
-              isLocked && 'opacity-60 cursor-not-allowed',
-              isUserPick(game.away_team.id) && 'ring-2 ring-blue-500 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/20 shadow-md',
-              !isUserPick(game.away_team.id) && 'border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/30 hover:border-slate-300 dark:hover:border-slate-600'
+              "flex flex-col items-center justify-center p-1.5 rounded-lg transition-all duration-200 h-full",
+              !isLocked && "cursor-pointer hover:scale-105 hover:shadow-md",
+              isLocked && "opacity-60 cursor-not-allowed",
+              isUserPick(game.away_team.id) &&
+                "ring-2 ring-blue-500 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/20 shadow-md",
+              !isUserPick(game.away_team.id) &&
+                "border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/30 hover:border-slate-300 dark:hover:border-slate-600"
             )}
-            role={!isLocked ? 'button' : undefined}
+            role={!isLocked ? "button" : undefined}
             aria-label={!isLocked ? `Pick ${game.away_team.name}` : undefined}
             tabIndex={!isLocked ? 0 : undefined}
             onKeyDown={(e) => {
-              if (!isLocked && !isSubmitting && (e.key === 'Enter' || e.key === ' ')) {
-                e.preventDefault()
-                e.currentTarget.requestSubmit()
+              if (
+                !isLocked &&
+                !isSubmitting &&
+                (e.key === "Enter" || e.key === " ")
+              ) {
+                e.preventDefault();
+                e.currentTarget.requestSubmit();
               }
             }}
           >
             <input type="hidden" name="gameId" value={game.id} />
-            <input type="hidden" name="pickedTeamId" value={game.away_team.id} />
-            <input type="hidden" name="spread" value={game.spread || ''} />
+            <input
+              type="hidden"
+              name="pickedTeamId"
+              value={game.away_team.id}
+            />
+            <input type="hidden" name="spread" value={game.spread || ""} />
+            <input
+              type="hidden"
+              name="isPotd"
+              value={optimisticIsPotd ? "true" : "false"}
+            />
 
             <div className="text-center space-y-0.5 w-full">
               <div className="flex items-baseline justify-center gap-1.5 min-h-[20px]">
@@ -138,10 +219,10 @@ export function GameCard({ game, userPick, userId: _userId }: GameCardProps) {
                   <Badge
                     variant="outline"
                     className={cn(
-                      'font-mono text-xs font-semibold px-1.5 py-0.5',
+                      "font-mono text-xs font-semibold px-1.5 py-0.5",
                       awayIsFavorite
-                        ? 'border-purple-500 bg-purple-50 text-purple-700 dark:bg-purple-950/30 dark:text-purple-300'
-                        : 'border-slate-300 dark:border-slate-600'
+                        ? "border-purple-500 bg-purple-50 text-purple-700 dark:bg-purple-950/30 dark:text-purple-300"
+                        : "border-slate-300 dark:border-slate-600"
                     )}
                   >
                     {getSpreadDisplay(game.away_team.id)}
@@ -172,13 +253,21 @@ export function GameCard({ game, userPick, userId: _userId }: GameCardProps) {
 
             {userPick && (
               <div className="flex flex-col items-center gap-1">
-                {userPick.result && userPick.result !== 'pending' && (
-                  <Badge className={cn(getResultColor(userPick.result), 'font-bold shadow-md text-xs px-1.5 py-0.5')}>
+                {userPick.result && userPick.result !== "pending" && (
+                  <Badge
+                    className={cn(
+                      getResultColor(userPick.result),
+                      "font-bold shadow-md text-xs px-1.5 py-0.5"
+                    )}
+                  >
                     {userPick.result.toUpperCase()}
                   </Badge>
                 )}
-                {isLocked && userPick.result === 'pending' && (
-                  <Badge variant="outline" className="text-xs border-amber-500 text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 px-1.5 py-0.5">
+                {isLocked && userPick.result === "pending" && (
+                  <Badge
+                    variant="outline"
+                    className="text-xs border-amber-500 text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 px-1.5 py-0.5"
+                  >
                     Locked
                   </Badge>
                 )}
@@ -191,29 +280,44 @@ export function GameCard({ game, userPick, userId: _userId }: GameCardProps) {
             method="post"
             onClick={(e) => {
               if (!isLocked && !isSubmitting) {
-                e.currentTarget.requestSubmit()
+                e.currentTarget.requestSubmit();
               }
             }}
             className={cn(
-              'flex flex-col items-center justify-center p-1.5 rounded-lg transition-all duration-200 h-full',
-              !isLocked && 'cursor-pointer hover:scale-105 hover:shadow-md',
-              isLocked && 'opacity-60 cursor-not-allowed',
-              isUserPick(game.home_team.id) && 'ring-2 ring-blue-500 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/20 shadow-md',
-              !isUserPick(game.home_team.id) && 'border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/30 hover:border-slate-300 dark:hover:border-slate-600'
+              "flex flex-col items-center justify-center p-1.5 rounded-lg transition-all duration-200 h-full",
+              !isLocked && "cursor-pointer hover:scale-105 hover:shadow-md",
+              isLocked && "opacity-60 cursor-not-allowed",
+              isUserPick(game.home_team.id) &&
+                "ring-2 ring-blue-500 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/20 shadow-md",
+              !isUserPick(game.home_team.id) &&
+                "border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/30 hover:border-slate-300 dark:hover:border-slate-600"
             )}
-            role={!isLocked ? 'button' : undefined}
+            role={!isLocked ? "button" : undefined}
             aria-label={!isLocked ? `Pick ${game.home_team.name}` : undefined}
             tabIndex={!isLocked ? 0 : undefined}
             onKeyDown={(e) => {
-              if (!isLocked && !isSubmitting && (e.key === 'Enter' || e.key === ' ')) {
-                e.preventDefault()
-                e.currentTarget.requestSubmit()
+              if (
+                !isLocked &&
+                !isSubmitting &&
+                (e.key === "Enter" || e.key === " ")
+              ) {
+                e.preventDefault();
+                e.currentTarget.requestSubmit();
               }
             }}
           >
             <input type="hidden" name="gameId" value={game.id} />
-            <input type="hidden" name="pickedTeamId" value={game.home_team.id} />
-            <input type="hidden" name="spread" value={game.spread || ''} />
+            <input
+              type="hidden"
+              name="pickedTeamId"
+              value={game.home_team.id}
+            />
+            <input type="hidden" name="spread" value={game.spread || ""} />
+            <input
+              type="hidden"
+              name="isPotd"
+              value={optimisticIsPotd ? "true" : "false"}
+            />
 
             <div className="text-center space-y-0.5 w-full">
               <div className="flex items-baseline justify-center gap-1.5 min-h-[20px]">
@@ -225,10 +329,10 @@ export function GameCard({ game, userPick, userId: _userId }: GameCardProps) {
                   <Badge
                     variant="outline"
                     className={cn(
-                      'font-mono text-xs font-semibold px-1.5 py-0.5',
+                      "font-mono text-xs font-semibold px-1.5 py-0.5",
                       homeIsFavorite
-                        ? 'border-purple-500 bg-purple-50 text-purple-700 dark:bg-purple-950/30 dark:text-purple-300'
-                        : 'border-slate-300 dark:border-slate-600'
+                        ? "border-purple-500 bg-purple-50 text-purple-700 dark:bg-purple-950/30 dark:text-purple-300"
+                        : "border-slate-300 dark:border-slate-600"
                     )}
                   >
                     {getSpreadDisplay(game.home_team.id)}
@@ -258,28 +362,33 @@ export function GameCard({ game, userPick, userId: _userId }: GameCardProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5">
             <Badge
-              variant={game.conference.is_power_conference ? 'default' : 'secondary'}
+              variant={
+                game.conference.is_power_conference ? "default" : "secondary"
+              }
               className="font-semibold text-xs px-1.5 py-0.5"
             >
               {game.conference.short_name}
             </Badge>
-            {game.status === 'in_progress' && (
+            {game.status === "in_progress" && (
               <Badge className="bg-red-600 text-white border-0 animate-pulse-soft shadow-lg shadow-red-600/50 text-xs px-1.5 py-0.5">
                 <span className="inline-block w-1 h-1 rounded-full bg-white mr-1 animate-pulse"></span>
                 LIVE
               </Badge>
             )}
-            {game.status === 'completed' && (
+            {game.status === "completed" && (
               <Badge className="bg-slate-600 text-white border-0 text-xs px-1.5 py-0.5">
                 FINAL
               </Badge>
             )}
           </div>
-          <span className="text-xs font-semibold text-slate-600 dark:text-slate-400" suppressHydrationWarning>
-            {format(gameDate, 'h:mm a')}
+          <span
+            className="text-xs font-semibold text-slate-600 dark:text-slate-400"
+            suppressHydrationWarning
+          >
+            {format(gameDate, "h:mm a")}
           </span>
         </div>
       </div>
     </Card>
-  )
+  );
 }

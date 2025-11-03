@@ -36,7 +36,9 @@ INSERT INTO conferences (name, short_name, is_power_conference) VALUES
   ('America East Conference', 'AE', false),
   ('ASUN Conference', 'ASUN', false),
   ('WAC', 'WAC', false),
-  ('MEAC', 'MEAC', false)
+  ('MEAC', 'MEAC', false),
+  -- Independent/Unknown Conference for auto-created teams
+  ('Independent', 'IND', false)
 ON CONFLICT (name) DO NOTHING;
 
 -- ============================================

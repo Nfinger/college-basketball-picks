@@ -20,6 +20,11 @@ export function DatePicker({ currentDate }: DatePickerProps) {
   const [open, setOpen] = React.useState(false)
   const navigate = useNavigate()
 
+  // Sync internal state with currentDate prop when it changes
+  React.useEffect(() => {
+    setDate(currentDate)
+  }, [currentDate])
+
   const handleSelect = (selectedDate: Date | undefined) => {
     if (selectedDate) {
       setDate(selectedDate)

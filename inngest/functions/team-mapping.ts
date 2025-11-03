@@ -5,11 +5,27 @@
  */
 
 export function normalizeTeamName(oddsApiName: string): string {
+  // Handle specific problematic team names first
+  const directMappings: Record<string, string> = {
+    'Lipscomb Bisons': 'Lipscomb',
+    'California Golden Bears': 'California',
+    'Arkansas-Pine Bluff Golden Lions': 'Arkansas-Pine Bluff',
+    'Long Beach St 49ers': 'Long Beach State',
+    'Long Beach State 49ers': 'Long Beach State',
+    'Miss Valley St Delta Devils': 'Mississippi Valley State',
+    'Tenn-Martin Skyhawks': 'UT Martin',
+    'Maryland-Eastern Shore Hawks': 'Maryland-Eastern Shore',
+    'West Georgia Wolves': 'West Georgia',
+  }
+
+  if (directMappings[oddsApiName]) {
+    return directMappings[oddsApiName]
+  }
+
   // First, handle common abbreviation expansions before mascot removal
   const preprocessed = oddsApiName
     // Expand "St" to "State" (but not "St." which is for Saint)
-    .replace(/\sSt\s/g, ' State ')  // "Michigan St Spartans" → "Michigan State Spartans"
-    .replace(/\sSt$/g, ' State')     // "Michigan St" → "Michigan State"
+    .replace(/\b(Michigan|Missouri|Montana|Arizona|Oregon|Oklahoma|Kansas|Iowa|North Dakota|South Dakota|Kent|Murray|Coppin|Appalachian|Arkansas|Georgia|Chicago|Youngstown|Indiana|Jackson|Mississippi Valley|SE Missouri|Cleveland|Morehead|Colorado|South Carolina|San José|San Jose|Washington|San Diego|Portland|Morgan|Northwestern|Wichita|Ball|Boise|Fresno|Illinois|NC|Penn)\sSt\b/g, '$1 State')
     // Expand other abbreviations
     .replace(/\sUniv\./g, ' University')  // "Boston Univ." → "Boston University"
     .replace(/^SE\s/g, 'Southeastern ')   // "SE Louisiana" → "Southeastern Louisiana"
@@ -21,9 +37,10 @@ export function normalizeTeamName(oddsApiName: string): string {
     .replace(/\s\(OH\)/g, ' Ohio')        // "Miami (OH)" → "Miami Ohio"
     .trim()
 
-  // Remove common mascot patterns and normalize
+  // Remove common mascot patterns and normalize (order matters - remove compound mascots first)
   const normalized = preprocessed
-    .replace(/\s+(Blue Devils|Tar Heels|Wildcats|Tigers|Bulldogs|Bears|Eagles|Panthers|Lions|Wolfpack|Demon Deacons|Hokies|Cardinals|Fighting Irish|Yellow Jackets|Boilermakers|Fighting Illini|Spartans|Badgers|Hoosiers|Wolverines|Buckeyes|Hawkeyes|Terrapins|Cornhuskers|Bruins|Trojans|Ducks|Huskies|Jayhawks|Cougars|Red Raiders|Cyclones|Horned Frogs|Cowboys|Mountaineers|Bearcats|Knights|Sun Devils|Buffaloes|Utes|Crimson Tide|War Eagles|Volunteers|Gators|Razorbacks|Rebels|Aggies|Gamecocks|Commodores|Longhorns|Sooners|Golden Eagles|Musketeers|Friars|Pirates|Blue Jays|Nittany Lions|Scarlet Knights|Golden Gophers|Huskers|Huskies|Orangemen|Orange|Seminoles|Wolfpack|Hurricanes|Rainbow Warriors|Anteaters|Gauchos|Tritons|Highlanders|Titans|Matadors|Mustangs|49ers|Beach|Hornets|Rainbow Warriors|Lumberjacks|Aggies|Miners|Hilltoppers|Golden Panthers|Gamecocks|Golden Eagles|Flames|Bison|Warhawks|Purple Aces|Racers|Bruins|Flames|Lions|Grizzlies|Bobcats|Thundering Herd|Hatters|Eagles|Owls|Bulls|Green Wave|Shockers|Golden Hurricane|Flyers|Rams|Billikens|Spiders|Explorers|Patriots|Colonials|Dukes|Bonnies|Minutemen|Aztecs|Wolf Pack|Lobos|Broncos|Rams|Cowboys|Aggies|Rebels|Falcons|Bulldogs|Spartans|Zags|Gaels|Dons|Broncos|Ramblers|Lions|Waves|Pilots|Toreros|Bulldogs|Braves|Redbirds|Sycamores|Bears|Purple Aces|Salukis|Beacons|Crusaders|Aces|Purple Eagles|Phoenix|Redhawks|Raiders|Flyers|Golden Grizzlies|Norse|Penguins|Mastodons|Jaguars|River Hawks|Retrievers|Bearcats|Seawolves|Seahawks|Blackbirds|Colonels|Redhawks|Panthers|Skyhawks|Govs|Governors|Redhawks|Cougars|Screaming Eagles|Lions|Leathernecks|Bison|Flamingos|Mavericks|Tommies|Raiders|Catamounts|Black Bears|Wildcats|Great Danes|Danes|River Hawks|Retrievers|Bearcats|Hawks|Hatters|Ospreys|Dolphins|Dons|Flames|Lipscomb Bisons|Bears|Royals|Tartans|Nighthawks|Lions|Antelopes|Redhawks|Lopes|Thunderbirds|Runnin' Rebels|Aggies|Techsters|Wolverines|Eagles|Privateers|Phoenix|Golden Eagles|Mocs|Buccaneers|Spartans|Keydets|Bulldogs|Terriers|Paladins|Bears|Catamounts|Colonels|Blue Hose|Saints|Hilltoppers|Thoroughbreds|Delta Devils|Braves|Hornets|Tigers|Jaguars|Bison|Panthers|Wildcats|Rattlers|Eagles|Bison|Fightin' Hawks|Mavericks|Coyotes|Summit League|Kangaroos|Pioneers|Roos|Purple Aces|Red Wolves|Red Storm|Red Flash|Red Foxes|Bluejays|Revolutionaries|Pride|Midshipmen|Vandals|Fighting Camels|Golden Griffins|Chanticleers|Chippewas|Vikings|Blue Hens|Blue Demons|Roadrunners|Great Danes|Lancers|Fighting Hawks|Sharks|Ragin' Cajuns|Greyhounds|Mountain Hawks|Zips|Golden Flashes|Leopards|Beavers|Jackrabbits)/i, '')
+    .replace(/\s+(Golden Lions|Golden Bears|Golden Eagles|Golden Gophers|Golden Panthers|Golden Grizzlies|Golden Hurricane|Golden Flashes|Golden Griffins)/i, '')  // Remove compound mascots first
+    .replace(/\s+(Blue Devils|Tar Heels|Wildcats|Tigers|Bulldogs|Bears|Eagles|Panthers|Lions|Wolfpack|Demon Deacons|Hokies|Cardinals|Fighting Irish|Yellow Jackets|Boilermakers|Fighting Illini|Spartans|Badgers|Hoosiers|Wolverines|Buckeyes|Hawkeyes|Terrapins|Cornhuskers|Bruins|Trojans|Ducks|Huskies|Jayhawks|Cougars|Red Raiders|Cyclones|Horned Frogs|Cowboys|Mountaineers|Bearcats|Knights|Sun Devils|Buffaloes|Utes|Crimson Tide|War Eagles|Volunteers|Gators|Razorbacks|Rebels|Aggies|Gamecocks|Commodores|Longhorns|Sooners|Musketeers|Friars|Pirates|Blue Jays|Nittany Lions|Scarlet Knights|Huskers|Huskies|Orangemen|Orange|Seminoles|Wolfpack|Hurricanes|Rainbow Warriors|Anteaters|Gauchos|Tritons|Highlanders|Titans|Matadors|Mustangs|49ers|Hornets|Lumberjacks|Miners|Hilltoppers|Flames|Bison|Bisons|Warhawks|Purple Aces|Racers|Grizzlies|Bobcats|Thundering Herd|Hatters|Owls|Bulls|Green Wave|Shockers|Flyers|Rams|Billikens|Spiders|Explorers|Patriots|Colonials|Dukes|Bonnies|Minutemen|Aztecs|Wolf Pack|Lobos|Broncos|Falcons|Zags|Gaels|Dons|Ramblers|Waves|Pilots|Toreros|Braves|Redbirds|Sycamores|Salukis|Beacons|Crusaders|Aces|Purple Eagles|Phoenix|Redhawks|Raiders|Norse|Penguins|Mastodons|Jaguars|River Hawks|Retrievers|Seawolves|Seahawks|Blackbirds|Colonels|Skyhawks|Govs|Governors|Screaming Eagles|Leathernecks|Flamingos|Mavericks|Tommies|Catamounts|Black Bears|Great Danes|Danes|Hawks|Ospreys|Dolphins|Royals|Tartans|Nighthawks|Antelopes|Lopes|Thunderbirds|Runnin' Rebels|Techsters|Privateers|Mocs|Buccaneers|Keydets|Terriers|Paladins|Blue Hose|Saints|Thoroughbreds|Delta Devils|Rattlers|Fightin' Hawks|Coyotes|Summit League|Kangaroos|Pioneers|Roos|Red Wolves|Red Storm|Red Flash|Red Foxes|Bluejays|Revolutionaries|Pride|Midshipmen|Vandals|Fighting Camels|Chanticleers|Chippewas|Vikings|Blue Hens|Blue Demons|Roadrunners|Lancers|Fighting Hawks|Sharks|Ragin' Cajuns|Greyhounds|Mountain Hawks|Zips|Leopards|Beavers|Jackrabbits|Hoyas|Stags|Monarchs|Broncs|Cavaliers|Rockets|Demons|Peacocks|Vaqueros|Blazers|Lakers|Wolves|Texans|Trailblazers|Warriors|Cardinal)/i, '')
     .trim()
     // Remove apostrophes (St. John's → St. Johns, Saint Mary's → Saint Marys)
     .replace(/'/g, '')
@@ -54,6 +71,8 @@ export function normalizeTeamName(oddsApiName: string): string {
     'Saint Marys': 'Saint Marys',
     'Saint Josephs': 'Saint Josephs',
     'Saint Joseph': 'Saint Josephs',
+    'Saint Peters': 'Saint Peters',
+    'Saint Peter': 'Saint Peters',
     'St. Francis Pennsylvania': 'St. Francis Brooklyn',  // Map St. Francis (PA) to DB name
     'St. Thomas Minnesota': 'St. Thomas',
     'Ole Miss': 'Ole Miss',
@@ -63,6 +82,7 @@ export function normalizeTeamName(oddsApiName: string): string {
     'UNC Asheville': 'UNC Asheville',
     'UNC Greensboro': 'UNC Greensboro',
     'Long Island': 'Long Island',
+    'Long Beach State': 'Long Beach State',
     'IU Indianapolis': 'IU Indianapolis',
     'Boston University': 'Boston University',
     'Loyola Chicago': 'Loyola Chicago',
@@ -76,6 +96,26 @@ export function normalizeTeamName(oddsApiName: string): string {
     'UIC': 'UIC',
     'CSU Bakersfield': 'Cal State Bakersfield',
     'Fort Wayne': 'Purdue Fort Wayne',
+    // Fix specific API name variations
+    'Lipscomb': 'Lipscomb',  // Prevent "Lipscomb Bisons" → "Lipscombs"
+    'California': 'California',  // Prevent "California Golden Bears" → "California Golden"
+    'Arkansas-Pine Bluff': 'Arkansas-Pine Bluff',  // Prevent "Arkansas-Pine Bluff Golden Lions" → "Arkansas-Pine Bluff Golden"
+    'Northwestern State': 'Northwestern State',
+    'Cal Baptist': 'California Baptist',
+    'California Baptist': 'California Baptist',
+    'USC Upstate': 'SC Upstate',
+    'SC Upstate': 'SC Upstate',
+    'South Carolina Upstate': 'SC Upstate',
+    'UT Rio Grande Valley': 'UT Rio Grande Valley',
+    'Tarleton State': 'Tarleton State',
+    'Utah Tech': 'Utah Tech',
+    'UL Monroe': 'Louisiana Monroe',
+    'Louisiana Monroe': 'Louisiana Monroe',
+    'Tennessee-Martin': 'UT Martin',
+    'Tenn-Martin': 'UT Martin',
+    'UT Martin': 'UT Martin',
+    'Mount St. Marys': 'Mount St. Marys',
+    'Mt. St. Marys': 'Mount St. Marys',
   }
 
   return specialCases[normalized] || normalized

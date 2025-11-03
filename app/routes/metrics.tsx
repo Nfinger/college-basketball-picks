@@ -14,7 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from '~/components/ui/table'
-import { TrendingUp, TrendingDown, Trophy, Target } from 'lucide-react'
+import { TrendingUp, TrendingDown, Trophy, Target, Star } from 'lucide-react'
 import { useState } from 'react'
 
 type UserStats = {
@@ -44,21 +44,24 @@ type ComparisonStats = {
 export async function loader({ request }: Route.LoaderArgs) {
   const { user, supabase, headers } = await requireAuth(request)
 
-  // Get overall stats
-  const { data: overallStats } = await supabase
-    .rpc('get_user_overall_stats', { user_uuid: user.id })
-
-  // Get conference breakdown
-  const { data: conferenceStats } = await supabase
-    .rpc('get_user_conference_stats', { user_uuid: user.id })
-
-  // Get current streak
-  const { data: streak } = await supabase
-    .rpc('get_user_current_streak', { user_uuid: user.id })
-
-  // Get all users stats at once (optimized - no N+1 query)
-  const { data: allUsersStats } = await supabase
-    .rpc('get_all_users_overall_stats')
+  // Get all stats in parallel for performance
+  const [
+    { data: overallStats },
+    { data: conferenceStats },
+    { data: streak },
+    { data: allUsersStats },
+    { data: potdStats },
+    { data: potdStreak },
+    { data: potdComparison },
+  ] = await Promise.all([
+    supabase.rpc('get_user_overall_stats', { user_uuid: user.id }),
+    supabase.rpc('get_user_conference_stats', { user_uuid: user.id }),
+    supabase.rpc('get_user_current_streak', { user_uuid: user.id }),
+    supabase.rpc('get_all_users_overall_stats'),
+    supabase.rpc('get_user_potd_stats', { user_uuid: user.id }),
+    supabase.rpc('get_user_potd_streak', { user_uuid: user.id }),
+    supabase.rpc('get_user_potd_comparison', { user_uuid: user.id }),
+  ])
 
   // Filter out current user for comparison
   const comparisonStats = (allUsersStats || [])
@@ -74,6 +77,9 @@ export async function loader({ request }: Route.LoaderArgs) {
     conferenceStats: conferenceStats || [],
     streak: streak?.[0] || null,
     comparisonStats,
+    potdStats: potdStats?.[0] || null,
+    potdStreak: potdStreak?.[0] || null,
+    potdComparison: potdComparison || [],
     headers,
   }
 }
@@ -86,7 +92,7 @@ export function meta(_: Route.MetaArgs) {
 }
 
 export default function Metrics() {
-  const { user, overallStats, conferenceStats, streak, comparisonStats } =
+  const { user, overallStats, conferenceStats, streak, comparisonStats, potdStats, potdStreak, potdComparison } =
     useLoaderData<typeof loader>()
   const navigation = useNavigation()
   const [conferenceFilter, setConferenceFilter] = useState<'all' | 'power' | 'midmajor'>('all')
@@ -239,6 +245,153 @@ export default function Metrics() {
               </div>
             </CardContent>
           </Card>
+        )}
+
+        {/* Pick of the Day Stats */}
+        {potdStats && potdStats.total_potd > 0 && (
+          <>
+            <div className="mt-8 mb-4">
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-yellow-600 to-amber-600 dark:from-yellow-400 dark:to-amber-400 bg-clip-text text-transparent flex items-center gap-2">
+                <Star className="w-6 h-6 fill-yellow-500 text-yellow-600" />
+                Pick of the Day Performance
+              </h2>
+              <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+                Track your performance on your most confident picks
+              </p>
+            </div>
+
+            {/* POTD Stats Cards */}
+            <div className="grid gap-6 md:grid-cols-4">
+              <Card className="hover:shadow-lg transition-shadow bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-950/30 dark:to-amber-950/30 border-yellow-200 dark:border-yellow-900">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-semibold text-yellow-700 dark:text-yellow-400 uppercase tracking-wide flex items-center gap-1">
+                    <Star className="w-4 h-4 fill-yellow-500" />
+                    Total POTDs
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-4xl font-bold text-yellow-600 dark:text-yellow-400 tabular-nums">{potdStats.total_potd}</div>
+                </CardContent>
+              </Card>
+
+              <Card className="hover:shadow-lg transition-shadow bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/30 border-green-200 dark:border-green-900">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-semibold text-green-700 dark:text-green-400 uppercase tracking-wide">
+                    POTD Wins
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-4xl font-bold text-green-600 dark:text-green-400 tabular-nums">{potdStats.wins}</div>
+                </CardContent>
+              </Card>
+
+              <Card className="hover:shadow-lg transition-shadow bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-950/30 dark:to-rose-950/30 border-red-200 dark:border-red-900">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-semibold text-red-700 dark:text-red-400 uppercase tracking-wide">
+                    POTD Losses
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-4xl font-bold text-red-600 dark:text-red-400 tabular-nums">{potdStats.losses}</div>
+                </CardContent>
+              </Card>
+
+              <Card className="hover:shadow-lg transition-shadow bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border-blue-200 dark:border-blue-900">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-semibold text-blue-700 dark:text-blue-400 uppercase tracking-wide">
+                    POTD Win Rate
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center space-x-3">
+                    <div className="text-4xl font-bold text-blue-600 dark:text-blue-400 tabular-nums">
+                      {potdStats.win_rate || '0'}%
+                    </div>
+                    {potdStats.win_rate && Number(potdStats.win_rate) > 50 ? (
+                      <TrendingUp className="h-6 w-6 text-green-600 dark:text-green-400" />
+                    ) : (
+                      <TrendingDown className="h-6 w-6 text-red-600 dark:text-red-400" />
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* POTD Streak */}
+            {potdStreak && potdStreak.streak_count > 0 && (
+              <Card className="bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-950/30 dark:to-amber-950/30 border-yellow-200 dark:border-yellow-900 hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <CardTitle className="text-yellow-900 dark:text-yellow-100 flex items-center gap-2">
+                    <Star className="w-5 h-5 fill-yellow-500" />
+                    Current POTD Streak
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center space-x-4">
+                    <div className="p-3 bg-yellow-100 dark:bg-yellow-900/50 rounded-full">
+                      <Trophy className="h-8 w-8 text-yellow-600 dark:text-yellow-400" />
+                    </div>
+                    <div>
+                      <div className="text-3xl font-bold text-yellow-900 dark:text-yellow-100">
+                        {potdStreak.streak_count} {potdStreak.streak_type === 'won' ? 'Wins' : 'Losses'}
+                      </div>
+                      <p className="text-sm text-yellow-700 dark:text-yellow-400 font-medium">
+                        Your most confident picks streak!
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* POTD vs Regular Picks Comparison */}
+            {potdComparison.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Star className="w-5 h-5 fill-yellow-500 text-yellow-600" />
+                    Pick of the Day vs Regular Picks
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Pick Type</TableHead>
+                        <TableHead className="text-right">Total Picks</TableHead>
+                        <TableHead className="text-right">Wins</TableHead>
+                        <TableHead className="text-right">Losses</TableHead>
+                        <TableHead className="text-right">Win Rate</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {potdComparison.map((comp: { pick_type: string; total_picks: number; wins: number; losses: number; win_rate: string }) => (
+                        <TableRow key={comp.pick_type} className={comp.pick_type === 'Pick of the Day' ? 'bg-yellow-50 dark:bg-yellow-900/20' : ''}>
+                          <TableCell className="font-medium">
+                            <div className="flex items-center gap-2">
+                              {comp.pick_type === 'Pick of the Day' && <Star className="w-4 h-4 fill-yellow-500 text-yellow-600" />}
+                              {comp.pick_type}
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-right">{comp.total_picks}</TableCell>
+                          <TableCell className="text-right text-green-600">{comp.wins}</TableCell>
+                          <TableCell className="text-right text-red-600">{comp.losses}</TableCell>
+                          <TableCell className="text-right">
+                            <Badge
+                              variant={Number(comp.win_rate) > 50 ? 'default' : 'secondary'}
+                              className={comp.pick_type === 'Pick of the Day' ? 'bg-yellow-500 hover:bg-yellow-600' : ''}
+                            >
+                              {comp.win_rate || '0'}%
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            )}
+          </>
         )}
 
         {/* Power vs Mid-Major */}

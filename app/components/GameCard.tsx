@@ -212,7 +212,7 @@ export function GameCard({
             <div className="text-center space-y-0.5 w-full">
               <div className="flex items-baseline justify-center gap-1.5 min-h-[20px]">
                 <div className="font-bold text-sm text-slate-900 dark:text-slate-100 truncate max-w-[120px]" title={game.away_team.name}>
-                  {game.away_team.name}
+                  {game.away_team.short_name}
                 </div>
 
                 {game.spread && (
@@ -322,7 +322,7 @@ export function GameCard({
             <div className="text-center space-y-0.5 w-full">
               <div className="flex items-baseline justify-center gap-1.5 min-h-[20px]">
                 <div className="font-bold text-sm text-slate-900 dark:text-slate-100 truncate max-w-[120px]" title={game.home_team.name}>
-                  {game.home_team.name}
+                  {game.home_team.short_name}
                 </div>
 
                 {game.spread && (

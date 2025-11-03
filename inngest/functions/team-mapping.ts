@@ -6,7 +6,7 @@
 
 export function normalizeTeamName(oddsApiName: string): string {
   // First, handle common abbreviation expansions before mascot removal
-  let preprocessed = oddsApiName
+  const preprocessed = oddsApiName
     // Expand "St" to "State" (but not "St." which is for Saint)
     .replace(/\sSt\s/g, ' State ')  // "Michigan St Spartans" → "Michigan State Spartans"
     .replace(/\sSt$/g, ' State')     // "Michigan St" → "Michigan State"

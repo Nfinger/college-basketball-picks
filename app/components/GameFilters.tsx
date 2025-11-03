@@ -9,20 +9,24 @@ import { ToggleGroup, ToggleGroupItem } from '~/components/ui/toggle-group'
 import { ListFilter, Check } from 'lucide-react'
 
 // Simple deep equality check for filter objects
-function isEqual(a: any, b: any): boolean {
+function isEqual(a: unknown, b: unknown): boolean {
   if (a === b) return true
   if (typeof a !== 'object' || typeof b !== 'object' || a === null || b === null) return false
 
-  const keysA = Object.keys(a)
-  const keysB = Object.keys(b)
+  // Type assertion after checking they are objects
+  const objA = a as Record<string, unknown>
+  const objB = b as Record<string, unknown>
+
+  const keysA = Object.keys(objA)
+  const keysB = Object.keys(objB)
 
   if (keysA.length !== keysB.length) return false
 
   for (const key of keysA) {
     if (!keysB.includes(key)) return false
 
-    const valA = a[key]
-    const valB = b[key]
+    const valA = objA[key]
+    const valB = objB[key]
 
     if (Array.isArray(valA) && Array.isArray(valB)) {
       if (valA.length !== valB.length) return false

@@ -7,9 +7,11 @@
   /* Popover colors - solid backgrounds for readability */
   --color-popover: white;
   --color-popover-foreground: rgb(15 23 42); /* slate-900 */
+}
 
-  /* Dark mode popover colors */
-  @media (prefers-color-scheme: dark) {
+/* Dark mode popover colors */
+@media (prefers-color-scheme: dark) {
+  :root {
     --color-popover: rgb(15 23 42); /* slate-900 */
     --color-popover-foreground: rgb(241 245 249); /* slate-100 */
   }

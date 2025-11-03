@@ -12,6 +12,7 @@ import { DatePicker } from "~/components/DatePicker";
 import { GameFilters } from "~/components/GameFilters";
 import { Button } from "~/components/ui/button";
 import { format, addDays, subDays, parseISO, isValid } from "date-fns";
+import { fromZonedTime } from "date-fns-tz";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 
@@ -67,11 +68,19 @@ export async function loader({ request }: Route.LoaderArgs) {
   const midMajorOnly = url.searchParams.get("midmajor") === "true";
   const picksOnly = url.searchParams.get("picks") === "true";
 
-  // Create proper date boundaries in UTC
-  const startOfDay = new Date(targetDate);
-  startOfDay.setHours(0, 0, 0, 0);
-  const endOfDay = new Date(targetDate);
-  endOfDay.setHours(23, 59, 59, 999);
+  // Create date boundaries in Eastern Time, then convert to UTC for the query
+  // This ensures we get all games that occur on the selected date in EST/EDT
+  const timezone = "America/New_York";
+
+  // Create start of day in Eastern Time (midnight)
+  const startOfDayET = new Date(targetDate);
+  startOfDayET.setHours(0, 0, 0, 0);
+  const startOfDay = fromZonedTime(startOfDayET, timezone);
+
+  // Create end of day in Eastern Time (23:59:59.999)
+  const endOfDayET = new Date(targetDate);
+  endOfDayET.setHours(23, 59, 59, 999);
+  const endOfDay = fromZonedTime(endOfDayET, timezone);
 
   // Fetch games, conferences, and POTD status in parallel
   const [gamesResult, conferencesResult, potdResult] = await Promise.all([

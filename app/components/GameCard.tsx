@@ -1,9 +1,10 @@
+import { useState } from "react";
 import { useFetcher } from "react-router";
 import { Card, CardContent } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
 import { format, isPast } from "date-fns";
 import { cn } from "~/lib/utils";
-import { Loader2, Star } from "lucide-react";
+import { Loader2, Star, Eye, EyeOff } from "lucide-react";
 
 interface Team {
   id: string;
@@ -44,6 +45,7 @@ interface Game {
 interface GameCardProps {
   game: Game;
   userPick?: Pick;
+  otherPick?: Pick;
   userId: string;
   potdGameId: string | null;
 }
@@ -51,6 +53,7 @@ interface GameCardProps {
 export function GameCard({
   game,
   userPick,
+  otherPick,
   userId: _userId,
   potdGameId,
 }: GameCardProps) {
@@ -58,6 +61,7 @@ export function GameCard({
   const gameDate = new Date(game.game_date);
   const isLocked = game.status !== "scheduled" || isPast(gameDate);
   const isCompleted = game.status === "completed";
+  const [showOtherPick, setShowOtherPick] = useState(false);
 
   // Optimistic UI: check if we're submitting a pick for this game
   const isSubmitting = fetcher.state === "submitting";
@@ -96,6 +100,11 @@ export function GameCard({
       return optimisticPickedTeamId === teamId;
     }
     return userPick?.picked_team_id === teamId;
+  };
+
+  // Check if other user picked this team
+  const isOtherPick = (teamId: string) => {
+    return showOtherPick && otherPick?.picked_team_id === teamId;
   };
 
   // Get result badge color
@@ -179,7 +188,9 @@ export function GameCard({
               isLocked && "opacity-60 cursor-not-allowed",
               isUserPick(game.away_team.id) &&
                 "ring-2 ring-blue-500 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/20 shadow-md",
-              !isUserPick(game.away_team.id) &&
+              isOtherPick(game.away_team.id) &&
+                "ring-2 ring-orange-400 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-950/30 dark:to-orange-900/20",
+              !isUserPick(game.away_team.id) && !isOtherPick(game.away_team.id) &&
                 "border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/30 hover:border-slate-300 dark:hover:border-slate-600"
             )}
             role={!isLocked ? "button" : undefined}
@@ -289,7 +300,9 @@ export function GameCard({
               isLocked && "opacity-60 cursor-not-allowed",
               isUserPick(game.home_team.id) &&
                 "ring-2 ring-blue-500 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950/30 dark:to-blue-900/20 shadow-md",
-              !isUserPick(game.home_team.id) &&
+              isOtherPick(game.home_team.id) &&
+                "ring-2 ring-orange-400 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-950/30 dark:to-orange-900/20",
+              !isUserPick(game.home_team.id) && !isOtherPick(game.home_team.id) &&
                 "border-2 border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/30 hover:border-slate-300 dark:hover:border-slate-600"
             )}
             role={!isLocked ? "button" : undefined}
@@ -379,6 +392,19 @@ export function GameCard({
               <Badge className="bg-slate-600 text-white border-0 text-xs px-1.5 py-0.5">
                 FINAL
               </Badge>
+            )}
+            {otherPick && (
+              <button
+                onClick={() => setShowOtherPick(!showOtherPick)}
+                className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                title={showOtherPick ? "Hide friend's pick" : "Show friend's pick"}
+              >
+                {showOtherPick ? (
+                  <EyeOff className="h-3.5 w-3.5" />
+                ) : (
+                  <Eye className="h-3.5 w-3.5" />
+                )}
+              </button>
             )}
           </div>
           <span

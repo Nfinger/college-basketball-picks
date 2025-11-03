@@ -39,6 +39,7 @@ type GameWithRelations = {
     result: "won" | "lost" | "push" | "pending" | null;
     locked_at: string | null;
     is_pick_of_day: boolean;
+    user_id: string;
   }[];
 };
 
@@ -67,6 +68,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   const powerOnly = url.searchParams.get("power") === "true";
   const midMajorOnly = url.searchParams.get("midmajor") === "true";
   const picksOnly = url.searchParams.get("picks") === "true";
+  const opponentPicksOnly = url.searchParams.get("opponentpicks") === "true";
   const excitingOnly = url.searchParams.get("exciting") === "true";
 
   // Create date boundaries in Eastern Time, then convert to UTC for the query
@@ -93,12 +95,11 @@ export async function loader({ request }: Route.LoaderArgs) {
         home_team:teams!games_home_team_id_fkey(id, name, short_name),
         away_team:teams!games_away_team_id_fkey(id, name, short_name),
         conference:conferences(id, name, short_name, is_power_conference),
-        picks(id, picked_team_id, spread_at_pick_time, result, locked_at, is_pick_of_day)
+        picks(id, picked_team_id, spread_at_pick_time, result, locked_at, is_pick_of_day, user_id)
       `
       )
       .gte("game_date", startOfDay.toISOString())
       .lte("game_date", endOfDay.toISOString())
-      .eq("picks.user_id", user.id)
       .order("game_date", { ascending: true }),
     supabase
       .from("conferences")
@@ -156,8 +157,15 @@ export async function loader({ request }: Route.LoaderArgs) {
     }
 
     // Picks only filter
-    if (picksOnly && (!game.picks || game.picks.length === 0)) {
-      return false;
+    if (picksOnly) {
+      const userPick = game.picks?.find(p => p.user_id === user.id);
+      if (!userPick) return false;
+    }
+
+    // Opponent picks only filter
+    if (opponentPicksOnly) {
+      const opponentPick = game.picks?.find(p => p.user_id !== user.id);
+      if (!opponentPick) return false;
     }
 
     // Exciting games filter - close spreads in power conferences OR very close spreads anywhere
@@ -359,15 +367,21 @@ export default function Index() {
           </span>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {games.map((game: GameWithRelations) => (
-            <GameCard
-              key={game.id}
-              game={game}
-              userPick={game.picks?.[0]}
-              userId={user.id}
-              potdGameId={potdGameId}
-            />
-          ))}
+          {games.map((game: GameWithRelations) => {
+            const userPick = game.picks?.find(p => p.user_id === user.id);
+            const otherPick = game.picks?.find(p => p.user_id !== user.id);
+
+            return (
+              <GameCard
+                key={game.id}
+                game={game}
+                userPick={userPick}
+                otherPick={otherPick}
+                userId={user.id}
+                potdGameId={potdGameId}
+              />
+            );
+          })}
         </div>
       </div>
     </AppLayout>

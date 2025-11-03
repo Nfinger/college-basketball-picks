@@ -12,7 +12,7 @@ export const updateScores = inngest.createFunction(
   // - Nov-Mar only (basketball season)
   // - Smart query below ensures API only called when games are active
   // Estimated: ~300 calls/month during season
-  { cron: '*/30 17-23,0-5 * 11,12,1-3 *' }
+  { cron: '*/30 17-23,0-5 * 11,12,1-3 *' },
   async ({ step }) => {
     const supabase = createClient(
       process.env.SUPABASE_URL!,

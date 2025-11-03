@@ -170,18 +170,31 @@ export const scrapeGames = inngest.createFunction(
             )
           }
 
-          // Extract spread from bookmakers          
-          const spread = game.bookmakers?.[0]?.markets?.find(
+          // Extract spread from bookmakers and determine favorite
+          const spreadsMarket = game.bookmakers?.[0]?.markets?.find(
             (m: { key: string }) => m.key === 'spreads'
-          )?.outcomes?.find((o: { point: number }) => o.point < 0)?.point
+          )
 
-
-          // Determine favorite team (negative spread)
           let favoriteTeamId = null
-          if (spread && spread < 0) {
-            favoriteTeamId = homeTeamData.id
-          } else if (spread && spread > 0) {
-            favoriteTeamId = awayTeamData.id
+          let spread: number | null = null
+
+          if (spreadsMarket?.outcomes) {
+            // Find the outcome with negative spread (the favorite)
+            const favoriteOutcome = spreadsMarket.outcomes.find(
+              (o: { point: number; name: string }) => o.point < 0
+            )
+
+            if (favoriteOutcome) {
+              spread = favoriteOutcome.point
+
+              // Match the favorite outcome's team name to home or away team
+              // The outcome name should match one of the team names from the API
+              if (favoriteOutcome.name === homeTeam) {
+                favoriteTeamId = homeTeamData.id
+              } else if (favoriteOutcome.name === awayTeam) {
+                favoriteTeamId = awayTeamData.id
+              }
+            }
           }
 
           // Get conference ID (assume both teams in same conference for now)

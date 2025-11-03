@@ -172,10 +172,10 @@ export default function Index() {
     <AppLayout user={user}>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
             Today's Games
           </h1>
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+          <p className="mt-2 text-base font-medium text-slate-600 dark:text-slate-400">
             {new Date().toLocaleDateString('en-US', {
               weekday: 'long',
               year: 'numeric',

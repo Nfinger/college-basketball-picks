@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react'
-import { useLoaderData, useNavigate, useNavigation, useActionData, useSearchParams } from 'react-router'
+import { useLoaderData, useNavigate, useNavigation, useActionData } from 'react-router'
 import type { Route } from './+types/games'
 import { requireAuth } from '~/lib/auth.server'
 import { AppLayout } from '~/components/AppLayout'
@@ -208,10 +208,10 @@ export default function Games() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
                 {isToday ? "Today's Games" : format(currentDate, 'MMMM d, yyyy')}
               </h1>
-              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+              <p className="mt-2 text-base font-medium text-slate-600 dark:text-slate-400">
                 {format(currentDate, 'EEEE')}
               </p>
             </div>

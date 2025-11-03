@@ -55,13 +55,13 @@ export const scrapeGames = inngest.createFunction(
           const normalizedAwayTeam = normalizeTeamName(awayTeam)
 
           // Find teams in database
-          const { data: homeTeamData, error: homeError } = await supabase
+          const { data: homeTeamData, error: _homeError } = await supabase
             .from('teams')
             .select('id')
             .eq('name', normalizedHomeTeam)
             .single()
 
-          const { data: awayTeamData, error: awayError } = await supabase
+          const { data: awayTeamData, error: _awayError } = await supabase
             .from('teams')
             .select('id')
             .eq('name', normalizedAwayTeam)

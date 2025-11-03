@@ -133,10 +133,10 @@ export default function Metrics() {
     <AppLayout user={user}>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
             Your Performance
           </h1>
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+          <p className="mt-2 text-base font-medium text-slate-600 dark:text-slate-400">
             Track your picking accuracy and compare with others
           </p>
         </div>
@@ -150,55 +150,55 @@ export default function Metrics() {
             <MetricsCardSkeleton />
           </div>
         ) : overallStats ? (
-          <div className="grid gap-4 md:grid-cols-4">
-            <Card>
+          <div className="grid gap-6 md:grid-cols-4">
+            <Card className="hover:shadow-lg transition-shadow bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-900/50 border-slate-200 dark:border-slate-800">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                <CardTitle className="text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wide">
                   Total Picks
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">{overallStats.total_picks}</div>
+                <div className="text-4xl font-bold text-slate-900 dark:text-slate-100 tabular-nums">{overallStats.total_picks}</div>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="hover:shadow-lg transition-shadow bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/30 border-green-200 dark:border-green-900">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                <CardTitle className="text-sm font-semibold text-green-700 dark:text-green-400 uppercase tracking-wide">
                   Wins
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-green-600">{overallStats.wins}</div>
+                <div className="text-4xl font-bold text-green-600 dark:text-green-400 tabular-nums">{overallStats.wins}</div>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="hover:shadow-lg transition-shadow bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-950/30 dark:to-rose-950/30 border-red-200 dark:border-red-900">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                <CardTitle className="text-sm font-semibold text-red-700 dark:text-red-400 uppercase tracking-wide">
                   Losses
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-red-600">{overallStats.losses}</div>
+                <div className="text-4xl font-bold text-red-600 dark:text-red-400 tabular-nums">{overallStats.losses}</div>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="hover:shadow-lg transition-shadow bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 border-blue-200 dark:border-blue-900">
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                <CardTitle className="text-sm font-semibold text-blue-700 dark:text-blue-400 uppercase tracking-wide">
                   Win Rate
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="flex items-center space-x-2">
-                  <div className="text-3xl font-bold">
+                <div className="flex items-center space-x-3">
+                  <div className="text-4xl font-bold text-blue-600 dark:text-blue-400 tabular-nums">
                     {overallStats.win_rate || '0'}%
                   </div>
                   {overallStats.win_rate && Number(overallStats.win_rate) > 50 ? (
-                    <TrendingUp className="h-5 w-5 text-green-600" />
+                    <TrendingUp className="h-6 w-6 text-green-600 dark:text-green-400" />
                   ) : (
-                    <TrendingDown className="h-5 w-5 text-red-600" />
+                    <TrendingDown className="h-6 w-6 text-red-600 dark:text-red-400" />
                   )}
                 </div>
               </CardContent>
@@ -219,18 +219,20 @@ export default function Metrics() {
 
         {/* Streak */}
         {streak && (
-          <Card>
+          <Card className="bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-amber-950/30 dark:to-yellow-950/30 border-amber-200 dark:border-amber-900 hover:shadow-lg transition-shadow">
             <CardHeader>
-              <CardTitle>Current Streak</CardTitle>
+              <CardTitle className="text-amber-900 dark:text-amber-100">Current Streak</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center space-x-4">
-                <Trophy className="h-8 w-8 text-yellow-500" />
+                <div className="p-3 bg-amber-100 dark:bg-amber-900/50 rounded-full">
+                  <Trophy className="h-8 w-8 text-amber-600 dark:text-amber-400" />
+                </div>
                 <div>
-                  <div className="text-2xl font-bold">
+                  <div className="text-3xl font-bold text-amber-900 dark:text-amber-100">
                     {streak.streak_count} {streak.streak_type === 'won' ? 'Wins' : 'Losses'}
                   </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-amber-700 dark:text-amber-400 font-medium">
                     Keep it going!
                   </p>
                 </div>

@@ -80,11 +80,11 @@ export const updateScores = inngest.createFunction(
     // Step 3: Update game scores and status
     const updateResults = await step.run('update-game-scores', async () => {
       let gamesUpdated = 0
-      let errors: string[] = []
+      const errors: string[] = []
 
       for (const game of games) {
         try {
-          const scoreData = scores.find((s: any) => s.id === game.external_id)
+          const scoreData = scores.find((s: { id: string }) => s.id === game.external_id)
 
           if (!scoreData) {
             continue
@@ -100,10 +100,10 @@ export const updateScores = inngest.createFunction(
 
           // Extract scores
           const homeScore = scoreData.scores?.find(
-            (s: any) => s.name === scoreData.home_team
+            (s: { name: string }) => s.name === scoreData.home_team
           )?.score
           const awayScore = scoreData.scores?.find(
-            (s: any) => s.name === scoreData.away_team
+            (s: { name: string }) => s.name === scoreData.away_team
           )?.score
 
           // Update game
@@ -122,8 +122,8 @@ export const updateScores = inngest.createFunction(
           } else {
             gamesUpdated++
           }
-        } catch (error: any) {
-          errors.push(`Error processing game ${game.id}: ${error.message}`)
+        } catch (error) {
+          errors.push(`Error processing game ${game.id}: ${error instanceof Error ? error.message : String(error)}`)
         }
       }
 

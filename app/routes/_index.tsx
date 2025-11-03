@@ -9,6 +9,20 @@ import { GameFilters, type FilterState } from '~/components/GameFilters'
 import { Card, CardContent } from '~/components/ui/card'
 import { toast } from 'sonner'
 
+type GameWithRelations = {
+  id: string
+  game_date: string
+  home_team: { id: string; name: string; short_name: string }
+  away_team: { id: string; name: string; short_name: string }
+  home_score: number | null
+  away_score: number | null
+  spread: number | null
+  favorite_team_id: string | null
+  status: 'scheduled' | 'in_progress' | 'completed' | 'postponed' | 'cancelled'
+  conference: { id: string; name: string; short_name: string; is_power_conference: boolean }
+  picks?: { id: string; picked_team_id: string; spread_at_pick_time: number; result: 'won' | 'lost' | 'push' | 'pending' | null; locked_at: string | null }[]
+}
+
 export async function loader({ request }: Route.LoaderArgs) {
   const { user, supabase, headers } = await requireAuth(request)
 
@@ -91,7 +105,7 @@ export async function action({ request }: Route.ActionArgs) {
   return { success: true, headers }
 }
 
-export function meta({}: Route.MetaArgs) {
+export function meta(_: Route.MetaArgs) {
   return [
     { title: "Today's Games - College Basketball Picks" },
     { name: 'description', content: 'Make your picks for today\'s college basketball games' },
@@ -105,7 +119,6 @@ export default function Index() {
   const [filterState, setFilterState] = useState<FilterState | null>(null)
 
   const isLoading = navigation.state === 'loading'
-  const isSubmitting = navigation.state === 'submitting'
 
   // Show toast notifications for pick results
   useEffect(() => {
@@ -122,7 +135,7 @@ export default function Index() {
   const filteredGames = useMemo(() => {
     if (!filterState) return games
 
-    return games.filter((game: any) => {
+    return games.filter((game: GameWithRelations) => {
       // Search filter
       if (filterState.search) {
         const search = filterState.search.toLowerCase()
@@ -206,7 +219,7 @@ export default function Index() {
               </span>
             </div>
             <div className="grid gap-4">
-              {filteredGames.map((game: any) => (
+              {filteredGames.map((game: GameWithRelations) => (
                 <GameCard
                   key={game.id}
                   game={game}

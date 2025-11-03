@@ -2,7 +2,7 @@ import { useLoaderData, useNavigation } from 'react-router'
 import type { Route } from './+types/metrics'
 import { requireAuth } from '~/lib/auth.server'
 import { AppLayout } from '~/components/AppLayout'
-import { MetricsCardSkeleton, MetricsTableSkeleton } from '~/components/MetricsSkeleton'
+import { MetricsCardSkeleton } from '~/components/MetricsSkeleton'
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
 import { Badge } from '~/components/ui/badge'
 import { Button } from '~/components/ui/button'
@@ -14,9 +14,32 @@ import {
   TableHeader,
   TableRow,
 } from '~/components/ui/table'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs'
 import { TrendingUp, TrendingDown, Trophy, Target } from 'lucide-react'
 import { useState } from 'react'
+
+type UserStats = {
+  user_id: string
+  username: string
+  total_picks: number
+  wins: number
+  losses: number
+  win_rate: string
+}
+
+type ConferenceStats = {
+  conference_id: string
+  conference_short_name: string
+  is_power_conference: boolean
+  total_picks: number
+  wins: number
+  losses: number
+  win_rate: string
+}
+
+type ComparisonStats = {
+  user: { id: string; username: string }
+  stats: UserStats
+}
 
 export async function loader({ request }: Route.LoaderArgs) {
   const { user, supabase, headers } = await requireAuth(request)
@@ -39,8 +62,8 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   // Filter out current user for comparison
   const comparisonStats = (allUsersStats || [])
-    .filter((u: any) => u.user_id !== user.id)
-    .map((stats: any) => ({
+    .filter((u: UserStats) => u.user_id !== user.id)
+    .map((stats: UserStats) => ({
       user: { id: stats.user_id, username: stats.username },
       stats,
     }))
@@ -55,7 +78,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   }
 }
 
-export function meta({}: Route.MetaArgs) {
+export function meta(_: Route.MetaArgs) {
   return [
     { title: 'Metrics - College Basketball Picks' },
     { name: 'description', content: 'View your picking statistics and performance' },
@@ -70,18 +93,18 @@ export default function Metrics() {
 
   const isLoading = navigation.state === 'loading'
 
-  const filteredConferenceStats = conferenceStats.filter((conf: any) => {
+  const filteredConferenceStats = conferenceStats.filter((conf: ConferenceStats) => {
     if (conferenceFilter === 'power') return conf.is_power_conference
     if (conferenceFilter === 'midmajor') return !conf.is_power_conference
     return true
   })
 
   // Calculate power vs mid-major stats
-  const powerStats = conferenceStats.filter((c: any) => c.is_power_conference)
-  const midMajorStats = conferenceStats.filter((c: any) => !c.is_power_conference)
+  const powerStats = conferenceStats.filter((c: ConferenceStats) => c.is_power_conference)
+  const midMajorStats = conferenceStats.filter((c: ConferenceStats) => !c.is_power_conference)
 
   const powerTotals = powerStats.reduce(
-    (acc: any, curr: any) => ({
+    (acc: { picks: number; wins: number; losses: number }, curr: ConferenceStats) => ({
       picks: acc.picks + Number(curr.total_picks),
       wins: acc.wins + Number(curr.wins),
       losses: acc.losses + Number(curr.losses),
@@ -90,7 +113,7 @@ export default function Metrics() {
   )
 
   const midMajorTotals = midMajorStats.reduce(
-    (acc: any, curr: any) => ({
+    (acc: { picks: number; wins: number; losses: number }, curr: ConferenceStats) => ({
       picks: acc.picks + Number(curr.total_picks),
       wins: acc.wins + Number(curr.wins),
       losses: acc.losses + Number(curr.losses),
@@ -321,7 +344,7 @@ export default function Metrics() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredConferenceStats.map((conf: any) => (
+                  {filteredConferenceStats.map((conf: ConferenceStats) => (
                     <TableRow key={conf.conference_id}>
                       <TableCell className="font-medium">
                         <div className="flex items-center gap-2">
@@ -383,9 +406,9 @@ export default function Metrics() {
                   )}
                   {/* Other users */}
                   {comparisonStats
-                    .filter((comp: any) => comp.stats)
-                    .sort((a: any, b: any) => Number(b.stats.win_rate || 0) - Number(a.stats.win_rate || 0))
-                    .map((comp: any) => (
+                    .filter((comp: ComparisonStats) => comp.stats)
+                    .sort((a: ComparisonStats, b: ComparisonStats) => Number(b.stats.win_rate || 0) - Number(a.stats.win_rate || 0))
+                    .map((comp: ComparisonStats) => (
                       <TableRow key={comp.user.id}>
                         <TableCell>{comp.user.username}</TableCell>
                         <TableCell className="text-right">{comp.stats.total_picks}</TableCell>

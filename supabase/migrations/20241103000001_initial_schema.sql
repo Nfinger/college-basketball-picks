@@ -1,9 +1,6 @@
--- Enable UUID extension
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
 -- Create conferences table
 CREATE TABLE conferences (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL UNIQUE,
   short_name TEXT NOT NULL,
   is_power_conference BOOLEAN NOT NULL DEFAULT false,
@@ -12,7 +9,7 @@ CREATE TABLE conferences (
 
 -- Create teams table
 CREATE TABLE teams (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL UNIQUE,
   short_name TEXT NOT NULL,
   conference_id UUID NOT NULL REFERENCES conferences(id) ON DELETE CASCADE,
@@ -28,7 +25,7 @@ CREATE TYPE game_status AS ENUM ('scheduled', 'in_progress', 'completed', 'postp
 
 -- Create games table
 CREATE TABLE games (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   external_id TEXT UNIQUE,
   game_date TIMESTAMPTZ NOT NULL,
   home_team_id UUID NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
@@ -56,7 +53,7 @@ CREATE TYPE pick_result AS ENUM ('won', 'lost', 'push', 'pending');
 
 -- Create picks table
 CREATE TABLE picks (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   game_id UUID NOT NULL REFERENCES games(id) ON DELETE CASCADE,
   picked_team_id UUID NOT NULL REFERENCES teams(id) ON DELETE CASCADE,

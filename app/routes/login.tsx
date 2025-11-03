@@ -14,7 +14,7 @@ export async function action({ request }: Route.ActionArgs) {
     return { error: 'Email and password are required' }
   }
 
-  const { data, error, headers } = await signIn(request, email, password)
+  const { data: _data, error, headers } = await signIn(request, email, password)
 
   if (error) {
     return { error: error.message }
@@ -23,7 +23,7 @@ export async function action({ request }: Route.ActionArgs) {
   return redirect('/', { headers })
 }
 
-export function meta({}: Route.MetaArgs) {
+export function meta(_: Route.MetaArgs) {
   return [
     { title: 'Login - College Basketball Picks' },
     { name: 'description', content: 'Login to make your picks' },

@@ -40,7 +40,7 @@ export const scrapeGames = inngest.createFunction(
     // Step 2: Process and upsert games to database
     const result = await step.run('upsert-games', async () => {
       let gamesProcessed = 0
-      let errors: string[] = []
+      const errors: string[] = []
 
       for (const game of games) {
         try {
@@ -69,7 +69,7 @@ export const scrapeGames = inngest.createFunction(
 
           // Extract spread from bookmakers
           const spread = game.bookmakers?.[0]?.markets?.find(
-            (m: any) => m.key === 'spreads'
+            (m: { key: string }) => m.key === 'spreads'
           )?.outcomes?.[0]?.point
 
           // Determine favorite team (negative spread)
@@ -110,8 +110,8 @@ export const scrapeGames = inngest.createFunction(
           } else {
             gamesProcessed++
           }
-        } catch (error: any) {
-          errors.push(`Error processing game: ${error.message}`)
+        } catch (error) {
+          errors.push(`Error processing game: ${error instanceof Error ? error.message : String(error)}`)
         }
       }
 

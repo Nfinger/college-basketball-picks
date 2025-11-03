@@ -2,7 +2,6 @@ import { useFetcher } from 'react-router'
 import { Card, CardContent, CardHeader } from '~/components/ui/card'
 import { Button } from '~/components/ui/button'
 import { Badge } from '~/components/ui/badge'
-import { Separator } from '~/components/ui/separator'
 import { format, isPast } from 'date-fns'
 import { cn } from '~/lib/utils'
 import { Loader2 } from 'lucide-react'
@@ -48,7 +47,7 @@ interface GameCardProps {
   userId: string
 }
 
-export function GameCard({ game, userPick, userId }: GameCardProps) {
+export function GameCard({ game, userPick, userId: _userId }: GameCardProps) {
   const fetcher = useFetcher()
   const gameDate = new Date(game.game_date)
   const isLocked = game.status !== 'scheduled' || isPast(gameDate)

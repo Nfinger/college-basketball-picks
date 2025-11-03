@@ -19,7 +19,7 @@ export async function action({ request }: Route.ActionArgs) {
     return { error: 'Password must be at least 6 characters' }
   }
 
-  const { data, error, headers } = await signUp(request, email, password, username)
+  const { data: _data, error, headers } = await signUp(request, email, password, username)
 
   if (error) {
     return { error: error.message }
@@ -34,7 +34,7 @@ export async function action({ request }: Route.ActionArgs) {
   })
 }
 
-export function meta({}: Route.MetaArgs) {
+export function meta(_: Route.MetaArgs) {
   return [
     { title: 'Sign Up - College Basketball Picks' },
     { name: 'description', content: 'Create an account to start making picks' },

@@ -10,9 +10,9 @@ const handler = serve({
 })
 
 export async function loader({ request }: Route.LoaderArgs) {
-  return handler(request)
+  return handler({ request })
 }
 
 export async function action({ request }: Route.ActionArgs) {
-  return handler(request)
+  return handler({ request })
 }

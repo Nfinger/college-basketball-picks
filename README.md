@@ -1,87 +1,119 @@
-# Welcome to React Router!
+# College Basketball Picks
 
-A modern, production-ready template for building full-stack React applications using React Router.
-
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
+A full-stack web application for making and tracking college basketball picks against the spread.
 
 ## Features
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
+- User authentication with Supabase
+- Daily game scraping from The Odds API
+- Pick against the spread for college basketball games
+- Real-time score updates
+- Personal metrics dashboard with win/loss tracking
+- Conference-based filtering and analytics
+- Head-to-head comparison with other users
+- Mobile-responsive design
+
+## Tech Stack
+
+- **Frontend**: React Router v7, TypeScript, Tailwind CSS v4
+- **UI Components**: shadcn/ui (Radix UI)
+- **Backend**: Supabase (PostgreSQL + Auth)
+- **Background Jobs**: Inngest
+- **Data Source**: The Odds API
+- **Deployment**: Vercel
+
+## Prerequisites
+
+- Node.js 18+
+- Supabase account
+- Inngest account
+- The Odds API key
+
+## Environment Variables
+
+Copy `.env.example` to `.env` and fill in your values:
+
+```bash
+cp .env.example .env
+```
+
+Required variables:
+- `SUPABASE_URL` - Your Supabase project URL
+- `SUPABASE_ANON_KEY` - Supabase anonymous key
+- `SUPABASE_SERVICE_ROLE_KEY` - Supabase service role key (for Inngest)
+- `ODDS_API_KEY` - The Odds API key
+- `INNGEST_EVENT_KEY` - Inngest event key
+- `INNGEST_SIGNING_KEY` - Inngest signing key
 
 ## Getting Started
 
-### Installation
-
-Install the dependencies:
+### 1. Install Dependencies
 
 ```bash
 npm install
 ```
 
-### Development
+### 2. Set Up Database
 
-Start the development server with HMR:
+Link your Supabase project and run migrations:
+
+```bash
+npx supabase link --project-ref YOUR_PROJECT_REF
+npx supabase db push
+npx supabase db seed
+```
+
+### 3. Start Development Server
 
 ```bash
 npm run dev
 ```
 
-Your application will be available at `http://localhost:5173`.
+Visit `http://localhost:5173`
 
-## Building for Production
+### 4. Start Inngest Dev Server (Optional)
 
-Create a production build:
+In a separate terminal:
 
 ```bash
-npm run build
+npm run inngest
 ```
+
+## Database Schema
+
+- **profiles** - User profiles
+- **conferences** - College basketball conferences
+- **teams** - College basketball teams
+- **games** - Scheduled and completed games
+- **picks** - User picks with results
+
+## Background Jobs
+
+- **Scrape Games** - Runs daily at 6 AM to fetch upcoming games
+- **Update Scores** - Runs every 5 minutes to update game scores and pick results
 
 ## Deployment
 
-### Docker Deployment
+Deploy to Vercel:
 
-To build and run using Docker:
+1. Push code to GitHub
+2. Import project in Vercel
+3. Add environment variables
+4. Deploy
 
-```bash
-docker build -t my-app .
+Configure Inngest webhook after deployment:
+- Add `https://your-app.vercel.app/api/inngest` as your Inngest app URL
 
-# Run the container
-docker run -p 3000:3000 my-app
-```
+## Scripts
 
-The containerized application can be deployed to any platform that supports Docker, including:
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run start` - Start production server
+- `npm run typecheck` - Run TypeScript type checking
+- `npm run inngest` - Start Inngest dev server
+- `npm run db:push` - Push database migrations
+- `npm run db:seed` - Seed database with initial data
 
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
+## License
 
-### DIY Deployment
-
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
-```
-
-## Styling
-
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
-
----
-
-Built with ❤️ using React Router.
+MIT

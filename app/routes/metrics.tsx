@@ -1,0 +1,407 @@
+import { useLoaderData, useNavigation } from 'react-router'
+import type { Route } from './+types/metrics'
+import { requireAuth } from '~/lib/auth.server'
+import { AppLayout } from '~/components/AppLayout'
+import { MetricsCardSkeleton, MetricsTableSkeleton } from '~/components/MetricsSkeleton'
+import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card'
+import { Badge } from '~/components/ui/badge'
+import { Button } from '~/components/ui/button'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '~/components/ui/table'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs'
+import { TrendingUp, TrendingDown, Trophy, Target } from 'lucide-react'
+import { useState } from 'react'
+
+export async function loader({ request }: Route.LoaderArgs) {
+  const { user, supabase, headers } = await requireAuth(request)
+
+  // Get overall stats
+  const { data: overallStats } = await supabase
+    .rpc('get_user_overall_stats', { user_uuid: user.id })
+
+  // Get conference breakdown
+  const { data: conferenceStats } = await supabase
+    .rpc('get_user_conference_stats', { user_uuid: user.id })
+
+  // Get current streak
+  const { data: streak } = await supabase
+    .rpc('get_user_current_streak', { user_uuid: user.id })
+
+  // Get all users stats at once (optimized - no N+1 query)
+  const { data: allUsersStats } = await supabase
+    .rpc('get_all_users_overall_stats')
+
+  // Filter out current user for comparison
+  const comparisonStats = (allUsersStats || [])
+    .filter((u: any) => u.user_id !== user.id)
+    .map((stats: any) => ({
+      user: { id: stats.user_id, username: stats.username },
+      stats,
+    }))
+
+  return {
+    user,
+    overallStats: overallStats?.[0] || null,
+    conferenceStats: conferenceStats || [],
+    streak: streak?.[0] || null,
+    comparisonStats,
+    headers,
+  }
+}
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: 'Metrics - College Basketball Picks' },
+    { name: 'description', content: 'View your picking statistics and performance' },
+  ]
+}
+
+export default function Metrics() {
+  const { user, overallStats, conferenceStats, streak, comparisonStats } =
+    useLoaderData<typeof loader>()
+  const navigation = useNavigation()
+  const [conferenceFilter, setConferenceFilter] = useState<'all' | 'power' | 'midmajor'>('all')
+
+  const isLoading = navigation.state === 'loading'
+
+  const filteredConferenceStats = conferenceStats.filter((conf: any) => {
+    if (conferenceFilter === 'power') return conf.is_power_conference
+    if (conferenceFilter === 'midmajor') return !conf.is_power_conference
+    return true
+  })
+
+  // Calculate power vs mid-major stats
+  const powerStats = conferenceStats.filter((c: any) => c.is_power_conference)
+  const midMajorStats = conferenceStats.filter((c: any) => !c.is_power_conference)
+
+  const powerTotals = powerStats.reduce(
+    (acc: any, curr: any) => ({
+      picks: acc.picks + Number(curr.total_picks),
+      wins: acc.wins + Number(curr.wins),
+      losses: acc.losses + Number(curr.losses),
+    }),
+    { picks: 0, wins: 0, losses: 0 }
+  )
+
+  const midMajorTotals = midMajorStats.reduce(
+    (acc: any, curr: any) => ({
+      picks: acc.picks + Number(curr.total_picks),
+      wins: acc.wins + Number(curr.wins),
+      losses: acc.losses + Number(curr.losses),
+    }),
+    { picks: 0, wins: 0, losses: 0 }
+  )
+
+  const powerWinRate = powerTotals.picks
+    ? ((powerTotals.wins / (powerTotals.wins + powerTotals.losses)) * 100).toFixed(2)
+    : '0.00'
+
+  const midMajorWinRate = midMajorTotals.picks
+    ? ((midMajorTotals.wins / (midMajorTotals.wins + midMajorTotals.losses)) * 100).toFixed(2)
+    : '0.00'
+
+  return (
+    <AppLayout user={user}>
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+            Your Performance
+          </h1>
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+            Track your picking accuracy and compare with others
+          </p>
+        </div>
+
+        {/* Overall Stats */}
+        {isLoading ? (
+          <div className="grid gap-4 md:grid-cols-4">
+            <MetricsCardSkeleton />
+            <MetricsCardSkeleton />
+            <MetricsCardSkeleton />
+            <MetricsCardSkeleton />
+          </div>
+        ) : overallStats ? (
+          <div className="grid gap-4 md:grid-cols-4">
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                  Total Picks
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold">{overallStats.total_picks}</div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                  Wins
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-green-600">{overallStats.wins}</div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                  Losses
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold text-red-600">{overallStats.losses}</div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                  Win Rate
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center space-x-2">
+                  <div className="text-3xl font-bold">
+                    {overallStats.win_rate || '0'}%
+                  </div>
+                  {overallStats.win_rate && Number(overallStats.win_rate) > 50 ? (
+                    <TrendingUp className="h-5 w-5 text-green-600" />
+                  ) : (
+                    <TrendingDown className="h-5 w-5 text-red-600" />
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        ) : (
+          <Card>
+            <CardContent className="pt-6">
+              <div className="text-center py-12">
+                <Target className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                <p className="text-gray-500 dark:text-gray-400">
+                  No picks yet. Start making picks to see your stats!
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Streak */}
+        {streak && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Current Streak</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center space-x-4">
+                <Trophy className="h-8 w-8 text-yellow-500" />
+                <div>
+                  <div className="text-2xl font-bold">
+                    {streak.streak_count} {streak.streak_type === 'won' ? 'Wins' : 'Losses'}
+                  </div>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Keep it going!
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Power vs Mid-Major */}
+        {(powerTotals.picks > 0 || midMajorTotals.picks > 0) && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Power Conferences vs Mid-Majors</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold">Power Conferences</span>
+                    <Badge variant="default">★</Badge>
+                  </div>
+                  <div className="space-y-1 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 dark:text-gray-400">Total Picks:</span>
+                      <span className="font-medium">{powerTotals.picks}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 dark:text-gray-400">Wins:</span>
+                      <span className="font-medium text-green-600">{powerTotals.wins}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 dark:text-gray-400">Losses:</span>
+                      <span className="font-medium text-red-600">{powerTotals.losses}</span>
+                    </div>
+                    <div className="flex justify-between font-semibold border-t pt-1">
+                      <span>Win Rate:</span>
+                      <span>{powerWinRate}%</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold">Mid-Majors</span>
+                    <Badge variant="secondary">MM</Badge>
+                  </div>
+                  <div className="space-y-1 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 dark:text-gray-400">Total Picks:</span>
+                      <span className="font-medium">{midMajorTotals.picks}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 dark:text-gray-400">Wins:</span>
+                      <span className="font-medium text-green-600">{midMajorTotals.wins}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 dark:text-gray-400">Losses:</span>
+                      <span className="font-medium text-red-600">{midMajorTotals.losses}</span>
+                    </div>
+                    <div className="flex justify-between font-semibold border-t pt-1">
+                      <span>Win Rate:</span>
+                      <span>{midMajorWinRate}%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Conference Breakdown */}
+        {conferenceStats.length > 0 && (
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle>Performance by Conference</CardTitle>
+                <div className="flex gap-2">
+                  <Button
+                    variant={conferenceFilter === 'all' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setConferenceFilter('all')}
+                  >
+                    All
+                  </Button>
+                  <Button
+                    variant={conferenceFilter === 'power' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setConferenceFilter('power')}
+                  >
+                    Power
+                  </Button>
+                  <Button
+                    variant={conferenceFilter === 'midmajor' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setConferenceFilter('midmajor')}
+                  >
+                    Mid-Major
+                  </Button>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Conference</TableHead>
+                    <TableHead className="text-right">Picks</TableHead>
+                    <TableHead className="text-right">Wins</TableHead>
+                    <TableHead className="text-right">Losses</TableHead>
+                    <TableHead className="text-right">Win Rate</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredConferenceStats.map((conf: any) => (
+                    <TableRow key={conf.conference_id}>
+                      <TableCell className="font-medium">
+                        <div className="flex items-center gap-2">
+                          {conf.conference_short_name}
+                          {conf.is_power_conference && (
+                            <Badge variant="outline" className="text-xs">★</Badge>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right">{conf.total_picks}</TableCell>
+                      <TableCell className="text-right text-green-600">{conf.wins}</TableCell>
+                      <TableCell className="text-right text-red-600">{conf.losses}</TableCell>
+                      <TableCell className="text-right">
+                        <Badge
+                          variant={Number(conf.win_rate) > 50 ? 'default' : 'secondary'}
+                        >
+                          {conf.win_rate || '0'}%
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Head-to-Head Comparison */}
+        {comparisonStats.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Head-to-Head Comparison</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>User</TableHead>
+                    <TableHead className="text-right">Total Picks</TableHead>
+                    <TableHead className="text-right">Wins</TableHead>
+                    <TableHead className="text-right">Losses</TableHead>
+                    <TableHead className="text-right">Win Rate</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {/* Current user row */}
+                  {overallStats && (
+                    <TableRow className="bg-blue-50 dark:bg-blue-900/20">
+                      <TableCell className="font-semibold">
+                        You
+                      </TableCell>
+                      <TableCell className="text-right">{overallStats.total_picks}</TableCell>
+                      <TableCell className="text-right text-green-600">{overallStats.wins}</TableCell>
+                      <TableCell className="text-right text-red-600">{overallStats.losses}</TableCell>
+                      <TableCell className="text-right">
+                        <Badge variant="default">{overallStats.win_rate || '0'}%</Badge>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                  {/* Other users */}
+                  {comparisonStats
+                    .filter((comp: any) => comp.stats)
+                    .sort((a: any, b: any) => Number(b.stats.win_rate || 0) - Number(a.stats.win_rate || 0))
+                    .map((comp: any) => (
+                      <TableRow key={comp.user.id}>
+                        <TableCell>{comp.user.username}</TableCell>
+                        <TableCell className="text-right">{comp.stats.total_picks}</TableCell>
+                        <TableCell className="text-right text-green-600">{comp.stats.wins}</TableCell>
+                        <TableCell className="text-right text-red-600">{comp.stats.losses}</TableCell>
+                        <TableCell className="text-right">
+                          <Badge variant="secondary">{comp.stats.win_rate || '0'}%</Badge>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+    </AppLayout>
+  )
+}

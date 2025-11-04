@@ -8,6 +8,9 @@ export default [
   route("login", "routes/login.tsx"),
   route("signup", "routes/signup.tsx"),
   route("logout", "routes/logout.tsx"),
+  
+  // My Picks route
+  route("mypicks", "routes/mypicks.tsx"),
 
   // Metrics route
   route("metrics", "routes/metrics.tsx"),

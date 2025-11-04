@@ -17,4 +17,7 @@ export default [
 
   // Inngest API route
   route("api/inngest", "routes/api.inngest.tsx"),
+
+  // API routes
+  route("api/favorites", "routes/api.favorites.tsx"),
 ] satisfies RouteConfig;

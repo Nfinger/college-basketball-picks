@@ -46,9 +46,6 @@ export function MyTeamsFilterToggle({ className }: MyTeamsFilterToggleProps) {
     >
       <Heart className={cn("h-4 w-4", isMyTeamsOnly && "fill-current")} />
       <span>My Teams Only</span>
-      {hasAnyFavorites > 0 && (
-        <span className="text-xs opacity-70">({hasAnyFavorites})</span>
-      )}
     </Button>
   );
 }

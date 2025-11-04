@@ -1,20 +1,20 @@
-import { type ActionFunctionArgs } from "@remix-run/node";
-import { json } from "@remix-run/node";
+import { data } from "react-router";
 import { requireAuth } from "~/lib/auth.server";
+import type { Route } from "./+types/api.favorites";
 
 /**
  * API route for managing user's favorite teams
  * POST with intent=add to add a favorite
  * POST with intent=remove to remove a favorite
  */
-export async function action({ request }: ActionFunctionArgs) {
-  const { user, supabase, headers } = await requireAuth(request);
+export async function action({ request }: Route.ActionArgs) {
+  const { user, supabase } = await requireAuth(request);
   const formData = await request.formData();
   const intent = formData.get("intent");
   const teamId = formData.get("teamId");
 
   if (!teamId || typeof teamId !== "string") {
-    return json({ error: "Team ID is required" }, { status: 400 });
+    return data({ error: "Team ID is required" }, { status: 400 });
   }
 
   if (intent === "add") {
@@ -25,13 +25,13 @@ export async function action({ request }: ActionFunctionArgs) {
     if (error) {
       // Handle duplicate error gracefully (unique constraint violation)
       if (error.code === "23505") {
-        return json({ success: true, message: "Already favorited" });
+        return data({ success: true, message: "Already favorited" });
       }
       console.error("Error adding favorite team:", error);
-      return json({ error: error.message }, { status: 500 });
+      return data({ error: error.message }, { status: 500 });
     }
 
-    return json({ success: true, action: "added" });
+    return data({ success: true, action: "added" });
   }
 
   if (intent === "remove") {
@@ -42,11 +42,11 @@ export async function action({ request }: ActionFunctionArgs) {
 
     if (error) {
       console.error("Error removing favorite team:", error);
-      return json({ error: error.message }, { status: 500 });
+      return data({ error: error.message }, { status: 500 });
     }
 
-    return json({ success: true, action: "removed" });
+    return data({ success: true, action: "removed" });
   }
 
-  return json({ error: "Invalid intent. Use 'add' or 'remove'" }, { status: 400 });
+  return data({ error: "Invalid intent. Use 'add' or 'remove'" }, { status: 400 });
 }

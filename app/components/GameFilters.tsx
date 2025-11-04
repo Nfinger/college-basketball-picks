@@ -234,95 +234,99 @@ export function GameFilters({ conferences, onFilterChange }: GameFiltersProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center gap-4">
+      <div className="flex flex-col gap-4">
+        {/* Search input - full width on mobile, fixed width on larger screens */}
         <Input
           type="text"
           placeholder="Search teams..."
           value={localSearch}
           onChange={handleSearchChange}
-          className="flex-grow sm:flex-grow-0 sm:w-64"
+          className="w-full sm:w-64"
         />
 
-        <ToggleGroup
-          type="single"
-          value={activePreset}
-          onValueChange={handlePresetChange}
-          className="justify-start"
-        >
-          <ToggleGroupItem value="all">
-            {activePreset === 'all' && <Check className="h-3 w-3 mr-1" />}
-            All
-          </ToggleGroupItem>
-          <ToggleGroupItem value="exciting">
-            {activePreset === 'exciting' && <Check className="h-3 w-3 mr-1" />}
-            Exciting
-          </ToggleGroupItem>
-          <ToggleGroupItem value="power">
-            {activePreset === 'power' && <Check className="h-3 w-3 mr-1" />}
-            Power 5
-          </ToggleGroupItem>
-          <ToggleGroupItem value="midmajor">
-            {activePreset === 'midmajor' && <Check className="h-3 w-3 mr-1" />}
-            Mid-Major
-          </ToggleGroupItem>
-          <ToggleGroupItem value="picks">
-            {activePreset === 'picks' && <Check className="h-3 w-3 mr-1" />}
-            My Picks
-          </ToggleGroupItem>
-          <ToggleGroupItem value="opponentpicks">
-            {activePreset === 'opponentpicks' && <Check className="h-3 w-3 mr-1" />}
-            Others' Picks
-          </ToggleGroupItem>
-          <ToggleGroupItem value="swing">
-            {activePreset === 'swing' && <Check className="h-3 w-3 mr-1" />}
-            Swing Games
-          </ToggleGroupItem>
-        </ToggleGroup>
+        {/* Filter buttons - wrap on mobile */}
+        <div className="flex flex-wrap items-center gap-2">
+          <ToggleGroup
+            type="single"
+            value={activePreset}
+            onValueChange={handlePresetChange}
+            className="flex flex-wrap justify-start gap-2"
+          >
+            <ToggleGroupItem value="all" className="text-xs sm:text-sm">
+              {activePreset === 'all' && <Check className="h-3 w-3 mr-1" />}
+              All
+            </ToggleGroupItem>
+            <ToggleGroupItem value="exciting" className="text-xs sm:text-sm">
+              {activePreset === 'exciting' && <Check className="h-3 w-3 mr-1" />}
+              Exciting
+            </ToggleGroupItem>
+            <ToggleGroupItem value="power" className="text-xs sm:text-sm">
+              {activePreset === 'power' && <Check className="h-3 w-3 mr-1" />}
+              Power 5
+            </ToggleGroupItem>
+            <ToggleGroupItem value="midmajor" className="text-xs sm:text-sm">
+              {activePreset === 'midmajor' && <Check className="h-3 w-3 mr-1" />}
+              Mid-Major
+            </ToggleGroupItem>
+            <ToggleGroupItem value="picks" className="text-xs sm:text-sm">
+              {activePreset === 'picks' && <Check className="h-3 w-3 mr-1" />}
+              My Picks
+            </ToggleGroupItem>
+            <ToggleGroupItem value="opponentpicks" className="text-xs sm:text-sm">
+              {activePreset === 'opponentpicks' && <Check className="h-3 w-3 mr-1" />}
+              Others' Picks
+            </ToggleGroupItem>
+            <ToggleGroupItem value="swing" className="text-xs sm:text-sm">
+              {activePreset === 'swing' && <Check className="h-3 w-3 mr-1" />}
+              Swing Games
+            </ToggleGroupItem>
+          </ToggleGroup>
 
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant={activePreset === 'custom' ? 'default' : 'outline'} size="sm">
-              <ListFilter className="h-4 w-4 mr-2" />
-              Custom
-              {activePreset === 'custom' && filters.conferences.length > 0 && (
-                <Badge variant="secondary" className="ml-2 rounded-full">
-                  {filters.conferences.length}
-                </Badge>
-              )}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-80 bg-white dark:bg-slate-900" align="start">
-            <div className="space-y-4">
-              <Label className="text-sm font-semibold">Conferences</Label>
-              <div className="grid grid-cols-2 gap-2">
-                {conferences
-                  .sort((a, b) => {
-                    if (a.is_power_conference && !b.is_power_conference) return -1
-                    if (!a.is_power_conference && b.is_power_conference) return 1
-                    return a.short_name.localeCompare(b.short_name)
-                  })
-                  .map(conf => (
-                    <Button
-                      key={conf.id}
-                      variant={filters.conferences.includes(conf.id) ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => toggleConference(conf.id)}
-                      className="justify-start text-xs"
-                    >
-                      {conf.short_name}
-                      {conf.is_power_conference && <span className="ml-auto text-xs opacity-50">★</span>}
-                    </Button>
-                  ))}
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant={activePreset === 'custom' ? 'default' : 'outline'} size="sm" className="text-xs sm:text-sm">
+                <ListFilter className="h-4 w-4 mr-2" />
+                Custom
+                {activePreset === 'custom' && filters.conferences.length > 0 && (
+                  <Badge variant="secondary" className="ml-2 rounded-full">
+                    {filters.conferences.length}
+                  </Badge>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80 bg-white dark:bg-slate-900" align="start">
+              <div className="space-y-4">
+                <Label className="text-sm font-semibold">Conferences</Label>
+                <div className="grid grid-cols-2 gap-2">
+                  {conferences
+                    .sort((a, b) => {
+                      if (a.is_power_conference && !b.is_power_conference) return -1
+                      if (!a.is_power_conference && b.is_power_conference) return 1
+                      return a.short_name.localeCompare(b.short_name)
+                    })
+                    .map(conf => (
+                      <Button
+                        key={conf.id}
+                        variant={filters.conferences.includes(conf.id) ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => toggleConference(conf.id)}
+                        className="justify-start text-xs"
+                      >
+                        {conf.short_name}
+                        {conf.is_power_conference && <span className="ml-auto text-xs opacity-50">★</span>}
+                      </Button>
+                    ))}
+                </div>
               </div>
-            </div>
-          </PopoverContent>
-        </Popover>
+            </PopoverContent>
+          </Popover>
 
-        {hasActiveFilters && (
-          <Button variant="ghost" size="sm" onClick={clearFilters}>
-            Clear
-          </Button>
-        )}
+          {hasActiveFilters && (
+            <Button variant="ghost" size="sm" onClick={clearFilters} className="text-xs sm:text-sm">
+              Clear
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   )

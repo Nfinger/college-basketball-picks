@@ -375,26 +375,27 @@ export default function Index() {
       <div className="space-y-6">
         {/* Date Navigation */}
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
+          <div className="flex flex-col sm:flex-row items-center sm:items-center justify-between gap-4">
+            <div className="text-center sm:text-left">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
                 {isToday
                   ? "Today's Games"
                   : format(currentDate, "MMMM d, yyyy")}
               </h1>
-              <p className="mt-2 text-base font-medium text-slate-600 dark:text-slate-400">
+              <p className="mt-1 sm:mt-2 text-sm sm:text-base font-medium text-slate-600 dark:text-slate-400">
                 {format(currentDate, "EEEE")}
               </p>
             </div>
 
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center justify-center space-x-1 sm:space-x-2">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => navigate(`/?date=${previousDay}`)}
+                className="text-xs sm:text-sm"
               >
-                <ChevronLeft className="h-4 w-4 mr-1" />
-                Previous
+                <ChevronLeft className="h-4 w-4 sm:mr-1" />
+                <span className="hidden sm:inline">Previous</span>
               </Button>
 
               <DatePicker currentDate={currentDate} />
@@ -403,9 +404,10 @@ export default function Index() {
                 variant="outline"
                 size="sm"
                 onClick={() => navigate(`/?date=${nextDay}`)}
+                className="text-xs sm:text-sm"
               >
-                Next
-                <ChevronRight className="h-4 w-4 ml-1" />
+                <span className="hidden sm:inline">Next</span>
+                <ChevronRight className="h-4 w-4 sm:ml-1" />
               </Button>
             </div>
           </div>

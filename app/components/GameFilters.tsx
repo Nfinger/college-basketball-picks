@@ -59,9 +59,10 @@ export interface FilterState {
   picksOnly: boolean
   opponentPicksOnly: boolean
   excitingOnly: boolean
+  swingOnly: boolean
 }
 
-type Preset = 'all' | 'power' | 'midmajor' | 'picks' | 'opponentpicks' | 'exciting' | 'custom'
+type Preset = 'all' | 'power' | 'midmajor' | 'picks' | 'opponentpicks' | 'exciting' | 'swing' | 'custom'
 
 export function GameFilters({ conferences, onFilterChange }: GameFiltersProps) {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -76,12 +77,13 @@ export function GameFilters({ conferences, onFilterChange }: GameFiltersProps) {
   }, [conferences])
 
   const presets = useMemo<Record<Exclude<Preset, 'custom'>, Partial<FilterState>>>(() => ({
-    all: { conferences: [], powerOnly: false, midMajorOnly: false, picksOnly: false, opponentPicksOnly: false, excitingOnly: false },
-    power: { conferences: POWER_CONFERENCE_IDS, powerOnly: true, midMajorOnly: false, picksOnly: false, opponentPicksOnly: false, excitingOnly: false },
-    midmajor: { conferences: MID_MAJOR_CONFERENCE_IDS, powerOnly: false, midMajorOnly: true, picksOnly: false, opponentPicksOnly: false, excitingOnly: false },
-    picks: { conferences: [], powerOnly: false, midMajorOnly: false, picksOnly: true, opponentPicksOnly: false, excitingOnly: false },
-    opponentpicks: { conferences: [], powerOnly: false, midMajorOnly: false, picksOnly: false, opponentPicksOnly: true, excitingOnly: false },
-    exciting: { conferences: [], powerOnly: false, midMajorOnly: false, picksOnly: false, opponentPicksOnly: false, excitingOnly: true },
+    all: { conferences: [], powerOnly: false, midMajorOnly: false, picksOnly: false, opponentPicksOnly: false, excitingOnly: false, swingOnly: false },
+    power: { conferences: POWER_CONFERENCE_IDS, powerOnly: true, midMajorOnly: false, picksOnly: false, opponentPicksOnly: false, excitingOnly: false, swingOnly: false },
+    midmajor: { conferences: MID_MAJOR_CONFERENCE_IDS, powerOnly: false, midMajorOnly: true, picksOnly: false, opponentPicksOnly: false, excitingOnly: false, swingOnly: false },
+    picks: { conferences: [], powerOnly: false, midMajorOnly: false, picksOnly: true, opponentPicksOnly: false, excitingOnly: false, swingOnly: false },
+    opponentpicks: { conferences: [], powerOnly: false, midMajorOnly: false, picksOnly: false, opponentPicksOnly: true, excitingOnly: false, swingOnly: false },
+    exciting: { conferences: [], powerOnly: false, midMajorOnly: false, picksOnly: false, opponentPicksOnly: false, excitingOnly: true, swingOnly: false },
+    swing: { conferences: [], powerOnly: false, midMajorOnly: false, picksOnly: false, opponentPicksOnly: false, excitingOnly: false, swingOnly: true },
   }), [POWER_CONFERENCE_IDS, MID_MAJOR_CONFERENCE_IDS])
 
   // Derive all state directly from searchParams - single source of truth
@@ -93,6 +95,7 @@ export function GameFilters({ conferences, onFilterChange }: GameFiltersProps) {
     const picks = searchParams.get('picks') === 'true'
     const opponentpicks = searchParams.get('opponentpicks') === 'true'
     const exciting = searchParams.get('exciting') === 'true'
+    const swing = searchParams.get('swing') === 'true'
 
     const currentFilters: FilterState = {
       search,
@@ -102,6 +105,7 @@ export function GameFilters({ conferences, onFilterChange }: GameFiltersProps) {
       picksOnly: picks,
       opponentPicksOnly: opponentpicks,
       excitingOnly: exciting,
+      swingOnly: swing,
     }
 
     // Determine the active preset from the derived filter state
@@ -112,6 +116,7 @@ export function GameFilters({ conferences, onFilterChange }: GameFiltersProps) {
       picksOnly: currentFilters.picksOnly,
       opponentPicksOnly: currentFilters.opponentPicksOnly,
       excitingOnly: currentFilters.excitingOnly,
+      swingOnly: currentFilters.swingOnly,
     }
 
     let currentPreset: Preset = 'custom'
@@ -123,6 +128,7 @@ export function GameFilters({ conferences, onFilterChange }: GameFiltersProps) {
         picksOnly: presetValues.picksOnly || false,
         opponentPicksOnly: presetValues.opponentPicksOnly || false,
         excitingOnly: presetValues.excitingOnly || false,
+        swingOnly: presetValues.swingOnly || false,
       }
       if (isEqual(currentFilterStateForPresetCheck, comparablePreset)) {
         currentPreset = presetName as Preset
@@ -178,6 +184,7 @@ export function GameFilters({ conferences, onFilterChange }: GameFiltersProps) {
     newSearchParams.delete('picks')
     newSearchParams.delete('opponentpicks')
     newSearchParams.delete('exciting')
+    newSearchParams.delete('swing')
 
     presetState.conferences?.forEach(conf => newSearchParams.append('conf', conf))
     if (presetState.powerOnly) newSearchParams.set('power', 'true')
@@ -185,6 +192,7 @@ export function GameFilters({ conferences, onFilterChange }: GameFiltersProps) {
     if (presetState.picksOnly) newSearchParams.set('picks', 'true')
     if (presetState.opponentPicksOnly) newSearchParams.set('opponentpicks', 'true')
     if (presetState.excitingOnly) newSearchParams.set('exciting', 'true')
+    if (presetState.swingOnly) newSearchParams.set('swing', 'true')
 
     setSearchParams(newSearchParams, { replace: true })
   }
@@ -221,7 +229,8 @@ export function GameFilters({ conferences, onFilterChange }: GameFiltersProps) {
     filters.midMajorOnly ||
     filters.picksOnly ||
     filters.opponentPicksOnly ||
-    filters.excitingOnly
+    filters.excitingOnly ||
+    filters.swingOnly
 
   return (
     <div className="space-y-4">
@@ -263,6 +272,10 @@ export function GameFilters({ conferences, onFilterChange }: GameFiltersProps) {
           <ToggleGroupItem value="opponentpicks">
             {activePreset === 'opponentpicks' && <Check className="h-3 w-3 mr-1" />}
             Others' Picks
+          </ToggleGroupItem>
+          <ToggleGroupItem value="swing">
+            {activePreset === 'swing' && <Check className="h-3 w-3 mr-1" />}
+            Swing Games
           </ToggleGroupItem>
         </ToggleGroup>
 

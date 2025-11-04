@@ -88,6 +88,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   const picksOnly = url.searchParams.get("picks") === "true";
   const opponentPicksOnly = url.searchParams.get("opponentpicks") === "true";
   const excitingOnly = url.searchParams.get("exciting") === "true";
+  const swingOnly = url.searchParams.get("swing") === "true";
 
   // Create date boundaries in Eastern Time, then convert to UTC for the query
   // This ensures we get all games that occur on the selected date in EST/EDT
@@ -214,6 +215,22 @@ export async function loader({ request }: Route.LoaderArgs) {
       const isVeryCloseGame = game.spread <= 2.5;
 
       if (!isPowerConferenceCloseGame && !isVeryCloseGame) {
+        return false;
+      }
+    }
+
+    // Swing games filter - games where users picked opposite sides
+    if (swingOnly) {
+      if (!game.picks || game.picks.length < 2) {
+        return false; // Need at least 2 picks for a swing game
+      }
+
+      // Check if both home and away teams have picks
+      const homeTeamPicks = game.picks.filter(p => p.picked_team_id === game.home_team.id);
+      const awayTeamPicks = game.picks.filter(p => p.picked_team_id === game.away_team.id);
+
+      // It's a swing game if both teams have at least one pick
+      if (homeTeamPicks.length === 0 || awayTeamPicks.length === 0) {
         return false;
       }
     }
@@ -407,6 +424,11 @@ export default function Index() {
             const userPick = game.picks?.find(p => p.user_id === user.id);
             const otherPicks = game.picks?.filter(p => p.user_id !== user.id) || [];
 
+            // Check if this is a swing game (users picked opposite sides)
+            const homeTeamPicks = game.picks?.filter(p => p.picked_team_id === game.home_team.id) || [];
+            const awayTeamPicks = game.picks?.filter(p => p.picked_team_id === game.away_team.id) || [];
+            const isSwingGame = homeTeamPicks.length > 0 && awayTeamPicks.length > 0;
+
             return (
               <GameCard
                 key={game.id}
@@ -415,6 +437,9 @@ export default function Index() {
                 otherPicks={otherPicks}
                 userId={user.id}
                 potdGameId={potdGameId}
+                isSwingGame={isSwingGame}
+                homeTeamPickers={homeTeamPicks}
+                awayTeamPickers={awayTeamPicks}
               />
             );
           })}

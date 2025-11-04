@@ -53,6 +53,9 @@ interface GameCardProps {
   otherPicks: Pick[];
   userId: string;
   potdGameId: string | null;
+  isSwingGame?: boolean;
+  homeTeamPickers?: Pick[];
+  awayTeamPickers?: Pick[];
 }
 
 export function GameCard({
@@ -61,6 +64,9 @@ export function GameCard({
   otherPicks,
   userId: _userId,
   potdGameId,
+  isSwingGame = false,
+  homeTeamPickers = [],
+  awayTeamPickers = [],
 }: GameCardProps) {
   const fetcher = useFetcher();
   const gameDate = new Date(game.game_date);
@@ -379,7 +385,7 @@ export function GameCard({
       {/* Footer with Conference and Time */}
       <div className="px-2 pb-2 pt-1 border-t border-slate-200 dark:border-slate-800 bg-gradient-to-br from-slate-50 to-white dark:from-slate-900 dark:to-slate-900/50">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 flex-wrap">
             <Badge
               variant={
                 game.conference.is_power_conference ? "default" : "secondary"
@@ -399,6 +405,11 @@ export function GameCard({
                 FINAL
               </Badge>
             )}
+            {isSwingGame && (
+              <Badge className="bg-gradient-to-r from-purple-600 to-pink-600 text-white border-0 text-xs px-1.5 py-0.5 shadow-md font-bold">
+                ⚔️ SWING
+              </Badge>
+            )}
             <OthersPicksPopover
               otherPicks={otherPicks}
               homeTeam={game.home_team}
@@ -414,6 +425,22 @@ export function GameCard({
             {format(gameDate, "h:mm a")}
           </span>
         </div>
+        {/* Swing Game Details - Show who picked which side */}
+        {isSwingGame && (
+          <div className="mt-1.5 text-xs text-slate-600 dark:text-slate-400 flex items-center justify-between gap-2">
+            <div className="flex items-center gap-1 flex-1 min-w-0">
+              <span className="font-semibold text-slate-700 dark:text-slate-300 truncate">
+                {awayTeamPickers.map(p => p.profiles?.username).join(", ")}
+              </span>
+            </div>
+            <span className="text-slate-400 dark:text-slate-600 font-bold px-1">vs</span>
+            <div className="flex items-center gap-1 flex-1 min-w-0 justify-end">
+              <span className="font-semibold text-slate-700 dark:text-slate-300 truncate">
+                {homeTeamPickers.map(p => p.profiles?.username).join(", ")}
+              </span>
+            </div>
+          </div>
+        )}
       </div>
     </Card>
   );

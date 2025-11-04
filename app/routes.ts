@@ -15,6 +15,9 @@ export default [
   // Metrics route
   route("metrics", "routes/metrics.tsx"),
 
+  // Injuries route
+  route("injuries", "routes/injuries.tsx"),
+
   // Inngest API route
   route("api/inngest", "routes/api.inngest.tsx"),
 ] satisfies RouteConfig;

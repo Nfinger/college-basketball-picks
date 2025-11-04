@@ -4,7 +4,7 @@ import { Card, CardContent } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
 import { format, isPast } from "date-fns";
 import { cn } from "~/lib/utils";
-import { Loader2, Star } from "lucide-react";
+import { Loader2, Star, AlertCircle } from "lucide-react";
 import { OthersPicksPopover } from "~/components/OthersPicksPopover";
 
 interface Team {
@@ -45,6 +45,8 @@ interface Game {
   status: "scheduled" | "in_progress" | "completed" | "postponed" | "cancelled";
   conference: Conference;
   picks?: Pick[];
+  home_team_injury_count?: number;
+  away_team_injury_count?: number;
 }
 
 interface GameCardProps {
@@ -233,10 +235,21 @@ export function GameCard({
             />
 
             <div className="text-center space-y-0.5 w-full">
-              <div className="flex items-baseline justify-center gap-1.5 min-h-[20px]">
+              <div className="flex items-baseline justify-center gap-1.5 min-h-[20px] flex-wrap">
                 <div className="font-bold text-sm text-slate-900 dark:text-slate-100 truncate max-w-[120px]" title={game.away_team.name}>
                   {game.away_team.short_name}
                 </div>
+
+                {game.away_team_injury_count && game.away_team_injury_count > 0 && (
+                  <Badge
+                    variant="outline"
+                    className="border-red-500 bg-red-50 text-red-700 dark:bg-red-950/30 dark:text-red-300 text-xs px-1.5 py-0.5 flex items-center gap-0.5"
+                    title={`${game.away_team_injury_count} ${game.away_team_injury_count === 1 ? 'injury' : 'injuries'}`}
+                  >
+                    <AlertCircle className="h-3 w-3" />
+                    {game.away_team_injury_count}
+                  </Badge>
+                )}
 
                 {game.spread && (
                   <Badge
@@ -345,10 +358,21 @@ export function GameCard({
             />
 
             <div className="text-center space-y-0.5 w-full">
-              <div className="flex items-baseline justify-center gap-1.5 min-h-[20px]">
+              <div className="flex items-baseline justify-center gap-1.5 min-h-[20px] flex-wrap">
                 <div className="font-bold text-sm text-slate-900 dark:text-slate-100 truncate max-w-[120px]" title={game.home_team.name}>
                   {game.home_team.short_name}
                 </div>
+
+                {game.home_team_injury_count && game.home_team_injury_count > 0 && (
+                  <Badge
+                    variant="outline"
+                    className="border-red-500 bg-red-50 text-red-700 dark:bg-red-950/30 dark:text-red-300 text-xs px-1.5 py-0.5 flex items-center gap-0.5"
+                    title={`${game.home_team_injury_count} ${game.home_team_injury_count === 1 ? 'injury' : 'injuries'}`}
+                  >
+                    <AlertCircle className="h-3 w-3" />
+                    {game.home_team_injury_count}
+                  </Badge>
+                )}
 
                 {game.spread && (
                   <Badge

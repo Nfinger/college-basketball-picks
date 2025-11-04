@@ -25,6 +25,7 @@ export function AppLayout({ children, user }: AppLayoutProps) {
   const navigation = [
     { name: 'Games', href: '/' },
     { name: 'My Picks', href: '/mypicks' },
+    { name: 'Injuries', href: '/injuries' },
     { name: 'Metrics', href: '/metrics' },
   ]
 

@@ -21,12 +21,13 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 
 export default function Layout() {
-    const { user } = useLoaderData<Route.LoaderData>()
+    const { user } = useLoaderData<typeof loader>()
   const location = useLocation()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const navigation = [
     { name: 'Games', href: '/' },
+    { name: 'My Picks', href: '/mypicks' },
     { name: 'Injuries', href: '/injuries' },
     { name: 'Metrics', href: '/metrics' },
   ]
@@ -118,7 +119,7 @@ export default function Layout() {
       </nav>
 
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <Outlet />
+        <Outlet context={{ user }} />
       </main>
     </div>
   )

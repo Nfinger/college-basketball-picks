@@ -1,6 +1,5 @@
 import { useLoaderData } from "react-router";
 import { requireAuth } from "~/lib/auth.server";
-import { AppLayout } from "~/components/AppLayout";
 import { Card, CardContent } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
 import { AlertCircle, Ban, HelpCircle, Timer, TrendingUp } from "lucide-react";
@@ -60,16 +59,20 @@ export async function loader({ request }: any) {
   }
 
   // Transform the data to match our type structure
-  const transformedInjuries: InjuryReport[] = (injuries || []).map((injury: any) => ({
-    ...injury,
-    team: Array.isArray(injury.team) ? injury.team[0] : injury.team,
-  })).map((injury: any) => ({
-    ...injury,
-    team: {
-      ...injury.team,
-      conference: Array.isArray(injury.team.conference) ? injury.team.conference[0] : injury.team.conference,
-    },
-  }));
+  const transformedInjuries: InjuryReport[] = (injuries || [])
+    .map((injury: any) => ({
+      ...injury,
+      team: Array.isArray(injury.team) ? injury.team[0] : injury.team,
+    }))
+    .map((injury: any) => ({
+      ...injury,
+      team: {
+        ...injury.team,
+        conference: Array.isArray(injury.team.conference)
+          ? injury.team.conference[0]
+          : injury.team.conference,
+      },
+    }));
 
   return { user, injuries: transformedInjuries, headers };
 }
@@ -115,7 +118,7 @@ function getStatusColor(status: InjuryReport["status"]) {
 }
 
 export default function Injuries() {
-  const { user, injuries } = useLoaderData<typeof loader>();
+  const { injuries } = useLoaderData<typeof loader>();
 
   // Group injuries by conference
   const powerConferenceInjuries = injuries.filter(
@@ -139,10 +142,7 @@ export default function Injuries() {
         </p>
       ) : (
         injuries.map((injury) => (
-          <Card
-            key={injury.id}
-            className="hover:shadow-md transition-shadow"
-          >
+          <Card key={injury.id} className="hover:shadow-md transition-shadow">
             <CardContent className="p-4">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 space-y-2">
@@ -150,10 +150,7 @@ export default function Injuries() {
                     <h3 className="font-bold text-lg text-slate-900 dark:text-slate-100">
                       {injury.player_name}
                     </h3>
-                    <Badge
-                      variant="outline"
-                      className="text-xs"
-                    >
+                    <Badge variant="outline" className="text-xs">
                       {injury.team.short_name}
                     </Badge>
                     <Badge
@@ -209,67 +206,61 @@ export default function Injuries() {
   );
 
   return (
-    <AppLayout user={user}>
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
-            Injury Reports
-          </h1>
-          <p className="mt-2 text-base font-medium text-slate-600 dark:text-slate-400">
-            Current injury information for college basketball players
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
+          Injury Reports
+        </h1>
+        <p className="mt-2 text-base font-medium text-slate-600 dark:text-slate-400">
+          Current injury information for college basketball players
+        </p>
+      </div>
+
+      <Tabs defaultValue="all" className="w-full">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="all">All ({injuries.length})</TabsTrigger>
+          <TabsTrigger value="out">Out ({outInjuries.length})</TabsTrigger>
+          <TabsTrigger value="questionable">
+            Questionable ({questionableInjuries.length})
+          </TabsTrigger>
+          <TabsTrigger value="power">
+            Power ({powerConferenceInjuries.length})
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="all" className="mt-6">
+          <InjuryList injuries={injuries} />
+        </TabsContent>
+
+        <TabsContent value="out" className="mt-6">
+          <InjuryList injuries={outInjuries} />
+        </TabsContent>
+
+        <TabsContent value="questionable" className="mt-6">
+          <InjuryList injuries={questionableInjuries} />
+        </TabsContent>
+
+        <TabsContent value="power" className="mt-6">
+          <InjuryList injuries={powerConferenceInjuries} />
+        </TabsContent>
+      </Tabs>
+
+      {injuries.length > 0 && injuries[0].source_url && (
+        <div className="mt-6">
+          <Separator />
+          <p className="mt-4 text-xs text-slate-500 dark:text-slate-400 text-center">
+            Source:{" "}
+            <a
+              href={injuries[0].source_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:underline dark:text-blue-400"
+            >
+              RotoWire Injury Reports
+            </a>
           </p>
         </div>
-
-        <Tabs defaultValue="all" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="all">
-              All ({injuries.length})
-            </TabsTrigger>
-            <TabsTrigger value="out">
-              Out ({outInjuries.length})
-            </TabsTrigger>
-            <TabsTrigger value="questionable">
-              Questionable ({questionableInjuries.length})
-            </TabsTrigger>
-            <TabsTrigger value="power">
-              Power ({powerConferenceInjuries.length})
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="all" className="mt-6">
-            <InjuryList injuries={injuries} />
-          </TabsContent>
-
-          <TabsContent value="out" className="mt-6">
-            <InjuryList injuries={outInjuries} />
-          </TabsContent>
-
-          <TabsContent value="questionable" className="mt-6">
-            <InjuryList injuries={questionableInjuries} />
-          </TabsContent>
-
-          <TabsContent value="power" className="mt-6">
-            <InjuryList injuries={powerConferenceInjuries} />
-          </TabsContent>
-        </Tabs>
-
-        {injuries.length > 0 && injuries[0].source_url && (
-          <div className="mt-6">
-            <Separator />
-            <p className="mt-4 text-xs text-slate-500 dark:text-slate-400 text-center">
-              Source:{" "}
-              <a
-                href={injuries[0].source_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:underline dark:text-blue-400"
-              >
-                RotoWire Injury Reports
-              </a>
-            </p>
-          </div>
-        )}
-      </div>
-    </AppLayout>
+      )}
+    </div>
   );
 }

@@ -3,10 +3,10 @@ import {
   useLoaderData,
   useNavigate,
   useActionData,
+  useOutletContext,
 } from "react-router";
 import type { Route } from "./+types/_index";
 import { requireAuth } from "~/lib/auth.server";
-import { AppLayout } from "~/components/AppLayout";
 import { GameCard } from "~/components/GameCard";
 import { DatePicker } from "~/components/DatePicker";
 import { GameFilters } from "~/components/GameFilters";
@@ -288,7 +288,6 @@ export async function loader({ request }: Route.LoaderArgs) {
   });
 
   return {
-    user,
     games: sortedGames,
     allGamesCount: allGamesWithInjuries.length,
     conferences: conferencesResult.data || [],
@@ -384,8 +383,9 @@ export function meta({ data }: Route.MetaArgs) {
 }
 
 export default function Index() {
-  const { user, games, allGamesCount, conferences, date, isToday, potdGameId } =
+  const { games, allGamesCount, conferences, date, isToday, potdGameId } =
     useLoaderData<typeof loader>();
+  const { user } = useOutletContext<{ user: { id: string; email: string } }>();
   const navigate = useNavigate();
   const actionData = useActionData<typeof action>();
 
@@ -405,7 +405,6 @@ export default function Index() {
   }, [actionData]);
 
   return (
-    <AppLayout user={user}>
       <div className="space-y-6">
         {/* Date Navigation */}
         <div className="space-y-4">
@@ -481,6 +480,5 @@ export default function Index() {
           })}
         </div>
       </div>
-    </AppLayout>
   );
 }

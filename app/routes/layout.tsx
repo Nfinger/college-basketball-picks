@@ -1,4 +1,4 @@
-import { Form, Link, useLocation } from 'react-router'
+import { Form, Link, Outlet, useLocation } from 'react-router'
 import { Button } from '~/components/ui/button'
 import { cn } from '~/lib/utils'
 import {
@@ -10,15 +10,18 @@ import {
 } from '~/components/ui/sheet'
 import { Menu } from 'lucide-react'
 import { useState } from 'react'
+import { requireAuth } from '~/lib/auth.server'
+import type { Route } from './+types/layout'
+import { useLoaderData } from 'react-router'
 
-interface AppLayoutProps {
-  children: React.ReactNode
-  user: {
-    email?: string
-  }
+export async function loader({ request }: Route.LoaderArgs) {
+  const { user } = await requireAuth(request)
+  return { user }
 }
 
-export function AppLayout({ children, user }: AppLayoutProps) {
+
+export default function Layout() {
+    const { user } = useLoaderData<Route.LoaderData>()
   const location = useLocation()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
@@ -115,7 +118,7 @@ export function AppLayout({ children, user }: AppLayoutProps) {
       </nav>
 
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        {children}
+        <Outlet />
       </main>
     </div>
   )

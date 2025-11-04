@@ -44,6 +44,8 @@ type GameWithRelations = {
       username: string;
     };
   }[];
+  home_team_injury_count?: number;
+  away_team_injury_count?: number;
 };
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -164,8 +166,40 @@ export async function loader({ request }: Route.LoaderArgs) {
     })),
   }));
 
+  // Fetch injury counts for all teams in the games
+  const teamIds = Array.from(
+    new Set(
+      allGames.flatMap((game: GameWithRelations) => [
+        game.home_team.id,
+        game.away_team.id,
+      ])
+    )
+  );
+
+  const { data: injuryCounts } = await supabase
+    .from('injury_reports')
+    .select('team_id')
+    .eq('is_active', true)
+    .in('team_id', teamIds);
+
+  // Create a map of team_id -> injury count
+  const injuryCountMap = new Map<string, number>();
+  (injuryCounts || []).forEach((injury: { team_id: string }) => {
+    injuryCountMap.set(
+      injury.team_id,
+      (injuryCountMap.get(injury.team_id) || 0) + 1
+    );
+  });
+
+  // Add injury counts to games
+  const allGamesWithInjuries = allGames.map((game: GameWithRelations) => ({
+    ...game,
+    home_team_injury_count: injuryCountMap.get(game.home_team.id) || 0,
+    away_team_injury_count: injuryCountMap.get(game.away_team.id) || 0,
+  }));
+
   // Apply filters server-side
-  const filteredGames = allGames.filter((game: GameWithRelations) => {
+  const filteredGames = allGamesWithInjuries.filter((game: GameWithRelations) => {
     // Search filter - search both full name and abbreviation
     if (search) {
       const searchLower = search.toLowerCase();
@@ -256,7 +290,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   return {
     user,
     games: sortedGames,
-    allGamesCount: allGames.length,
+    allGamesCount: allGamesWithInjuries.length,
     conferences: conferencesResult.data || [],
     date: dateStr,
     isToday,

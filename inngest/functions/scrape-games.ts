@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import { normalizeTeamName } from './team-mapping'
 
 // Helper function to get or create the Independent conference
-async function getIndependentConference(supabase: ReturnType<typeof createClient>) {
+async function getIndependentConference(supabase: any) {
   const { data, error } = await supabase
     .from('conferences')
     .select('id')
@@ -38,7 +38,7 @@ function generateShortName(fullName: string): string {
 
 // Helper function to find or create a team
 async function findOrCreateTeam(
-  supabase: ReturnType<typeof createClient>,
+  supabase: any,
   apiTeamName: string,
   normalizedTeamName: string,
   independentConferenceId: string

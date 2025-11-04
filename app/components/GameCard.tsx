@@ -4,7 +4,8 @@ import { Card, CardContent } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
 import { format, isPast } from "date-fns";
 import { cn } from "~/lib/utils";
-import { Loader2, Star, Eye, EyeOff } from "lucide-react";
+import { Loader2, Star } from "lucide-react";
+import { OthersPicksPopover } from "~/components/OthersPicksPopover";
 
 interface Team {
   id: string;
@@ -26,6 +27,10 @@ interface Pick {
   result: "won" | "lost" | "push" | "pending" | null;
   locked_at: string | null;
   is_pick_of_day: boolean;
+  user_id: string;
+  profiles?: {
+    username: string;
+  };
 }
 
 interface Game {
@@ -45,7 +50,7 @@ interface Game {
 interface GameCardProps {
   game: Game;
   userPick?: Pick;
-  otherPick?: Pick;
+  otherPicks: Pick[];
   userId: string;
   potdGameId: string | null;
 }
@@ -53,7 +58,7 @@ interface GameCardProps {
 export function GameCard({
   game,
   userPick,
-  otherPick,
+  otherPicks,
   userId: _userId,
   potdGameId,
 }: GameCardProps) {
@@ -102,9 +107,10 @@ export function GameCard({
     return userPick?.picked_team_id === teamId;
   };
 
-  // Check if other user picked this team
+  // Check if any other user picked this team
   const isOtherPick = (teamId: string) => {
-    return showOtherPick && otherPick?.picked_team_id === teamId;
+    if (!showOtherPick) return false;
+    return otherPicks.some(pick => pick.picked_team_id === teamId);
   };
 
   // Get result badge color
@@ -393,19 +399,13 @@ export function GameCard({
                 FINAL
               </Badge>
             )}
-            {otherPick && (
-              <button
-                onClick={() => setShowOtherPick(!showOtherPick)}
-                className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
-                title={showOtherPick ? "Hide friend's pick" : "Show friend's pick"}
-              >
-                {showOtherPick ? (
-                  <EyeOff className="h-3.5 w-3.5" />
-                ) : (
-                  <Eye className="h-3.5 w-3.5" />
-                )}
-              </button>
-            )}
+            <OthersPicksPopover
+              otherPicks={otherPicks}
+              homeTeam={game.home_team}
+              awayTeam={game.away_team}
+              showOtherPick={showOtherPick}
+              onToggle={() => setShowOtherPick(!showOtherPick)}
+            />
           </div>
           <span
             className="text-xs font-semibold text-slate-600 dark:text-slate-400"

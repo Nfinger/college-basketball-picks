@@ -262,7 +262,7 @@ export function GameFilters({ conferences, onFilterChange }: GameFiltersProps) {
           </ToggleGroupItem>
           <ToggleGroupItem value="opponentpicks">
             {activePreset === 'opponentpicks' && <Check className="h-3 w-3 mr-1" />}
-            Opponent's Picks
+            Others' Picks
           </ToggleGroupItem>
         </ToggleGroup>
 

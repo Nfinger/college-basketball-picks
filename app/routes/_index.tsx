@@ -12,7 +12,7 @@ import { DatePicker } from "~/components/DatePicker";
 import { GameFilters } from "~/components/GameFilters";
 import { Button } from "~/components/ui/button";
 import { format, addDays, subDays, parseISO, isValid } from "date-fns";
-import { fromZonedTime } from "date-fns-tz";
+import { fromZonedTime, toZonedTime } from "date-fns-tz";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 
@@ -40,6 +40,9 @@ type GameWithRelations = {
     locked_at: string | null;
     is_pick_of_day: boolean;
     user_id: string;
+    profiles?: {
+      username: string;
+    };
   }[];
 };
 
@@ -58,8 +61,14 @@ export async function loader({ request }: Route.LoaderArgs) {
     targetDate = new Date();
   }
 
+  // Define timezone constant
+  const timezone = "America/New_York";
+
+  // Get current date in Eastern Time for "Today" comparison
+  const nowInET = toZonedTime(new Date(), timezone);
+  const todayStr = format(nowInET, "yyyy-MM-dd");
+
   const dateStr = format(targetDate, "yyyy-MM-dd");
-  const todayStr = format(new Date(), "yyyy-MM-dd");
   const isToday = dateStr === todayStr;
 
   // Parse filter parameters from URL
@@ -73,7 +82,6 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   // Create date boundaries in Eastern Time, then convert to UTC for the query
   // This ensures we get all games that occur on the selected date in EST/EDT
-  const timezone = "America/New_York";
 
   // Create start of day in Eastern Time (midnight)
   const startOfDayET = new Date(targetDate);
@@ -95,7 +103,7 @@ export async function loader({ request }: Route.LoaderArgs) {
         home_team:teams!games_home_team_id_fkey(id, name, short_name),
         away_team:teams!games_away_team_id_fkey(id, name, short_name),
         conference:conferences(id, name, short_name, is_power_conference),
-        picks(id, picked_team_id, spread_at_pick_time, result, locked_at, is_pick_of_day, user_id)
+        picks(id, picked_team_id, spread_at_pick_time, result, locked_at, is_pick_of_day, user_id, profiles(username))
       `
       )
       .gte("game_date", startOfDay.toISOString())
@@ -162,10 +170,10 @@ export async function loader({ request }: Route.LoaderArgs) {
       if (!userPick) return false;
     }
 
-    // Opponent picks only filter
+    // Others' picks only filter
     if (opponentPicksOnly) {
-      const opponentPick = game.picks?.find(p => p.user_id !== user.id);
-      if (!opponentPick) return false;
+      const othersPicks = game.picks?.filter(p => p.user_id !== user.id);
+      if (!othersPicks || othersPicks.length === 0) return false;
     }
 
     // Exciting games filter - close spreads in power conferences OR very close spreads anywhere
@@ -369,14 +377,14 @@ export default function Index() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {games.map((game: GameWithRelations) => {
             const userPick = game.picks?.find(p => p.user_id === user.id);
-            const otherPick = game.picks?.find(p => p.user_id !== user.id);
+            const otherPicks = game.picks?.filter(p => p.user_id !== user.id) || [];
 
             return (
               <GameCard
                 key={game.id}
                 game={game}
                 userPick={userPick}
-                otherPick={otherPick}
+                otherPicks={otherPicks}
                 userId={user.id}
                 potdGameId={potdGameId}
               />

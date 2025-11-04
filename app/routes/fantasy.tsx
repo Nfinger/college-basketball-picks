@@ -330,7 +330,7 @@ export default function Fantasy() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">The Long Burn</h1>
+        <h1 className="text-3xl font-bold">Elimination Fantasy</h1>
         <p className="text-slate-600 dark:text-slate-400 mt-1">
           {season.name} - Week {currentWeek.week_number}
         </p>

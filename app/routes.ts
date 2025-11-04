@@ -13,6 +13,7 @@ export default [
     route("injuries", "routes/injuries.tsx"),
     route("metrics", "routes/metrics.tsx"),
     route("mypicks", "routes/mypicks.tsx"),
+    route("fantasy", "routes/fantasy.tsx"),
   ]),
 
   // Inngest API route

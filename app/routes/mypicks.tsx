@@ -1,6 +1,7 @@
 import { useLoaderData } from "react-router";
 import type { Route } from "./+types/mypicks";
 import { requireAuth } from "~/lib/auth.server";
+import { getFavoriteTeamIds } from "~/lib/favorites.server";
 import { GameCard } from "~/components/GameCard";
 import { MyPicksFilters } from "~/components/MyPicksFilters";
 
@@ -51,9 +52,14 @@ export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
   const filterParam = (url.searchParams.get("filter") || "all") as "all" | "upcoming" | "past";
   const sortParam = url.searchParams.get("sort") || "date-desc";
+  const isPotdOnly = url.searchParams.get("potdOnly") === "true";
+  const myTeamsOnly = url.searchParams.get("myTeamsOnly") === "true";
 
-  // Fetch user's picks with full game data
-  const { data: picksData, error } = await supabase
+  // Get user's favorite teams for filtering
+  const favoriteTeamIds = await getFavoriteTeamIds(supabase, user.id);
+
+  // Build picks query with server-side filters
+  let picksQuery = supabase
     .from("picks")
     .select(`
       *,
@@ -64,12 +70,36 @@ export async function loader({ request }: Route.LoaderArgs) {
         conference:conferences(*)
       )
     `)
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false });
+    .eq("user_id", user.id);
+
+  // Apply POTD filter at database level
+  if (isPotdOnly) {
+    picksQuery = picksQuery.eq("is_pick_of_day", true);
+  }
+
+  // Apply My Teams filter at database level
+  if (myTeamsOnly && favoriteTeamIds.length > 0) {
+    // First get game IDs that involve favorite teams
+    const { data: gamesData } = await supabase
+      .from("games")
+      .select("id")
+      .or(`home_team_id.in.(${favoriteTeamIds.join(",")}),away_team_id.in.(${favoriteTeamIds.join(",")})`);
+
+    const gameIds = gamesData?.map((g) => g.id) || [];
+
+    if (gameIds.length > 0) {
+      picksQuery = picksQuery.in("game_id", gameIds);
+    } else {
+      // No games match favorites, return empty result
+      picksQuery = picksQuery.eq("game_id", "00000000-0000-0000-0000-000000000000"); // UUID that won't match
+    }
+  }
+
+  const { data: picksData, error } = await picksQuery.order("created_at", { ascending: false });
 
   if (error) {
     console.error("Error fetching picks:", error);
-    return { picks: [], filterParam, sortParam, user, potdGameId: null, headers };
+    return { picks: [], filterParam, sortParam, isPotdOnly, user, potdGameId: null, headers };
   }
 
   const picks = (picksData || []) as PickWithGame[];
@@ -87,6 +117,9 @@ export async function loader({ request }: Route.LoaderArgs) {
     );
   }
 
+  // All filters now applied server-side in the query above
+  // (POTD, My Teams, and user_id)
+
   // Apply sorting
   const sortedPicks = sortPicks(filteredPicks, sortParam);
 
@@ -98,6 +131,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     picks: sortedPicks,
     filterParam,
     sortParam,
+    isPotdOnly,
     user,
     potdGameId,
     headers,
@@ -208,7 +242,7 @@ function sortPicks(picks: PickWithGame[], sortParam: string): PickWithGame[] {
 }
 
 export default function MyPicks() {
-  const { picks, filterParam, sortParam, user, potdGameId } = useLoaderData<typeof loader>();
+  const { picks, filterParam, sortParam, isPotdOnly, user, potdGameId } = useLoaderData<typeof loader>();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
@@ -225,6 +259,7 @@ export default function MyPicks() {
         <MyPicksFilters
           currentFilter={filterParam}
           currentSort={sortParam}
+          isPotdOnly={isPotdOnly}
         />
 
         {picks.length === 0 ? (

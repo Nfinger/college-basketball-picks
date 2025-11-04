@@ -1,10 +1,28 @@
+import { useState } from "react";
 import { useLoaderData } from "react-router";
 import { requireAuth } from "~/lib/auth.server";
-import { Card, CardContent } from "~/components/ui/card";
+import { getFavoriteTeamIds } from "~/lib/favorites.server";
 import { Badge } from "~/components/ui/badge";
-import { AlertCircle, Ban, HelpCircle, Timer, TrendingUp } from "lucide-react";
+import { AlertCircle, Ban, HelpCircle, Timer, TrendingUp, Search } from "lucide-react";
+import { MyTeamsFilterToggle } from "~/components/MyTeamsFilterToggle";
 import { Separator } from "~/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { Input } from "~/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "~/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
+import type { Route } from "./+types/injuries";
 
 type InjuryReport = {
   id: string;
@@ -27,11 +45,18 @@ type InjuryReport = {
   };
 };
 
-export async function loader({ request }: any) {
+export async function loader({ request }: Route.LoaderArgs) {
   const { user, supabase, headers } = await requireAuth(request);
 
-  // Fetch all active injury reports with team and conference info
-  const { data: injuries, error } = await supabase
+  // Get URL search params
+  const url = new URL(request.url);
+  const myTeamsOnly = url.searchParams.get("myTeamsOnly") === "true";
+
+  // Get user's favorite teams
+  const favoriteTeamIds = await getFavoriteTeamIds(supabase, user.id);
+
+  // Build injury reports query with server-side filtering
+  let injuriesQuery = supabase
     .from("injury_reports")
     .select(
       `
@@ -51,8 +76,14 @@ export async function loader({ request }: any) {
       )
     `
     )
-    .eq("is_active", true)
-    .order("reported_date", { ascending: false });
+    .eq("is_active", true);
+
+  // Apply My Teams filter at database level
+  if (myTeamsOnly && favoriteTeamIds.length > 0) {
+    injuriesQuery = injuriesQuery.in("team_id", favoriteTeamIds);
+  }
+
+  const { data: injuries, error } = await injuriesQuery.order("reported_date", { ascending: false });
 
   if (error) {
     console.error("Error fetching injuries:", error);
@@ -60,11 +91,11 @@ export async function loader({ request }: any) {
 
   // Transform the data to match our type structure
   const transformedInjuries: InjuryReport[] = (injuries || [])
-    .map((injury: any) => ({
+    .map((injury: InjuryReport) => ({
       ...injury,
       team: Array.isArray(injury.team) ? injury.team[0] : injury.team,
     }))
-    .map((injury: any) => ({
+    .map((injury: InjuryReport) => ({
       ...injury,
       team: {
         ...injury.team,
@@ -119,91 +150,128 @@ function getStatusColor(status: InjuryReport["status"]) {
 
 export default function Injuries() {
   const { injuries } = useLoaderData<typeof loader>();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [conferenceFilter, setConferenceFilter] = useState<string>("all");
 
-  // Group injuries by conference
-  const powerConferenceInjuries = injuries.filter(
-    (inj) => inj.team.conference.is_power_conference
-  );
-  const midMajorInjuries = injuries.filter(
-    (inj) => !inj.team.conference.is_power_conference
-  );
+  // Get unique conferences for filter dropdown
+  const conferences = Array.from(
+    new Set(injuries.map((inj) => inj.team.conference.short_name))
+  ).sort();
 
-  // Group by status
-  const outInjuries = injuries.filter((inj) => inj.status === "out");
-  const questionableInjuries = injuries.filter((inj) =>
-    ["questionable", "doubtful", "day-to-day"].includes(inj.status)
-  );
+  // Apply filters
+  const filteredInjuries = injuries.filter((injury) => {
+    // Search filter
+    const matchesSearch =
+      searchQuery === "" ||
+      injury.player_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      injury.team.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      injury.team.short_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      injury.injury_type?.toLowerCase().includes(searchQuery.toLowerCase());
 
-  const InjuryList = ({ injuries }: { injuries: InjuryReport[] }) => (
-    <div className="space-y-3">
-      {injuries.length === 0 ? (
+    // Status filter
+    const matchesStatus =
+      statusFilter === "all" ||
+      (statusFilter === "out" && injury.status === "out") ||
+      (statusFilter === "questionable" &&
+        ["questionable", "doubtful", "day-to-day"].includes(injury.status)) ||
+      (statusFilter === "probable" && injury.status === "probable");
+
+    // Conference filter
+    const matchesConference =
+      conferenceFilter === "all" ||
+      (conferenceFilter === "power" && injury.team.conference.is_power_conference) ||
+      (conferenceFilter === "mid-major" && !injury.team.conference.is_power_conference) ||
+      injury.team.conference.short_name === conferenceFilter;
+
+    // My Teams filter now applied server-side in the loader
+
+    return matchesSearch && matchesStatus && matchesConference;
+  });
+
+  const InjuryList = ({ injuries }: { injuries: InjuryReport[] }) => {
+    if (injuries.length === 0) {
+      return (
         <p className="text-center text-slate-500 dark:text-slate-400 py-8">
           No injury reports available
         </p>
-      ) : (
-        injuries.map((injury) => (
-          <Card key={injury.id} className="hover:shadow-md transition-shadow">
-            <CardContent className="p-4">
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex-1 space-y-2">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="font-bold text-lg text-slate-900 dark:text-slate-100">
-                      {injury.player_name}
-                    </h3>
-                    <Badge variant="outline" className="text-xs">
-                      {injury.team.short_name}
-                    </Badge>
-                    <Badge
-                      variant={
-                        injury.team.conference.is_power_conference
-                          ? "default"
-                          : "secondary"
-                      }
-                      className="text-xs"
-                    >
-                      {injury.team.conference.short_name}
-                    </Badge>
-                  </div>
+      );
+    }
 
-                  {injury.injury_type && (
-                    <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                      {injury.injury_type}
-                    </p>
-                  )}
-
-                  {injury.description && (
-                    <p className="text-sm text-slate-600 dark:text-slate-400">
-                      {injury.description}
-                    </p>
-                  )}
-
-                  <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
-                    <span>
-                      Reported:{" "}
-                      {new Date(injury.reported_date).toLocaleDateString()}
-                    </span>
-                    {injury.expected_return && (
-                      <span>
-                        Expected Return:{" "}
-                        {new Date(injury.expected_return).toLocaleDateString()}
-                      </span>
+    return (
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="font-semibold">Player</TableHead>
+              <TableHead className="font-semibold">Team</TableHead>
+              <TableHead className="font-semibold">Conference</TableHead>
+              <TableHead className="font-semibold">Injury</TableHead>
+              <TableHead className="font-semibold">Status</TableHead>
+              <TableHead className="font-semibold">Reported</TableHead>
+              <TableHead className="font-semibold">Expected Return</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {injuries.map((injury) => (
+              <TableRow key={injury.id}>
+                <TableCell className="font-medium whitespace-normal max-w-[200px]">
+                  {injury.player_name}
+                </TableCell>
+                <TableCell>
+                  <Badge variant="outline" className="text-xs">
+                    {injury.team.short_name}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  <Badge
+                    variant={
+                      injury.team.conference.is_power_conference
+                        ? "default"
+                        : "secondary"
+                    }
+                    className="text-xs"
+                  >
+                    {injury.team.conference.short_name}
+                  </Badge>
+                </TableCell>
+                <TableCell className="whitespace-normal max-w-[250px]">
+                  <div className="space-y-1">
+                    {injury.injury_type && (
+                      <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                        {injury.injury_type}
+                      </p>
+                    )}
+                    {injury.description && (
+                      <p className="text-xs text-slate-600 dark:text-slate-400">
+                        {injury.description}
+                      </p>
                     )}
                   </div>
-                </div>
-
-                <Badge
-                  className={`${getStatusColor(injury.status)} flex items-center gap-1 whitespace-nowrap`}
-                >
-                  {getStatusIcon(injury.status)}
-                  {injury.status.toUpperCase()}
-                </Badge>
-              </div>
-            </CardContent>
-          </Card>
-        ))
-      )}
-    </div>
-  );
+                </TableCell>
+                <TableCell>
+                  <Badge
+                    className={`${getStatusColor(injury.status)} flex items-center gap-1 w-fit`}
+                  >
+                    {getStatusIcon(injury.status)}
+                    <span className="capitalize">{injury.status}</span>
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-sm">
+                  {new Date(injury.reported_date).toLocaleDateString()}
+                </TableCell>
+                <TableCell className="text-sm">
+                  {injury.expected_return
+                    ? new Date(injury.expected_return).toLocaleDateString()
+                    : "-"}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    );
+  };
 
   return (
     <div className="space-y-6">
@@ -216,34 +284,54 @@ export default function Injuries() {
         </p>
       </div>
 
-      <Tabs defaultValue="all" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="all">All ({injuries.length})</TabsTrigger>
-          <TabsTrigger value="out">Out ({outInjuries.length})</TabsTrigger>
-          <TabsTrigger value="questionable">
-            Questionable ({questionableInjuries.length})
-          </TabsTrigger>
-          <TabsTrigger value="power">
-            Power ({powerConferenceInjuries.length})
-          </TabsTrigger>
-        </TabsList>
+      {/* Search and Filters */}
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+          <Input
+            type="text"
+            placeholder="Search players, teams, or injury types..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+        <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <SelectTrigger className="w-full sm:w-[180px]">
+            <SelectValue placeholder="Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Statuses</SelectItem>
+            <SelectItem value="out">Out</SelectItem>
+            <SelectItem value="questionable">Questionable</SelectItem>
+            <SelectItem value="probable">Probable</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value={conferenceFilter} onValueChange={setConferenceFilter}>
+          <SelectTrigger className="w-full sm:w-[180px]">
+            <SelectValue placeholder="Conference" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Conferences</SelectItem>
+            <SelectItem value="power">Power Conferences</SelectItem>
+            <SelectItem value="mid-major">Mid-Major</SelectItem>
+            <Separator className="my-2" />
+            {conferences.map((conf) => (
+              <SelectItem key={conf} value={conf}>
+                {conf}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <MyTeamsFilterToggle />
+      </div>
 
-        <TabsContent value="all" className="mt-6">
-          <InjuryList injuries={injuries} />
-        </TabsContent>
+      {/* Results count */}
+      <div className="text-sm text-slate-600 dark:text-slate-400">
+        Showing {filteredInjuries.length} of {injuries.length} injuries
+      </div>
 
-        <TabsContent value="out" className="mt-6">
-          <InjuryList injuries={outInjuries} />
-        </TabsContent>
-
-        <TabsContent value="questionable" className="mt-6">
-          <InjuryList injuries={questionableInjuries} />
-        </TabsContent>
-
-        <TabsContent value="power" className="mt-6">
-          <InjuryList injuries={powerConferenceInjuries} />
-        </TabsContent>
-      </Tabs>
+      <InjuryList injuries={filteredInjuries} />
 
       {injuries.length > 0 && injuries[0].source_url && (
         <div className="mt-6">

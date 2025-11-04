@@ -7,6 +7,7 @@ import {
 } from "react-router";
 import type { Route } from "./+types/_index";
 import { requireAuth } from "~/lib/auth.server";
+import { getFavoriteTeamIds } from "~/lib/favorites.server";
 import { GameCard } from "~/components/GameCard";
 import { DatePicker } from "~/components/DatePicker";
 import { GameFilters } from "~/components/GameFilters";
@@ -91,6 +92,10 @@ export async function loader({ request }: Route.LoaderArgs) {
   const opponentPicksOnly = url.searchParams.get("opponentpicks") === "true";
   const excitingOnly = url.searchParams.get("exciting") === "true";
   const swingOnly = url.searchParams.get("swing") === "true";
+  const myTeamsOnly = url.searchParams.get("myTeamsOnly") === "true";
+
+  // Get user's favorite teams for filtering
+  const favoriteTeamIds = await getFavoriteTeamIds(supabase, user.id);
 
   // Create date boundaries in Eastern Time, then convert to UTC for the query
   // This ensures we get all games that occur on the selected date in EST/EDT
@@ -105,22 +110,33 @@ export async function loader({ request }: Route.LoaderArgs) {
   endOfDayET.setHours(23, 59, 59, 999);
   const endOfDay = fromZonedTime(endOfDayET, timezone);
 
+  // Build games query with optional My Teams filter
+  let gamesQuery = supabase
+    .from("games")
+    .select(
+      `
+      *,
+      home_team:teams!games_home_team_id_fkey(id, name, short_name),
+      away_team:teams!games_away_team_id_fkey(id, name, short_name),
+      conference:conferences(id, name, short_name, is_power_conference),
+      picks(id, picked_team_id, spread_at_pick_time, result, locked_at, is_pick_of_day, user_id)
+    `
+    )
+    .gte("game_date", startOfDay.toISOString())
+    .lte("game_date", endOfDay.toISOString());
+
+  // Apply My Teams filter if enabled and user has favorites
+  if (myTeamsOnly && favoriteTeamIds.length > 0) {
+    gamesQuery = gamesQuery.or(
+      `home_team_id.in.(${favoriteTeamIds.join(",")}),away_team_id.in.(${favoriteTeamIds.join(",")})`
+    );
+  }
+
+  gamesQuery = gamesQuery.order("game_date", { ascending: true });
+
   // Fetch games, conferences, profiles, and POTD status in parallel
   const [gamesResult, conferencesResult, profilesResult, potdResult] = await Promise.all([
-    supabase
-      .from("games")
-      .select(
-        `
-        *,
-        home_team:teams!games_home_team_id_fkey(id, name, short_name),
-        away_team:teams!games_away_team_id_fkey(id, name, short_name),
-        conference:conferences(id, name, short_name, is_power_conference),
-        picks(id, picked_team_id, spread_at_pick_time, result, locked_at, is_pick_of_day, user_id)
-      `
-      )
-      .gte("game_date", startOfDay.toISOString())
-      .lte("game_date", endOfDay.toISOString())
-      .order("game_date", { ascending: true }),
+    gamesQuery,
     supabase
       .from("conferences")
       .select("id, name, short_name, is_power_conference")

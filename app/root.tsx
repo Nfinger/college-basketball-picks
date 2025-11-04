@@ -9,6 +9,8 @@ import {
 
 import type { Route } from "./+types/root";
 import { Toaster } from "~/components/ui/sonner";
+import { createSupabaseServerClient } from "~/lib/supabase.server";
+import { FavoriteTeamsProvider } from "~/contexts/FavoriteTeamsContext";
 import "./app.css";
 
 export const links: Route.LinksFunction = () => [
@@ -24,6 +26,66 @@ export const links: Route.LinksFunction = () => [
     href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
   },
 ];
+
+/**
+ * Root loader - Loads user's favorite teams and all teams for the team manager
+ * This data is available globally via useRouteLoaderData("root")
+ */
+export async function loader({ request }: Route.LoaderArgs) {
+  const { supabase, headers } = createSupabaseServerClient(request);
+
+  // Get authenticated user (optional - doesn't throw if not logged in)
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  let favoriteTeams: string[] = [];
+  let allTeams: Array<{
+    id: string;
+    name: string;
+    short_name: string;
+    conference: {
+      id: string;
+      name: string;
+      short_name: string;
+      is_power_conference: boolean;
+    };
+  }> = [];
+
+  if (user) {
+    // Fetch user's favorite team IDs
+    const { data: favorites } = await supabase
+      .from("user_favorite_teams")
+      .select("team_id")
+      .eq("user_id", user.id);
+
+    favoriteTeams = favorites?.map((f) => f.team_id) || [];
+
+    // Fetch all teams with conference info for the team manager
+    const { data: teams } = await supabase
+      .from("teams")
+      .select(`
+        id,
+        name,
+        short_name,
+        conference:conferences(
+          id,
+          name,
+          short_name,
+          is_power_conference
+        )
+      `)
+      .order("name");
+
+    allTeams = teams || [];
+  }
+
+  return {
+    user,
+    favoriteTeams,
+    allTeams,
+  };
+}
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -45,7 +107,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  return (
+    <FavoriteTeamsProvider>
+      <Outlet />
+    </FavoriteTeamsProvider>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

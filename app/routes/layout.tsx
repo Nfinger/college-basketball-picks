@@ -1,4 +1,4 @@
-import { Form, Link, Outlet, useLocation } from 'react-router'
+import { Form, Link, Outlet, useLocation, useRouteLoaderData } from 'react-router'
 import { Button } from '~/components/ui/button'
 import { cn } from '~/lib/utils'
 import {
@@ -8,11 +8,13 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '~/components/ui/sheet'
-import { Menu } from 'lucide-react'
+import { Menu, Heart } from 'lucide-react'
 import { useState } from 'react'
 import { requireAuth } from '~/lib/auth.server'
 import type { Route } from './+types/layout'
 import { useLoaderData } from 'react-router'
+import { FavoriteTeamManager } from '~/components/FavoriteTeamManager'
+import type { loader as rootLoader } from '~/root'
 
 export async function loader({ request }: Route.LoaderArgs) {
   const { user } = await requireAuth(request)
@@ -21,13 +23,16 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 
 export default function Layout() {
-    const { user } = useLoaderData<typeof loader>()
+  const { user } = useLoaderData<typeof loader>()
+  const rootData = useRouteLoaderData<typeof rootLoader>("root")
   const location = useLocation()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [teamManagerOpen, setTeamManagerOpen] = useState(false)
 
   const navigation = [
     { name: 'Games', href: '/' },
     { name: 'My Picks', href: '/mypicks' },
+    { name: 'Fantasy', href: '/fantasy' },
     { name: 'Injuries', href: '/injuries' },
     { name: 'Metrics', href: '/metrics' },
   ]
@@ -62,6 +67,15 @@ export default function Layout() {
               </div>
             </div>
             <div className="flex items-center space-x-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setTeamManagerOpen(true)}
+                className="hidden sm:flex items-center gap-2"
+              >
+                <Heart className="h-4 w-4" />
+                <span>My Teams</span>
+              </Button>
               <span className="hidden sm:inline text-sm text-slate-700 dark:text-slate-300 font-medium">
                 {user.email}
               </span>
@@ -100,8 +114,19 @@ export default function Layout() {
                         </Link>
                       ))}
                     </div>
-                    <div className="border-t border-slate-200 dark:border-slate-800 pt-4 mt-4">
-                      <p className="px-4 text-sm text-slate-600 dark:text-slate-400 mb-3 font-medium">
+                    <div className="border-t border-slate-200 dark:border-slate-800 pt-4 mt-4 space-y-3">
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setTeamManagerOpen(true)
+                          setMobileMenuOpen(false)
+                        }}
+                        className="w-full flex items-center gap-2"
+                      >
+                        <Heart className="h-4 w-4" />
+                        <span>My Teams</span>
+                      </Button>
+                      <p className="px-4 text-sm text-slate-600 dark:text-slate-400 font-medium">
                         {user.email}
                       </p>
                       <Form method="post" action="/logout">
@@ -121,6 +146,13 @@ export default function Layout() {
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <Outlet context={{ user }} />
       </main>
+
+      {/* Favorite Team Manager Modal */}
+      <FavoriteTeamManager
+        teams={rootData?.allTeams || []}
+        open={teamManagerOpen}
+        onOpenChange={setTeamManagerOpen}
+      />
     </div>
   )
 }

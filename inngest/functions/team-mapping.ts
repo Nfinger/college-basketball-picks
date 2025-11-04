@@ -16,6 +16,12 @@ export function normalizeTeamName(oddsApiName: string): string {
     'Tenn-Martin Skyhawks': 'UT Martin',
     'Maryland-Eastern Shore Hawks': 'Maryland-Eastern Shore',
     'West Georgia Wolves': 'West Georgia',
+    // RotoWire-specific mappings
+    'Louisiana State': 'LSU',
+    'Texas-San Antonio': 'UTSA',
+    'Connecticut': 'UConn',
+    'College of Charleston': 'Charleston',
+    'St. Joseph\'s': 'Saint Josephs',
   }
 
   if (directMappings[oddsApiName]) {

@@ -7,6 +7,7 @@ import { Label } from '~/components/ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '~/components/ui/popover'
 import { ToggleGroup, ToggleGroupItem } from '~/components/ui/toggle-group'
 import { ListFilter, Check } from 'lucide-react'
+import { MyTeamsFilterToggle } from '~/components/MyTeamsFilterToggle'
 
 // Simple deep equality check for filter objects
 function isEqual(a: unknown, b: unknown): boolean {
@@ -281,6 +282,8 @@ export function GameFilters({ conferences, onFilterChange }: GameFiltersProps) {
               Swing Games
             </ToggleGroupItem>
           </ToggleGroup>
+
+          <MyTeamsFilterToggle />
 
           <Popover>
             <PopoverTrigger asChild>

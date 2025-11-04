@@ -8,14 +8,17 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import { Label } from "~/components/ui/label";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, Star } from "lucide-react";
+import { Button } from "~/components/ui/button";
+import { MyTeamsFilterToggle } from "~/components/MyTeamsFilterToggle";
 
 interface MyPicksFiltersProps {
   currentFilter: "all" | "upcoming" | "past";
   currentSort: string;
+  isPotdOnly: boolean;
 }
 
-export function MyPicksFilters({ currentFilter, currentSort }: MyPicksFiltersProps) {
+export function MyPicksFilters({ currentFilter, currentSort, isPotdOnly }: MyPicksFiltersProps) {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const handleFilterChange = (value: string) => {
@@ -40,6 +43,16 @@ export function MyPicksFilters({ currentFilter, currentSort }: MyPicksFiltersPro
     setSearchParams(params);
   };
 
+  const handlePotdToggle = () => {
+    const params = new URLSearchParams(searchParams);
+    if (isPotdOnly) {
+      params.delete("potdOnly");
+    } else {
+      params.set("potdOnly", "true");
+    }
+    setSearchParams(params);
+  };
+
   return (
     <div className="mb-6 space-y-4">
       {/* Time-based Filters */}
@@ -48,34 +61,46 @@ export function MyPicksFilters({ currentFilter, currentSort }: MyPicksFiltersPro
           <Label className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 block">
             Filter by Status
           </Label>
-          <ToggleGroup
-            type="single"
-            value={currentFilter}
-            onValueChange={handleFilterChange}
-            className="justify-start flex-wrap"
-          >
-            <ToggleGroupItem
-              value="all"
-              aria-label="Show all picks"
-              className="data-[state=on]:bg-blue-100 data-[state=on]:text-blue-900 dark:data-[state=on]:bg-blue-900 dark:data-[state=on]:text-blue-100"
+          <div className="flex items-center gap-2 flex-wrap">
+            <ToggleGroup
+              type="single"
+              value={currentFilter}
+              onValueChange={handleFilterChange}
+              className="justify-start flex-wrap"
             >
-              All
-            </ToggleGroupItem>
-            <ToggleGroupItem
-              value="upcoming"
-              aria-label="Show upcoming picks"
-              className="data-[state=on]:bg-blue-100 data-[state=on]:text-blue-900 dark:data-[state=on]:bg-blue-900 dark:data-[state=on]:text-blue-100"
+              <ToggleGroupItem
+                value="all"
+                aria-label="Show all picks"
+                className="data-[state=on]:bg-blue-100 data-[state=on]:text-blue-900 dark:data-[state=on]:bg-blue-900 dark:data-[state=on]:text-blue-100"
+              >
+                All
+              </ToggleGroupItem>
+              <ToggleGroupItem
+                value="upcoming"
+                aria-label="Show upcoming picks"
+                className="data-[state=on]:bg-blue-100 data-[state=on]:text-blue-900 dark:data-[state=on]:bg-blue-900 dark:data-[state=on]:text-blue-100"
+              >
+                Upcoming
+              </ToggleGroupItem>
+              <ToggleGroupItem
+                value="past"
+                aria-label="Show past picks"
+                className="data-[state=on]:bg-blue-100 data-[state=on]:text-blue-900 dark:data-[state=on]:bg-blue-900 dark:data-[state=on]:text-blue-100"
+              >
+                Past
+              </ToggleGroupItem>
+            </ToggleGroup>
+            <Button
+              onClick={handlePotdToggle}
+              variant={isPotdOnly ? "default" : "outline"}
+              size="sm"
+              className={isPotdOnly ? "bg-yellow-500 hover:bg-yellow-600 text-white border-0" : ""}
             >
-              Upcoming
-            </ToggleGroupItem>
-            <ToggleGroupItem
-              value="past"
-              aria-label="Show past picks"
-              className="data-[state=on]:bg-blue-100 data-[state=on]:text-blue-900 dark:data-[state=on]:bg-blue-900 dark:data-[state=on]:text-blue-100"
-            >
-              Past
-            </ToggleGroupItem>
-          </ToggleGroup>
+              <Star className={`h-4 w-4 mr-1 ${isPotdOnly ? "fill-white" : ""}`} />
+              POTD Only
+            </Button>
+            <MyTeamsFilterToggle />
+          </div>
         </div>
 
         {/* Sort Dropdown */}

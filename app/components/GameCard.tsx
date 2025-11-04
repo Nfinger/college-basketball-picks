@@ -234,42 +234,40 @@ export function GameCard({
               value={optimisticIsPotd ? "true" : "false"}
             />
 
-            <div className="text-center space-y-0.5 w-full">
-              <div className="flex items-baseline justify-center gap-1.5 min-h-[20px] flex-wrap">
-                <div className="font-bold text-sm text-slate-900 dark:text-slate-100 truncate max-w-[120px]" title={game.away_team.name}>
+            <div className="text-center space-y-1 w-full">
+              {/* Line 1: Team Name + Injury Icon */}
+              <div
+                className="flex items-center justify-center gap-1.5"
+                title={game.away_team.name}
+              >
+                <span className="font-bold text-base text-slate-900 dark:text-slate-100 truncate max-w-[120px]">
                   {game.away_team.short_name}
-                </div>
-
+                </span>
                 {game.away_team_injury_count && game.away_team_injury_count > 0 && (
-                  <Badge
-                    variant="outline"
-                    className="border-red-500 bg-red-50 text-red-700 dark:bg-red-950/30 dark:text-red-300 text-xs px-1.5 py-0.5 flex items-center gap-0.5"
-                    title={`${game.away_team_injury_count} ${game.away_team_injury_count === 1 ? 'injury' : 'injuries'}`}
-                  >
-                    <AlertCircle className="h-3 w-3" />
-                    {game.away_team_injury_count}
-                  </Badge>
-                )}
-
-                {game.spread && (
-                  <Badge
-                    variant="outline"
-                    className={cn(
-                      "font-mono text-xs font-semibold px-1.5 py-0.5",
-                      awayIsFavorite
-                        ? "border-purple-500 bg-purple-50 text-purple-700 dark:bg-purple-950/30 dark:text-purple-300"
-                        : "border-slate-300 dark:border-slate-600"
-                    )}
-                  >
-                    {getSpreadDisplay(game.away_team.id)}
-                  </Badge>
+                  <div title={`${game.away_team_injury_count} ${game.away_team_injury_count === 1 ? 'injury' : 'injuries'}`}>
+                    <AlertCircle className="h-4 w-4 text-red-500" />
+                  </div>
                 )}
               </div>
 
-              {isCompleted && game.away_score !== null && (
-                <div className="text-xl font-bold tabular-nums text-slate-900 dark:text-slate-100">
+              {/* Line 2: Score (if completed) or Spread */}
+              {isCompleted && game.away_score !== null ? (
+                <div className="text-2xl font-bold tabular-nums text-slate-900 dark:text-slate-100">
                   {game.away_score}
                 </div>
+              ) : game.spread ? (
+                <div
+                  className={cn(
+                    "text-base font-mono font-semibold",
+                    awayIsFavorite
+                      ? "text-purple-700 dark:text-purple-400"
+                      : "text-slate-600 dark:text-slate-400"
+                  )}
+                >
+                  {getSpreadDisplay(game.away_team.id)}
+                </div>
+              ) : (
+                <div className="h-[24px]" /> // Placeholder to maintain height
               )}
 
               {isSubmitting && optimisticPickedTeamId === game.away_team.id && (
@@ -281,12 +279,8 @@ export function GameCard({
             </div>
           </fetcher.Form>
 
-          {/* Center Column: Game Info */}
+          {/* Center Column: Result & Status */}
           <div className="flex flex-col items-center justify-center px-1 space-y-1.5 min-w-[40px] h-full">
-            <span className="text-slate-400 dark:text-slate-600 text-sm font-bold px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded-full">
-              @
-            </span>
-
             {userPick && (
               <div className="flex flex-col items-center gap-1">
                 {userPick.result && userPick.result !== "pending" && (
@@ -357,42 +351,40 @@ export function GameCard({
               value={optimisticIsPotd ? "true" : "false"}
             />
 
-            <div className="text-center space-y-0.5 w-full">
-              <div className="flex items-baseline justify-center gap-1.5 min-h-[20px] flex-wrap">
-                <div className="font-bold text-sm text-slate-900 dark:text-slate-100 truncate max-w-[120px]" title={game.home_team.name}>
+            <div className="text-center space-y-1 w-full">
+              {/* Line 1: Team Name + Injury Icon */}
+              <div
+                className="flex items-center justify-center gap-1.5"
+                title={game.home_team.name}
+              >
+                <span className="font-bold text-base text-slate-900 dark:text-slate-100 truncate max-w-[120px]">
                   {game.home_team.short_name}
-                </div>
-
+                </span>
                 {game.home_team_injury_count && game.home_team_injury_count > 0 && (
-                  <Badge
-                    variant="outline"
-                    className="border-red-500 bg-red-50 text-red-700 dark:bg-red-950/30 dark:text-red-300 text-xs px-1.5 py-0.5 flex items-center gap-0.5"
-                    title={`${game.home_team_injury_count} ${game.home_team_injury_count === 1 ? 'injury' : 'injuries'}`}
-                  >
-                    <AlertCircle className="h-3 w-3" />
-                    {game.home_team_injury_count}
-                  </Badge>
-                )}
-
-                {game.spread && (
-                  <Badge
-                    variant="outline"
-                    className={cn(
-                      "font-mono text-xs font-semibold px-1.5 py-0.5",
-                      homeIsFavorite
-                        ? "border-purple-500 bg-purple-50 text-purple-700 dark:bg-purple-950/30 dark:text-purple-300"
-                        : "border-slate-300 dark:border-slate-600"
-                    )}
-                  >
-                    {getSpreadDisplay(game.home_team.id)}
-                  </Badge>
+                  <div title={`${game.home_team_injury_count} ${game.home_team_injury_count === 1 ? 'injury' : 'injuries'}`}>
+                    <AlertCircle className="h-4 w-4 text-red-500" />
+                  </div>
                 )}
               </div>
 
-              {isCompleted && game.home_score !== null && (
-                <div className="text-xl font-bold tabular-nums text-slate-900 dark:text-slate-100">
+              {/* Line 2: Score (if completed) or Spread */}
+              {isCompleted && game.home_score !== null ? (
+                <div className="text-2xl font-bold tabular-nums text-slate-900 dark:text-slate-100">
                   {game.home_score}
                 </div>
+              ) : game.spread ? (
+                <div
+                  className={cn(
+                    "text-base font-mono font-semibold",
+                    homeIsFavorite
+                      ? "text-purple-700 dark:text-purple-400"
+                      : "text-slate-600 dark:text-slate-400"
+                  )}
+                >
+                  {getSpreadDisplay(game.home_team.id)}
+                </div>
+              ) : (
+                <div className="h-[24px]" /> // Placeholder to maintain height
               )}
 
               {isSubmitting && optimisticPickedTeamId === game.home_team.id && (

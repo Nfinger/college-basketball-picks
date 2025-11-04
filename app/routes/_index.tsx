@@ -49,26 +49,35 @@ type GameWithRelations = {
 export async function loader({ request }: Route.LoaderArgs) {
   const { user, supabase, headers } = await requireAuth(request);
 
+  // Define timezone constant
+  const timezone = "America/New_York";
+
+  // Get current date in Eastern Time
+  const nowInET = toZonedTime(new Date(), timezone);
+  const todayStr = format(nowInET, "yyyy-MM-dd");
+
   // Parse and validate date from query parameter
   const url = new URL(request.url);
   const dateParam = url.searchParams.get("date");
   let targetDate: Date;
+  let dateStr: string;
 
   if (dateParam) {
     const parsed = parseISO(dateParam);
-    targetDate = isValid(parsed) ? parsed : new Date();
+    if (isValid(parsed)) {
+      targetDate = parsed;
+      dateStr = format(parsed, "yyyy-MM-dd");
+    } else {
+      // Invalid date param, use today in ET
+      targetDate = nowInET;
+      dateStr = todayStr;
+    }
   } else {
-    targetDate = new Date();
+    // No date param, use today in ET
+    targetDate = nowInET;
+    dateStr = todayStr;
   }
 
-  // Define timezone constant
-  const timezone = "America/New_York";
-
-  // Get current date in Eastern Time for "Today" comparison
-  const nowInET = toZonedTime(new Date(), timezone);
-  const todayStr = format(nowInET, "yyyy-MM-dd");
-
-  const dateStr = format(targetDate, "yyyy-MM-dd");
   const isToday = dateStr === todayStr;
 
   // Parse filter parameters from URL
@@ -93,8 +102,8 @@ export async function loader({ request }: Route.LoaderArgs) {
   endOfDayET.setHours(23, 59, 59, 999);
   const endOfDay = fromZonedTime(endOfDayET, timezone);
 
-  // Fetch games, conferences, and POTD status in parallel
-  const [gamesResult, conferencesResult, potdResult] = await Promise.all([
+  // Fetch games, conferences, profiles, and POTD status in parallel
+  const [gamesResult, conferencesResult, profilesResult, potdResult] = await Promise.all([
     supabase
       .from("games")
       .select(
@@ -103,7 +112,7 @@ export async function loader({ request }: Route.LoaderArgs) {
         home_team:teams!games_home_team_id_fkey(id, name, short_name),
         away_team:teams!games_away_team_id_fkey(id, name, short_name),
         conference:conferences(id, name, short_name, is_power_conference),
-        picks(id, picked_team_id, spread_at_pick_time, result, locked_at, is_pick_of_day, user_id, profiles(username))
+        picks(id, picked_team_id, spread_at_pick_time, result, locked_at, is_pick_of_day, user_id)
       `
       )
       .gte("game_date", startOfDay.toISOString())
@@ -113,6 +122,9 @@ export async function loader({ request }: Route.LoaderArgs) {
       .from("conferences")
       .select("id, name, short_name, is_power_conference")
       .order("name", { ascending: true }),
+    supabase
+      .from("profiles")
+      .select("id, username"),
     supabase
       .from("picks")
       .select("game_id")
@@ -129,11 +141,27 @@ export async function loader({ request }: Route.LoaderArgs) {
   if (conferencesResult.error) {
     console.error("Error fetching conferences:", conferencesResult.error);
   }
+  if (profilesResult.error) {
+    console.error("Error fetching profiles:", profilesResult.error);
+  }
   if (potdResult.error) {
     console.error("Error fetching POTD status:", potdResult.error);
   }
 
-  const allGames = gamesResult.data || [];
+  // Create a map of user_id -> username for quick lookup
+  const profilesMap = new Map<string, string>();
+  (profilesResult.data || []).forEach((profile: { id: string; username: string }) => {
+    profilesMap.set(profile.id, profile.username);
+  });
+
+  // Merge profile data into picks
+  const allGames = (gamesResult.data || []).map((game: GameWithRelations) => ({
+    ...game,
+    picks: game.picks?.map(pick => ({
+      ...pick,
+      profiles: pick.user_id ? { username: profilesMap.get(pick.user_id) || 'Unknown' } : undefined,
+    })),
+  }));
 
   // Apply filters server-side
   const filteredGames = allGames.filter((game: GameWithRelations) => {

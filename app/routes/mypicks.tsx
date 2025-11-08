@@ -31,6 +31,8 @@ interface Pick {
 interface Game {
   id: string;
   game_date: string;
+  home_team_id: string;
+  away_team_id: string;
   home_team: Team;
   away_team: Team;
   home_score: number | null;
@@ -65,6 +67,8 @@ export async function loader({ request }: Route.LoaderArgs) {
       *,
       games (
         *,
+        home_team_id,
+        away_team_id,
         home_team:teams!games_home_team_id_fkey(*),
         away_team:teams!games_away_team_id_fkey(*),
         conference:conferences(*)

@@ -6,6 +6,7 @@ import { format, isPast } from "date-fns";
 import { cn } from "~/lib/utils";
 import { Loader2, Star, AlertCircle } from "lucide-react";
 import { OthersPicksPopover } from "~/components/OthersPicksPopover";
+import { GameDetailsDialogCompact } from "~/components/GameDetailsDialog";
 
 interface Team {
   id: string;
@@ -33,9 +34,24 @@ interface Pick {
   };
 }
 
+interface MatchupAnalysisData {
+  id: string;
+  analysis_text: string;
+  prediction: {
+    winner_team_id: string;
+    winner_name: string;
+    confidence: number;
+    predicted_spread?: number;
+  };
+  key_insights: string[];
+  analyzed_at: string;
+}
+
 interface Game {
   id: string;
   game_date: string;
+  home_team_id: string;
+  away_team_id: string;
   home_team: Team;
   away_team: Team;
   home_score: number | null;
@@ -45,8 +61,13 @@ interface Game {
   status: "scheduled" | "in_progress" | "completed" | "postponed" | "cancelled";
   conference: Conference;
   picks?: Pick[];
+  matchup_analysis?: MatchupAnalysisData | null;
   home_team_injury_count?: number;
   away_team_injury_count?: number;
+  home_team_rank?: number;
+  away_team_rank?: number;
+  home_team_net_eff?: number;
+  away_team_net_eff?: number;
 }
 
 interface GameCardProps {
@@ -235,15 +256,20 @@ export function GameCard({
             />
 
             <div className="text-center space-y-1 w-full">
-              {/* Line 1: Team Name + Injury Icon */}
+              {/* Line 1: Team Name + Ranking + Injury Icon */}
               <div
                 className="flex items-center justify-center gap-1.5"
                 title={game.away_team.name}
               >
-                <span className="font-bold text-base text-slate-900 dark:text-slate-100 truncate max-w-[120px]">
+                {game.away_team_rank && (
+                  <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                    #{game.away_team_rank}
+                  </span>
+                )}
+                <span className="font-bold text-base text-slate-900 dark:text-slate-100 truncate max-w-[100px]">
                   {game.away_team.short_name}
                 </span>
-                {game.away_team_injury_count && game.away_team_injury_count > 0 && (
+                {game.away_team_injury_count != null && game.away_team_injury_count > 0 && (
                   <div title={`${game.away_team_injury_count} ${game.away_team_injury_count === 1 ? 'injury' : 'injuries'}`}>
                     <AlertCircle className="h-4 w-4 text-red-500" />
                   </div>
@@ -352,15 +378,20 @@ export function GameCard({
             />
 
             <div className="text-center space-y-1 w-full">
-              {/* Line 1: Team Name + Injury Icon */}
+              {/* Line 1: Team Name + Ranking + Injury Icon */}
               <div
                 className="flex items-center justify-center gap-1.5"
                 title={game.home_team.name}
               >
-                <span className="font-bold text-base text-slate-900 dark:text-slate-100 truncate max-w-[120px]">
+                {game.home_team_rank && (
+                  <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                    #{game.home_team_rank}
+                  </span>
+                )}
+                <span className="font-bold text-base text-slate-900 dark:text-slate-100 truncate max-w-[100px]">
                   {game.home_team.short_name}
                 </span>
-                {game.home_team_injury_count && game.home_team_injury_count > 0 && (
+                {game.home_team_injury_count != null && game.home_team_injury_count > 0 && (
                   <div title={`${game.home_team_injury_count} ${game.home_team_injury_count === 1 ? 'injury' : 'injuries'}`}>
                     <AlertCircle className="h-4 w-4 text-red-500" />
                   </div>
@@ -434,12 +465,20 @@ export function GameCard({
               onToggle={() => setShowOtherPick(!showOtherPick)}
             />
           </div>
-          <span
-            className="text-xs font-semibold text-slate-600 dark:text-slate-400"
-            suppressHydrationWarning
-          >
-            {format(gameDate, "h:mm a")}
-          </span>
+          <div className="flex items-center gap-2">
+            <GameDetailsDialogCompact
+              game={game}
+              userPick={userPick}
+              potdGameId={potdGameId}
+              enablePicking={true}
+            />
+            <span
+              className="text-xs font-semibold text-slate-600 dark:text-slate-400"
+              suppressHydrationWarning
+            >
+              {format(gameDate, "h:mm a")}
+            </span>
+          </div>
         </div>
         {/* Swing Game Details - Show who picked which side */}
         {isSwingGame && (

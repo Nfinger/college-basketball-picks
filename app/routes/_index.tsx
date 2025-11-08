@@ -20,6 +20,8 @@ import { toast } from "sonner";
 type GameWithRelations = {
   id: string;
   game_date: string;
+  home_team_id: string;
+  away_team_id: string;
   home_team: { id: string; name: string; short_name: string };
   away_team: { id: string; name: string; short_name: string };
   home_score: number | null;
@@ -44,6 +46,18 @@ type GameWithRelations = {
     profiles?: {
       username: string;
     };
+  }[];
+  matchup_analyses?: {
+    id: string;
+    analysis_text: string;
+    prediction: {
+      winner_team_id: string;
+      winner_name: string;
+      confidence: number;
+      predicted_spread?: number;
+    };
+    key_insights: string[];
+    analyzed_at: string;
   }[];
   home_team_injury_count?: number;
   away_team_injury_count?: number;
@@ -116,10 +130,13 @@ export async function loader({ request }: Route.LoaderArgs) {
     .select(
       `
       *,
+      home_team_id,
+      away_team_id,
       home_team:teams!games_home_team_id_fkey(id, name, short_name),
       away_team:teams!games_away_team_id_fkey(id, name, short_name),
       conference:conferences(id, name, short_name, is_power_conference),
-      picks(id, picked_team_id, spread_at_pick_time, result, locked_at, is_pick_of_day, user_id)
+      picks(id, picked_team_id, spread_at_pick_time, result, locked_at, is_pick_of_day, user_id),
+      matchup_analyses!matchup_analyses_game_id_fkey(id, analysis_text, prediction, key_insights, analyzed_at)
     `
     )
     .gte("game_date", startOfDay.toISOString())
@@ -173,16 +190,17 @@ export async function loader({ request }: Route.LoaderArgs) {
     profilesMap.set(profile.id, profile.username);
   });
 
-  // Merge profile data into picks
+  // Merge profile data into picks and normalize matchup_analyses
   const allGames = (gamesResult.data || []).map((game: GameWithRelations) => ({
     ...game,
     picks: game.picks?.map(pick => ({
       ...pick,
       profiles: pick.user_id ? { username: profilesMap.get(pick.user_id) || 'Unknown' } : undefined,
     })),
+    matchup_analysis: game.matchup_analyses && game.matchup_analyses.length > 0 ? game.matchup_analyses[0] : null,
   }));
 
-  // Fetch injury counts for all teams in the games
+  // Fetch injury counts and team stats for all teams in the games
   const teamIds = Array.from(
     new Set(
       allGames.flatMap((game: GameWithRelations) => [
@@ -192,26 +210,71 @@ export async function loader({ request }: Route.LoaderArgs) {
     )
   );
 
-  const { data: injuryCounts } = await supabase
-    .from('injury_reports')
-    .select('team_id')
-    .eq('is_active', true)
-    .in('team_id', teamIds);
+  // Get current season
+  const now = new Date();
+  const month = now.getMonth() + 1;
+  const year = now.getFullYear();
+  const currentSeason = month >= 8 ? year + 1 : year;
+
+  // Fetch injury counts and team stats in parallel
+  const [injuryResult, teamStatsResult] = await Promise.all([
+    supabase
+      .from('injury_reports')
+      .select('team_id')
+      .eq('is_active', true)
+      .in('team_id', teamIds),
+    supabase
+      .from('team_stats')
+      .select('team_id, overall_rank, source, offensive_efficiency, defensive_efficiency')
+      .eq('season', currentSeason)
+      .in('team_id', teamIds)
+  ]);
 
   // Create a map of team_id -> injury count
   const injuryCountMap = new Map<string, number>();
-  (injuryCounts || []).forEach((injury: { team_id: string }) => {
+  (injuryResult.data || []).forEach((injury: { team_id: string }) => {
     injuryCountMap.set(
       injury.team_id,
       (injuryCountMap.get(injury.team_id) || 0) + 1
     );
   });
 
-  // Add injury counts to games
+  // Create a map of team_id -> best ranking (prioritize kenpom > barttorvik > espn)
+  const teamStatsMap = new Map<string, { rank: number; netEff: number }>();
+  (teamStatsResult.data || []).forEach((stat: {
+    team_id: string;
+    overall_rank: number;
+    source: string;
+    offensive_efficiency: number;
+    defensive_efficiency: number;
+  }) => {
+    const existingStat = teamStatsMap.get(stat.team_id);
+    const sourcePriority = { kenpom: 3, barttorvik: 2, espn: 1 };
+    const currentPriority = sourcePriority[stat.source as keyof typeof sourcePriority] || 0;
+    const existingPriority = existingStat ?
+      (sourcePriority[(teamStatsResult.data?.find((s: any) =>
+        s.team_id === stat.team_id && s.overall_rank === existingStat.rank
+      )?.source) as keyof typeof sourcePriority] || 0) : 0;
+
+    if (!existingStat || currentPriority > existingPriority) {
+      const netEff = stat.offensive_efficiency && stat.defensive_efficiency ?
+        stat.offensive_efficiency - stat.defensive_efficiency : 0;
+      teamStatsMap.set(stat.team_id, {
+        rank: stat.overall_rank,
+        netEff: netEff
+      });
+    }
+  });
+
+  // Add injury counts and team stats to games
   const allGamesWithInjuries = allGames.map((game: GameWithRelations) => ({
     ...game,
     home_team_injury_count: injuryCountMap.get(game.home_team.id) || 0,
     away_team_injury_count: injuryCountMap.get(game.away_team.id) || 0,
+    home_team_rank: teamStatsMap.get(game.home_team.id)?.rank,
+    away_team_rank: teamStatsMap.get(game.away_team.id)?.rank,
+    home_team_net_eff: teamStatsMap.get(game.home_team.id)?.netEff,
+    away_team_net_eff: teamStatsMap.get(game.away_team.id)?.netEff,
   }));
 
   // Apply filters server-side

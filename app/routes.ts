@@ -14,6 +14,8 @@ export default [
     route("metrics", "routes/metrics.tsx"),
     route("mypicks", "routes/mypicks.tsx"),
     route("fantasy", "routes/fantasy.tsx"),
+    route("news", "routes/news.tsx"),
+    route("admin/scrapers", "routes/admin.scrapers.tsx"),
   ]),
 
   // Inngest API route
@@ -21,4 +23,6 @@ export default [
 
   // API routes
   route("api/favorites", "routes/api.favorites.tsx"),
+  route("api/stats/:teamId", "routes/api.stats.$teamId.ts"),
+  route("api/analyze-matchup", "routes/api.analyze-matchup.ts"),
 ] satisfies RouteConfig;

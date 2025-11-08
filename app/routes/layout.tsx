@@ -34,6 +34,7 @@ export default function Layout() {
     { name: 'My Picks', href: '/mypicks' },
     { name: 'Fantasy', href: '/fantasy' },
     { name: 'Injuries', href: '/injuries' },
+    { name: 'News', href: '/news' },
     { name: 'Metrics', href: '/metrics' },
   ]
 

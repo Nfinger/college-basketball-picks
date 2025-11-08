@@ -25,4 +25,8 @@ export default [
   route("api/favorites", "routes/api.favorites.tsx"),
   route("api/stats/:teamId", "routes/api.stats.$teamId.ts"),
   route("api/analyze-matchup", "routes/api.analyze-matchup.ts"),
+  route("api/og/potd/:pickId", "routes/api.og.potd.$pickId.tsx"),
+
+  // Share routes
+  route("share/potd/:pickId", "routes/share.potd.$pickId.tsx"),
 ] satisfies RouteConfig;

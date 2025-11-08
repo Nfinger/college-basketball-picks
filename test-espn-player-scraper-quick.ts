@@ -133,7 +133,8 @@ function parsePlayersFromHTML(html: string): any[] {
     const playerName = match ? match[1].trim() : playerText
     const position = match ? match[2] : ''
 
-    if (!playerName) continue
+    // Skip empty names and total rows
+    if (!playerName || playerName.toLowerCase() === 'total') continue
 
     const statsRow = statsRows.eq(i)
     const statCells = statsRow.find('td')

@@ -8,6 +8,7 @@ import { aggregateNews } from '../../inngest/functions/aggregate-news'
 import { scrapeBartTorvikStats } from '../../inngest/functions/scrape-barttorvik-stats'
 import { scrapeKenPomStats } from '../../inngest/functions/scrape-kenpom-stats'
 import { scrapeESPNStats } from '../../inngest/functions/scrape-espn-stats'
+import { scrapeESPNPlayers } from '../../inngest/functions/scrape-espn-players'
 import { analyzeMatchup } from '../../inngest/functions/analyze-matchup'
 
 const handler = serve({
@@ -20,6 +21,7 @@ const handler = serve({
     scrapeBartTorvikStats,
     scrapeKenPomStats,
     scrapeESPNStats,
+    scrapeESPNPlayers,
     analyzeMatchup,
   ],
 })

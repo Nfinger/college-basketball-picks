@@ -7,6 +7,8 @@ import { cn } from "~/lib/utils";
 import { Loader2, Star, AlertCircle } from "lucide-react";
 import { OthersPicksPopover } from "~/components/OthersPicksPopover";
 import { GameDetailsDialogCompact } from "~/components/GameDetailsDialog";
+import { ShareButton } from "~/components/ShareButton";
+import { ShareModal } from "~/components/ShareModal";
 
 interface Team {
   id: string;
@@ -96,6 +98,7 @@ export function GameCard({
   const isLocked = game.status !== "scheduled" || isPast(gameDate);
   const isCompleted = game.status === "completed";
   const [showOtherPick, setShowOtherPick] = useState(false);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
 
   // Optimistic UI: check if we're submitting a pick for this game
   const isSubmitting = fetcher.state === "submitting";
@@ -155,6 +158,11 @@ export function GameCard({
         return "bg-blue-500 text-white";
     }
   };
+
+  // Determine picked team for share modal
+  const pickedTeam = userPick?.picked_team_id === game.home_team.id
+    ? game.home_team
+    : game.away_team;
 
   return (
     <Card className="hover:shadow-lg transition-all duration-300 bg-white dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col h-[200px] pb-0">
@@ -466,6 +474,15 @@ export function GameCard({
             />
           </div>
           <div className="flex items-center gap-2">
+            {/* Share button - only show for POTD picks */}
+            {userPick?.is_pick_of_day && (
+              <ShareButton
+                onClick={() => setShareModalOpen(true)}
+                size="sm"
+                variant="ghost"
+                className="h-7 px-2"
+              />
+            )}
             <GameDetailsDialogCompact
               game={game}
               userPick={userPick}
@@ -497,6 +514,17 @@ export function GameCard({
           </div>
         )}
       </div>
+
+      {/* Share Modal */}
+      {userPick?.is_pick_of_day && (
+        <ShareModal
+          open={shareModalOpen}
+          onOpenChange={setShareModalOpen}
+          pickId={userPick.id}
+          pickedTeam={pickedTeam}
+          spread={userPick.spread_at_pick_time}
+        />
+      )}
     </Card>
   );
 }

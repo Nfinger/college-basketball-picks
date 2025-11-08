@@ -1,9 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   useLoaderData,
   useNavigate,
   useActionData,
   useOutletContext,
+  useSearchParams,
+  useFetcher,
 } from "react-router";
 import type { Route } from "./+types/_index";
 import { requireAuth } from "~/lib/auth.server";
@@ -16,6 +18,16 @@ import { format, addDays, subDays, parseISO, isValid } from "date-fns";
 import { fromZonedTime, toZonedTime } from "date-fns-tz";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "~/components/ui/dialog";
+import { GameAnalytics } from "~/components/GameAnalytics";
+import { MatchupAnalysis } from "~/components/MatchupAnalysis";
+import { Sparkles, TrendingUp, Loader2 } from "lucide-react";
+import { cn } from "~/lib/utils";
 
 type GameWithRelations = {
   id: string;
@@ -467,10 +479,37 @@ export default function Index() {
   const { user } = useOutletContext<{ user: { id: string; email: string } }>();
   const navigate = useNavigate();
   const actionData = useActionData<typeof action>();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const fetcher = useFetcher();
 
   const currentDate = parseISO(date);
   const previousDay = format(subDays(currentDate, 1), "yyyy-MM-dd");
   const nextDay = format(addDays(currentDate, 1), "yyyy-MM-dd");
+
+  // Get gameId from URL and find the game
+  const gameIdFromUrl = searchParams.get("gameId");
+  const selectedGame = gameIdFromUrl
+    ? games.find((g: GameWithRelations) => g.id === gameIdFromUrl)
+    : null;
+  const userPickForModal = selectedGame?.picks?.find(p => p.user_id === user.id);
+
+  // Control modal state based on URL
+  const [modalOpen, setModalOpen] = useState(false);
+
+  // Sync modal state with URL
+  useEffect(() => {
+    setModalOpen(!!gameIdFromUrl && !!selectedGame);
+  }, [gameIdFromUrl, selectedGame]);
+
+  // Handle modal close - remove gameId from URL
+  const handleModalClose = (open: boolean) => {
+    if (!open) {
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete("gameId");
+      setSearchParams(newParams, { replace: true });
+    }
+    setModalOpen(open);
+  };
 
   // Show toast notifications for pick results
   useEffect(() => {
@@ -558,6 +597,111 @@ export default function Index() {
             );
           })}
         </div>
+
+        {/* URL-controlled Game Modal */}
+        {selectedGame && (
+          <Dialog open={modalOpen} onOpenChange={handleModalClose}>
+            <DialogContent className="!w-[95vw] sm:!max-w-[95vw] lg:!max-w-[1600px] !max-h-[90vh] overflow-y-auto p-4 sm:p-6">
+              <DialogHeader>
+                <DialogTitle className="text-2xl">
+                  {selectedGame.away_team.name} @ {selectedGame.home_team.name}
+                </DialogTitle>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm text-gray-600">
+                  <span>{format(new Date(selectedGame.game_date), 'EEEE, MMMM d')} at {format(new Date(selectedGame.game_date), 'h:mm a')}</span>
+                  <span className="hidden sm:inline">•</span>
+                  <span className="flex items-center gap-1">
+                    {selectedGame.conference.name}
+                    {selectedGame.conference.is_power_conference && (
+                      <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
+                        Power
+                      </span>
+                    )}
+                  </span>
+                </div>
+              </DialogHeader>
+
+              {/* Game Header - Spread and Status */}
+              <div className="grid grid-cols-3 gap-2 sm:gap-4 py-3 sm:py-4 border-y">
+                {/* Away Team */}
+                <div className="text-center">
+                  <div className="font-semibold text-lg">{selectedGame.away_team.short_name}</div>
+                  {selectedGame.spread && (
+                    <div className={`text-sm ${selectedGame.favorite_team_id === selectedGame.away_team.id ? 'font-semibold text-blue-600' : 'text-gray-600'}`}>
+                      {selectedGame.favorite_team_id === selectedGame.away_team.id ? `-${selectedGame.spread}` : `+${selectedGame.spread}`}
+                    </div>
+                  )}
+                  {selectedGame.away_team_injury_count != null && selectedGame.away_team_injury_count > 0 && (
+                    <div className="text-xs text-orange-600 mt-1">
+                      {selectedGame.away_team_injury_count} {selectedGame.away_team_injury_count === 1 ? 'injury' : 'injuries'}
+                    </div>
+                  )}
+                </div>
+
+                {/* VS/Score */}
+                <div className="text-center">
+                  {selectedGame.status === 'completed' && selectedGame.home_score !== null && selectedGame.away_score !== null ? (
+                    <div className="text-2xl font-bold">
+                      {selectedGame.away_score} - {selectedGame.home_score}
+                    </div>
+                  ) : (
+                    <div className="text-gray-400 text-lg">VS</div>
+                  )}
+                  <div className="text-xs text-gray-500 mt-1 capitalize">{selectedGame.status}</div>
+                </div>
+
+                {/* Home Team */}
+                <div className="text-center">
+                  <div className="font-semibold text-lg">{selectedGame.home_team.short_name}</div>
+                  {selectedGame.spread && (
+                    <div className={`text-sm ${selectedGame.favorite_team_id === selectedGame.home_team.id ? 'font-semibold text-blue-600' : 'text-gray-600'}`}>
+                      {selectedGame.favorite_team_id === selectedGame.home_team.id ? `-${selectedGame.spread}` : `+${selectedGame.spread}`}
+                    </div>
+                  )}
+                  {selectedGame.home_team_injury_count != null && selectedGame.home_team_injury_count > 0 && (
+                    <div className="text-xs text-orange-600 mt-1">
+                      {selectedGame.home_team_injury_count} {selectedGame.home_team_injury_count === 1 ? 'injury' : 'injuries'}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* AI Matchup Analysis Section */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+                  <Sparkles className="h-4 w-4 text-purple-500" />
+                  <span>AI Matchup Analysis</span>
+                </div>
+
+                <MatchupAnalysis
+                  gameId={selectedGame.id}
+                  analysis={(selectedGame.matchup_analyses && selectedGame.matchup_analyses.length > 0 ? selectedGame.matchup_analyses[0] : null) || null}
+                  homeTeamName={selectedGame.home_team.short_name}
+                  awayTeamName={selectedGame.away_team.short_name}
+                />
+              </div>
+
+              {/* Analytics Section */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+                  <TrendingUp className="h-4 w-4" />
+                  <span>Team Analytics & Comparison</span>
+                </div>
+
+                <GameAnalytics
+                  game={selectedGame}
+                  showComparison={true}
+                />
+              </div>
+
+              {/* Footer Actions */}
+              <div className="flex justify-end gap-2 pt-4 border-t">
+                <Button variant="outline" onClick={() => handleModalClose(false)}>
+                  Close
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
   );
 }

@@ -84,7 +84,7 @@ export async function loader({ request }: { request: Request }) {
   const userIds = [...new Set((allRankings || []).map((r: any) => r.user_id))];
   const { data: profiles } = await supabase
     .from("profiles")
-    .select("id, full_name, email")
+    .select("id, username")
     .in("id", userIds);
 
   if (allRankingsError) {
@@ -204,7 +204,7 @@ export default function RankingsPage() {
                                 <TableHead className="w-16 sticky left-0 bg-background z-10">Rank</TableHead>
                                 {rankings.map((ranking: UserRanking) => {
                                   const profile = profiles[ranking.user_id];
-                                  const userName = profile?.full_name || profile?.email?.split('@')[0] || 'Anonymous';
+                                  const userName = profile?.username || 'Anonymous';
                                   return (
                                     <TableHead key={ranking.id} className="min-w-[200px]">
                                       <div className="flex flex-col">

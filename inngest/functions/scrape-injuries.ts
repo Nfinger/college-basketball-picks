@@ -1,7 +1,7 @@
 import { inngest } from '../client'
 import { createClient } from '@supabase/supabase-js'
 import { normalizeTeamName } from './team-mapping'
-import { chromium } from 'playwright'
+import { launchBrowser } from '../../lib/browser'
 
 interface InjuryData {
   teamName: string
@@ -55,7 +55,7 @@ export const scrapeInjuries = inngest.createFunction(
 
     // Step 1: Scrape injury data from RotoWire
     const injuries = await step.run('scrape-rotowire-injuries', async () => {
-      const browser = await chromium.launch({ headless: true })
+      const browser = await launchBrowser()
 
       try {
         const page = await browser.newPage()

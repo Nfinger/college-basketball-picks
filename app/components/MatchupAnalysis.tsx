@@ -37,14 +37,13 @@ export function MatchupAnalysis({
   const isGenerating = fetcher.state === 'submitting' || fetcher.state === 'loading'
 
   const handleGenerateAnalysis = () => {
-    fetcher.submit(
-      { gameId },
-      {
-        method: 'POST',
-        action: '/api/analyze-matchup',
-        encType: 'application/json',
-      }
-    )
+    const formData = new FormData()
+    formData.append('gameId', gameId)
+
+    fetcher.submit(formData, {
+      method: 'POST',
+      action: '/api/analyze-matchup',
+    })
   }
 
   // If no analysis and not generating, show the generate button

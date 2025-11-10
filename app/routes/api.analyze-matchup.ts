@@ -13,8 +13,17 @@ export async function action({ request }: { request: Request }) {
   }
 
   try {
-    const body = await request.json();
-    const { gameId } = body;
+    let gameId: string | null = null;
+
+    // Handle both JSON and FormData
+    const contentType = request.headers.get("content-type");
+    if (contentType?.includes("application/json")) {
+      const body = await request.json();
+      gameId = body.gameId;
+    } else {
+      const formData = await request.formData();
+      gameId = formData.get("gameId") as string;
+    }
 
     if (!gameId) {
       return Response.json(

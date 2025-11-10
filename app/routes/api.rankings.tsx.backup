@@ -36,13 +36,6 @@ export async function action({ request }: { request: Request }) {
       .single();
 
     if (error) {
-      // Handle duplicate week/season error
-      if (error.code === "23505") {
-        return data(
-          { error: "You already have a ranking for this week and season" },
-          { status: 400 }
-        );
-      }
       console.error("Error creating ranking:", error);
       return data({ error: error.message }, { status: 500 });
     }

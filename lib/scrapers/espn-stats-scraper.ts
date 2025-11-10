@@ -1,8 +1,8 @@
 import * as cheerio from 'cheerio'
-import { chromium } from 'playwright'
 import { BaseScraper } from './base-scraper'
 import type { ScraperConfig, ValidationResult, ScraperRunResult } from './base-scraper'
 import { TeamResolver } from './team-resolver'
+import { launchBrowser } from '../browser'
 
 interface ESPNRawTeamStats {
   teamName: string
@@ -123,7 +123,7 @@ export class ESPNStatsScraper extends BaseScraper<ESPNRawTeamStats, TeamStatsRec
     // ESPN team stats URL - use seasontype/2 for regular season
     const url = `https://www.espn.com/mens-college-basketball/stats/team/_/season/${this.currentSeason}/seasontype/2/page/${page}`
 
-    const browser = await chromium.launch({ headless: true })
+    const browser = await launchBrowser()
     const browserPage = await browser.newPage()
 
     try {

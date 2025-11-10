@@ -1,8 +1,8 @@
 import * as cheerio from 'cheerio'
-import { chromium } from 'playwright'
 import { BaseScraper } from './base-scraper'
 import type { ScraperConfig, ValidationResult, ScraperRunResult } from './base-scraper'
 import { TeamResolver } from './team-resolver'
+import { launchBrowser } from '../browser'
 
 interface BartTorvikRawTeamStats {
   rank: number
@@ -84,7 +84,7 @@ export class BartTorvikScraper extends BaseScraper<BartTorvikRawTeamStats, TeamS
     const url = 'https://barttorvik.com/trank.php'
 
     // Launch browser
-    const browser = await chromium.launch({ headless: true })
+    const browser = await launchBrowser()
     const context = await browser.newContext({
       userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
     })

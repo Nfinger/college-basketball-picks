@@ -1,7 +1,7 @@
 import * as cheerio from 'cheerio'
-import { chromium } from 'playwright'
 import { BaseScraper } from './base-scraper'
 import type { ScraperConfig, ValidationResult, ScraperRunResult } from './base-scraper'
+import { launchBrowser } from '../browser'
 
 /**
  * Raw player data from ESPN
@@ -142,7 +142,7 @@ export class ESPNPlayerScraper extends BaseScraper<ESPNRawPlayer, PlayerStatsRec
     // ESPN player stats URL - similar to team stats
     const url = `https://www.espn.com/mens-college-basketball/stats/player/_/season/${this.currentSeason}/seasontype/2/page/${page}`
 
-    const browser = await chromium.launch({ headless: true })
+    const browser = await launchBrowser()
     const browserPage = await browser.newPage()
 
     try {

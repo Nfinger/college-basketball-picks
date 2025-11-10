@@ -1,8 +1,8 @@
-import { chromium } from 'playwright'
-import type { Browser, Page } from 'playwright'
+import type { Browser, Page } from 'playwright-core'
 import { BaseScraper } from './base-scraper'
 import type { ScraperConfig, ValidationResult, ScraperRunResult } from './base-scraper'
 import { TeamResolver } from './team-resolver'
+import { launchBrowser } from '../browser'
 
 interface KenPomRawTeamStats {
   rank: number
@@ -83,17 +83,7 @@ export class KenPomScraper extends BaseScraper<KenPomRawTeamStats, TeamStatsReco
   private async initBrowser(): Promise<void> {
     console.log('[KenPom] Launching browser...')
 
-    this.browser = await chromium.launch({
-      headless: true,
-      args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-blink-features=AutomationControlled',
-        '--disable-dev-shm-usage',
-        '--disable-web-security',
-        '--disable-features=IsolateOrigins,site-per-process'
-      ]
-    })
+    this.browser = await launchBrowser()
 
     const context = await this.browser.newContext({
       userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',

@@ -1,19 +1,13 @@
 import { data } from "react-router";
 import { requireAuth } from "~/lib/auth.server";
-import type { Route } from "./+types/api.favorites";
 
-/**
- * API route for managing user's favorite teams
- * POST with intent=add to add a favorite
- * POST with intent=remove to remove a favorite
- */
-export async function action({ request }: Route.ActionArgs) {
+export async function action({ request }: { request: Request }) {
   const { user, supabase } = await requireAuth(request);
   const formData = await request.formData();
   const intent = formData.get("intent");
 
-  // Ranking actions
-  if (intent === "create-ranking") {
+  // Create a new ranking
+  if (intent === "create") {
     const title = formData.get("title");
     const week = formData.get("week");
     const season = formData.get("season");
@@ -41,6 +35,30 @@ export async function action({ request }: Route.ActionArgs) {
     return data({ success: true, ranking });
   }
 
+  // Update ranking metadata
+  if (intent === "update") {
+    const rankingId = formData.get("rankingId");
+    const title = formData.get("title");
+
+    if (!rankingId || !title) {
+      return data({ error: "Ranking ID and title are required" }, { status: 400 });
+    }
+
+    const { error } = await supabase
+      .from("user_rankings")
+      .update({ title: title as string })
+      .eq("id", rankingId as string)
+      .eq("user_id", user.id);
+
+    if (error) {
+      console.error("Error updating ranking:", error);
+      return data({ error: error.message }, { status: 500 });
+    }
+
+    return data({ success: true });
+  }
+
+  // Save ranking entries (the actual ranked teams)
   if (intent === "save-entries") {
     const rankingId = formData.get("rankingId");
     const entriesJson = formData.get("entries");
@@ -56,6 +74,7 @@ export async function action({ request }: Route.ActionArgs) {
       return data({ error: "Invalid entries format" }, { status: 400 });
     }
 
+    // Verify the ranking belongs to the user
     const { data: ranking, error: rankingError } = await supabase
       .from("user_rankings")
       .select("id")
@@ -67,8 +86,18 @@ export async function action({ request }: Route.ActionArgs) {
       return data({ error: "Ranking not found" }, { status: 404 });
     }
 
-    await supabase.from("ranking_entries").delete().eq("ranking_id", rankingId as string);
+    // Delete existing entries
+    const { error: deleteError } = await supabase
+      .from("ranking_entries")
+      .delete()
+      .eq("ranking_id", rankingId as string);
 
+    if (deleteError) {
+      console.error("Error deleting existing entries:", deleteError);
+      return data({ error: deleteError.message }, { status: 500 });
+    }
+
+    // Insert new entries
     if (entries.length > 0) {
       const { error: insertError } = await supabase
         .from("ranking_entries")
@@ -81,7 +110,7 @@ export async function action({ request }: Route.ActionArgs) {
         );
 
       if (insertError) {
-        console.error("Error inserting entries:", insertError);
+        console.error("Error inserting new entries:", insertError);
         return data({ error: insertError.message }, { status: 500 });
       }
     }
@@ -89,8 +118,10 @@ export async function action({ request }: Route.ActionArgs) {
     return data({ success: true });
   }
 
-  if (intent === "publish-ranking") {
+  // Publish a ranking
+  if (intent === "publish") {
     const rankingId = formData.get("rankingId");
+
     if (!rankingId) {
       return data({ error: "Ranking ID is required" }, { status: 400 });
     }
@@ -102,14 +133,17 @@ export async function action({ request }: Route.ActionArgs) {
       .eq("user_id", user.id);
 
     if (error) {
+      console.error("Error publishing ranking:", error);
       return data({ error: error.message }, { status: 500 });
     }
 
     return data({ success: true });
   }
 
-  if (intent === "delete-ranking") {
+  // Delete a ranking
+  if (intent === "delete") {
     const rankingId = formData.get("rankingId");
+
     if (!rankingId) {
       return data({ error: "Ranking ID is required" }, { status: 400 });
     }
@@ -121,49 +155,15 @@ export async function action({ request }: Route.ActionArgs) {
       .eq("user_id", user.id);
 
     if (error) {
+      console.error("Error deleting ranking:", error);
       return data({ error: error.message }, { status: 500 });
     }
 
     return data({ success: true });
   }
 
-  // Favorite teams actions
-  const teamId = formData.get("teamId");
-
-  if (!teamId || typeof teamId !== "string") {
-    return data({ error: "Team ID is required" }, { status: 400 });
-  }
-
-  if (intent === "add") {
-    const { error } = await supabase
-      .from("user_favorite_teams")
-      .insert({ user_id: user.id, team_id: teamId });
-
-    if (error) {
-      // Handle duplicate error gracefully (unique constraint violation)
-      if (error.code === "23505") {
-        return data({ success: true, message: "Already favorited" });
-      }
-      console.error("Error adding favorite team:", error);
-      return data({ error: error.message }, { status: 500 });
-    }
-
-    return data({ success: true, action: "added" });
-  }
-
-  if (intent === "remove") {
-    const { error } = await supabase
-      .from("user_favorite_teams")
-      .delete()
-      .match({ user_id: user.id, team_id: teamId });
-
-    if (error) {
-      console.error("Error removing favorite team:", error);
-      return data({ error: error.message }, { status: 500 });
-    }
-
-    return data({ success: true, action: "removed" });
-  }
-
-  return data({ error: "Invalid intent. Use 'add' or 'remove'" }, { status: 400 });
+  return data(
+    { error: "Invalid intent. Use 'create', 'update', 'save-entries', 'publish', or 'delete'" },
+    { status: 400 }
+  );
 }

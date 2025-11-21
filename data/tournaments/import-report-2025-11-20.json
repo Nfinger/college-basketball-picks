@@ -1,0 +1,182 @@
+{
+  "created": 25,
+  "skipped": 0,
+  "failed": 0,
+  "details": [
+    {
+      "name": "Shriners Hospitals Charleston Classic - Palmetto Bracket",
+      "status": "created",
+      "tournamentId": "aaf9aa85-433c-402a-8e14-1d1a9365efb6",
+      "teamsMatched": 4,
+      "teamsUnmatched": 0
+    },
+    {
+      "name": "Shriners Hospitals Charleston Classic - Lowcountry Bracket",
+      "status": "created",
+      "tournamentId": "d179d9bf-9d0f-4813-b4ee-eb365a359197",
+      "teamsMatched": 4,
+      "teamsUnmatched": 0
+    },
+    {
+      "name": "Baha Mar Bahamas Championship",
+      "status": "created",
+      "tournamentId": "31e7bf3d-e794-4729-98af-d99ccfd75e02",
+      "teamsMatched": 4,
+      "teamsUnmatched": 0
+    },
+    {
+      "name": "Hall of Fame Classic",
+      "status": "created",
+      "tournamentId": "27a81eed-11c9-4ea6-8c0f-e94b04902406",
+      "teamsMatched": 4,
+      "teamsUnmatched": 0
+    },
+    {
+      "name": "Boardwalk Battle",
+      "status": "created",
+      "tournamentId": "34acf513-b5e7-4ffe-bac5-202a1e77e83b",
+      "teamsMatched": 4,
+      "teamsUnmatched": 0
+    },
+    {
+      "name": "Pensacola Bay Center MTE",
+      "status": "created",
+      "tournamentId": "f3c8e98b-0216-4e90-9269-0d3301f28467",
+      "teamsMatched": 4,
+      "teamsUnmatched": 0
+    },
+    {
+      "name": "Sunshine Slam - Beach Bracket",
+      "status": "created",
+      "tournamentId": "ebbbd211-fead-40cc-80d7-ce0690c4ac4c",
+      "teamsMatched": 4,
+      "teamsUnmatched": 0
+    },
+    {
+      "name": "Sunshine Slam - Ocean Bracket",
+      "status": "created",
+      "tournamentId": "87d9dc1a-644a-4b99-a538-4ea6cdfec2cd",
+      "teamsMatched": 4,
+      "teamsUnmatched": 0
+    },
+    {
+      "name": "Coconut Hoops Royal Palm Division",
+      "status": "created",
+      "tournamentId": "6ba3e3a3-d65c-40b3-8035-697e35415dd0",
+      "teamsMatched": 4,
+      "teamsUnmatched": 0
+    },
+    {
+      "name": "Rady Children’s Invitational",
+      "status": "created",
+      "tournamentId": "99b81580-e73a-4c34-89ee-7ebf39af70f6",
+      "teamsMatched": 4,
+      "teamsUnmatched": 0
+    },
+    {
+      "name": "Resorts World Las Vegas Classic",
+      "status": "created",
+      "tournamentId": "a1e2ae89-3afc-421a-8bd8-02821536aed0",
+      "teamsMatched": 4,
+      "teamsUnmatched": 0
+    },
+    {
+      "name": "Emerald Coast Classic",
+      "status": "created",
+      "tournamentId": "f4c6d0d9-0185-4410-85b7-69f4a3c49f0b",
+      "teamsMatched": 4,
+      "teamsUnmatched": 0
+    },
+    {
+      "name": "Don Haskins Sun Bowl Invitational",
+      "status": "created",
+      "tournamentId": "6dfe4433-1d45-496e-8497-703aa93e37bd",
+      "teamsMatched": 2,
+      "teamsUnmatched": 1
+    },
+    {
+      "name": "Gotham Classic",
+      "status": "created",
+      "tournamentId": "78c3b1b6-4564-4e3a-8f59-ba3ac5baee30",
+      "teamsMatched": 4,
+      "teamsUnmatched": 0
+    },
+    {
+      "name": "Greenbrier Tip-Off River Division",
+      "status": "created",
+      "tournamentId": "70259906-2094-446b-b8bc-9f7cbd67b72d",
+      "teamsMatched": 0,
+      "teamsUnmatched": 1
+    },
+    {
+      "name": "Naismith Basketball Hall of Fame Showcase",
+      "status": "created",
+      "tournamentId": "c8d83ec4-f181-4cd9-9262-51b21feae7b4",
+      "teamsMatched": 0,
+      "teamsUnmatched": 1
+    },
+    {
+      "name": "Cancún Challenge",
+      "status": "created",
+      "tournamentId": "b775c806-8286-49df-a08a-6b0fddabbda2",
+      "teamsMatched": 6,
+      "teamsUnmatched": 0
+    },
+    {
+      "name": "Legends Classic",
+      "status": "created",
+      "tournamentId": "9fc6483d-a7bf-4005-aca0-af3a8d6959e6",
+      "teamsMatched": 3,
+      "teamsUnmatched": 0
+    },
+    {
+      "name": "Greenbrier Tip-Off Mountain Division",
+      "status": "created",
+      "tournamentId": "e2a10ca5-b2dd-45b4-8477-17afb6e3a390",
+      "teamsMatched": 0,
+      "teamsUnmatched": 1
+    },
+    {
+      "name": "Brotherhood Run MTE",
+      "status": "created",
+      "tournamentId": "5c4a96b8-14a6-463a-ae93-6962833cf257",
+      "teamsMatched": 2,
+      "teamsUnmatched": 0
+    },
+    {
+      "name": "Illinois/Missouri State MTE",
+      "status": "created",
+      "tournamentId": "2c29ebd6-b267-4bee-81fc-162b156264d5",
+      "teamsMatched": 0,
+      "teamsUnmatched": 1
+    },
+    {
+      "name": "Tampa MTE",
+      "status": "created",
+      "tournamentId": "cf35d57f-6b62-49b2-8fbf-8ad947c6e3cd",
+      "teamsMatched": 4,
+      "teamsUnmatched": 0
+    },
+    {
+      "name": "Fort Myers Tip-Off Palms Division",
+      "status": "created",
+      "tournamentId": "28b440ec-227f-432c-92d1-a9be634b9e8f",
+      "teamsMatched": 0,
+      "teamsUnmatched": 1
+    },
+    {
+      "name": "Fort Myers Tip-Off Beach Division",
+      "status": "created",
+      "tournamentId": "57cfaacd-1791-4965-b14a-22eb6ccc001d",
+      "teamsMatched": 0,
+      "teamsUnmatched": 1
+    },
+    {
+      "name": "Boise MTE",
+      "status": "created",
+      "tournamentId": "ce91456f-f70d-4802-88f7-b3c8f9b46aba",
+      "teamsMatched": 0,
+      "teamsUnmatched": 1
+    }
+  ]
+}

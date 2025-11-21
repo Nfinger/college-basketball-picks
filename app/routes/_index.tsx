@@ -13,10 +13,11 @@ import { getFavoriteTeamIds } from "~/lib/favorites.server";
 import { GameCard } from "~/components/GameCard";
 import { DatePicker } from "~/components/DatePicker";
 import { GameFilters } from "~/components/GameFilters";
+import { TournamentFilters } from "~/components/TournamentFilters";
 import { Button } from "~/components/ui/button";
 import { format, addDays, subDays, parseISO, isValid } from "date-fns";
 import { fromZonedTime, toZonedTime } from "date-fns-tz";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Trophy, Sparkles, TrendingUp, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -26,7 +27,6 @@ import {
 } from "~/components/ui/dialog";
 import { GameAnalytics } from "~/components/GameAnalytics";
 import { MatchupAnalysis } from "~/components/MatchupAnalysis";
-import { Sparkles, TrendingUp, Loader2 } from "lucide-react";
 import { cn } from "~/lib/utils";
 
 type GameWithRelations = {
@@ -34,6 +34,8 @@ type GameWithRelations = {
   game_date: string;
   home_team_id: string;
   away_team_id: string;
+  tournament_round: string | null;
+  tournament_metadata: { seed_home?: number; seed_away?: number; region?: string } | null;
   home_team: { id: string; name: string; short_name: string };
   away_team: { id: string; name: string; short_name: string };
   home_score: number | null;
@@ -47,6 +49,12 @@ type GameWithRelations = {
     short_name: string;
     is_power_conference: boolean;
   };
+  tournament?: {
+    id: string;
+    name: string;
+    type: "mte" | "conference" | "ncaa";
+    status: "upcoming" | "in_progress" | "completed";
+  } | null;
   picks?: {
     id: string;
     picked_team_id: string;
@@ -147,6 +155,7 @@ export async function loader({ request }: Route.LoaderArgs) {
       home_team:teams!games_home_team_id_fkey(id, name, short_name),
       away_team:teams!games_away_team_id_fkey(id, name, short_name),
       conference:conferences(id, name, short_name, is_power_conference),
+      tournament:tournaments(id, name, type, status),
       picks(id, picked_team_id, spread_at_pick_time, result, locked_at, is_pick_of_day, user_id),
       matchup_analyses!matchup_analyses_game_id_fkey(id, analysis_text, prediction, key_insights, analyzed_at)
     `
@@ -163,8 +172,8 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   gamesQuery = gamesQuery.order("game_date", { ascending: true });
 
-  // Fetch games, conferences, profiles, and POTD status in parallel
-  const [gamesResult, conferencesResult, profilesResult, potdResult] = await Promise.all([
+  // Fetch games, conferences, profiles, POTD status, active tournaments, and bracket picks in parallel
+  const [gamesResult, conferencesResult, profilesResult, potdResult, tournamentsResult, bracketPicksResult] = await Promise.all([
     gamesQuery,
     supabase
       .from("conferences")
@@ -180,6 +189,23 @@ export async function loader({ request }: Route.LoaderArgs) {
       .eq("is_pick_of_day", true)
       .eq("game_date_cache", dateStr)
       .maybeSingle(),
+    supabase
+      .from("tournaments")
+      .select(`
+        id,
+        name,
+        type,
+        status,
+        start_date,
+        end_date,
+        location,
+        games:games(count)
+      `)
+      .order("start_date", { ascending: true }),
+    supabase
+      .from("bracket_picks")
+      .select("tournament_id, picks, champion_team_id")
+      .eq("user_id", user.id),
   ]);
 
   // Log errors but don't fail - return empty arrays instead
@@ -378,10 +404,20 @@ export async function loader({ request }: Route.LoaderArgs) {
     return aDate - bDate;
   });
 
+  // Process bracket picks to create tournament completion map
+  const bracketCompletion = new Map<string, { hasPicks: boolean; championPicked: boolean }>();
+  (bracketPicksResult.data || []).forEach((bracket: { tournament_id: string; picks: any; champion_team_id: string | null }) => {
+    const hasPicks = bracket.picks && Object.keys(bracket.picks).length > 0;
+    const championPicked = !!bracket.champion_team_id;
+    bracketCompletion.set(bracket.tournament_id, { hasPicks, championPicked });
+  });
+
   return {
     games: sortedGames,
     allGamesCount: allGamesWithInjuries.length,
     conferences: conferencesResult.data || [],
+    tournaments: tournamentsResult.data || [],
+    bracketCompletion: Object.fromEntries(bracketCompletion),
     date: dateStr,
     isToday,
     potdGameId: potdResult.data?.game_id || null,
@@ -474,7 +510,7 @@ export function meta({ data }: Route.MetaArgs) {
 }
 
 export default function Index() {
-  const { games, allGamesCount, conferences, date, isToday, potdGameId } =
+  const { games, allGamesCount, conferences, tournaments, bracketCompletion, date, isToday, potdGameId } =
     useLoaderData<typeof loader>();
   const { user } = useOutletContext<{ user: { id: string; email: string } }>();
   const navigate = useNavigate();
@@ -485,6 +521,18 @@ export default function Index() {
   const currentDate = parseISO(date);
   const previousDay = format(subDays(currentDate, 1), "yyyy-MM-dd");
   const nextDay = format(addDays(currentDate, 1), "yyyy-MM-dd");
+
+  // Tab state
+  const activeTab = searchParams.get("view") || "games";
+  const setActiveTab = (tab: string) => {
+    const newParams = new URLSearchParams(searchParams);
+    if (tab === "games") {
+      newParams.delete("view");
+    } else {
+      newParams.set("view", tab);
+    }
+    setSearchParams(newParams, { replace: true });
+  };
 
   // Get gameId from URL and find the game
   const gameIdFromUrl = searchParams.get("gameId");
@@ -522,57 +570,119 @@ export default function Index() {
     }
   }, [actionData]);
 
+  // Filter tournaments based on search params
+  const filteredTournaments = tournaments.filter((tournament: any) => {
+    const statusFilters = searchParams.getAll('tournamentStatus');
+    const typeFilters = searchParams.getAll('tournamentType');
+    const picksOnly = searchParams.get('tournamentPicks') === 'true';
+
+    // Status filter
+    if (statusFilters.length > 0 && !statusFilters.includes(tournament.status)) {
+      return false;
+    }
+
+    // Type filter
+    if (typeFilters.length > 0 && !typeFilters.includes(tournament.type)) {
+      return false;
+    }
+
+    // Picks only filter - show only tournaments where user has made picks
+    if (picksOnly) {
+      const completion = bracketCompletion[tournament.id];
+      if (!completion || !completion.hasPicks) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+
   return (
       <div className="space-y-6">
-        {/* Date Navigation */}
+        {/* Header with Tabs */}
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row items-center sm:items-center justify-between gap-4">
             <div className="text-center sm:text-left">
               <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
-                {isToday
-                  ? "Today's Games"
-                  : format(currentDate, "MMMM d, yyyy")}
+                {activeTab === "tournaments" ? "Tournaments" : (isToday ? "Today's Games" : format(currentDate, "MMMM d, yyyy"))}
               </h1>
               <p className="mt-1 sm:mt-2 text-sm sm:text-base font-medium text-slate-600 dark:text-slate-400">
-                {format(currentDate, "EEEE")}
+                {activeTab === "tournaments" ? "Make your bracket picks" : format(currentDate, "EEEE")}
               </p>
             </div>
 
-            <div className="flex items-center justify-center space-x-1 sm:space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => navigate(`/?date=${previousDay}`)}
-                className="text-xs sm:text-sm"
-              >
-                <ChevronLeft className="h-4 w-4 sm:mr-1" />
-                <span className="hidden sm:inline">Previous</span>
-              </Button>
+            {activeTab === "games" && (
+              <div className="flex items-center justify-center space-x-1 sm:space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate(`/?date=${previousDay}`)}
+                  className="text-xs sm:text-sm"
+                >
+                  <ChevronLeft className="h-4 w-4 sm:mr-1" />
+                  <span className="hidden sm:inline">Previous</span>
+                </Button>
 
-              <DatePicker currentDate={currentDate} />
+                <DatePicker currentDate={currentDate} />
 
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => navigate(`/?date=${nextDay}`)}
-                className="text-xs sm:text-sm"
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate(`/?date=${nextDay}`)}
+                  className="text-xs sm:text-sm"
+                >
+                  <span className="hidden sm:inline">Next</span>
+                  <ChevronRight className="h-4 w-4 sm:ml-1" />
+                </Button>
+              </div>
+            )}
+          </div>
+
+          {/* Tab Navigation */}
+          <div className="flex items-center gap-2 border-b">
+            <button
+              onClick={() => setActiveTab("games")}
+              className={cn(
+                "px-4 py-2 text-sm font-medium border-b-2 transition-colors",
+                activeTab === "games"
+                  ? "border-primary text-foreground"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
+              )}
+            >
+              Games
+            </button>
+            {tournaments && tournaments.length > 0 && (
+              <button
+                onClick={() => setActiveTab("tournaments")}
+                className={cn(
+                  "px-4 py-2 text-sm font-medium border-b-2 transition-colors flex items-center gap-1.5",
+                  activeTab === "tournaments"
+                    ? "border-primary text-foreground"
+                    : "border-transparent text-muted-foreground hover:text-foreground"
+                )}
               >
-                <span className="hidden sm:inline">Next</span>
-                <ChevronRight className="h-4 w-4 sm:ml-1" />
-              </Button>
-            </div>
+                <Trophy className="w-4 h-4" />
+                Tournaments
+                <span className="ml-1 px-1.5 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-semibold">
+                  {tournaments.length}
+                </span>
+              </button>
+            )}
           </div>
         </div>
 
-        {/* Filters */}
-        <GameFilters conferences={conferences} />
+        {/* Games View */}
+        {activeTab === "games" && (
+          <>
+            {/* Filters */}
+            <GameFilters conferences={conferences} />
 
-        <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
-          <span>
-            Showing {games.length} of {allGamesCount} games
-          </span>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
+              <span>
+                Showing {games.length} of {allGamesCount} games
+              </span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {games.map((game: GameWithRelations) => {
             const userPick = game.picks?.find(p => p.user_id === user.id);
             const otherPicks = game.picks?.filter(p => p.user_id !== user.id) || [];
@@ -597,6 +707,91 @@ export default function Index() {
             );
           })}
         </div>
+          </>
+        )}
+
+        {/* Tournaments View */}
+        {activeTab === "tournaments" && (
+          <>
+            <TournamentFilters />
+            {filteredTournaments && filteredTournaments.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {filteredTournaments.map((tournament: any) => {
+                  const completion = bracketCompletion[tournament.id];
+                  const hasBracketPicks = completion?.hasPicks || false;
+                  const hasChampionPick = completion?.championPicked || false;
+
+                  return (
+                    <button
+                      key={tournament.id}
+                      onClick={() => navigate(`/tournaments/${tournament.id}`)}
+                      className="group bg-card rounded-lg border p-5 text-left hover:border-primary hover:bg-accent transition-all"
+                    >
+                      <div className="flex items-start justify-between gap-2 mb-3">
+                        <div className="flex-1">
+                          <div className="flex items-start gap-2">
+                            <h3 className="font-bold text-lg leading-tight flex-1">
+                              {tournament.name}
+                            </h3>
+                            {hasBracketPicks && (
+                              <CheckCircle2 className={cn(
+                                "w-5 h-5 shrink-0 mt-0.5",
+                                hasChampionPick
+                                  ? "text-green-600 dark:text-green-400"
+                                  : "text-yellow-600 dark:text-yellow-400"
+                              )} />
+                            )}
+                          </div>
+                        </div>
+                        <span className={`shrink-0 px-2 py-0.5 rounded text-[10px] font-medium uppercase tracking-wide ${
+                          tournament.status === 'in_progress'
+                            ? 'bg-green-500/10 text-green-600 dark:text-green-400'
+                            : 'bg-blue-500/10 text-blue-600 dark:text-blue-400'
+                        }`}>
+                          {tournament.status === 'in_progress' ? 'Live' : 'Upcoming'}
+                        </span>
+                      </div>
+
+                      <div className="text-sm text-muted-foreground space-y-1.5 mb-4">
+                        <div className="flex items-center gap-1">
+                          <span className="font-medium">{tournament.type.toUpperCase()}</span>
+                          {tournament.location && (
+                            <>
+                              <span>•</span>
+                              <span>{tournament.location}</span>
+                            </>
+                          )}
+                        </div>
+                        <div className="text-xs">
+                          {format(new Date(tournament.start_date), 'MMM d')} - {format(new Date(tournament.end_date), 'MMM d, yyyy')}
+                        </div>
+                        {hasBracketPicks && (
+                          <div className={cn(
+                            "text-xs font-medium",
+                            hasChampionPick
+                              ? "text-green-600 dark:text-green-400"
+                              : "text-yellow-600 dark:text-yellow-400"
+                          )}>
+                            {hasChampionPick ? "Bracket Complete" : "Bracket In Progress"}
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-2 text-sm font-medium text-primary">
+                        <span>{hasBracketPicks ? "Edit Bracket" : "View Bracket"}</span>
+                        <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="text-center py-12 text-muted-foreground">
+                No tournaments found matching your filters.
+              </div>
+            )}
+          </>
+        )}
 
         {/* URL-controlled Game Modal */}
         {selectedGame && (

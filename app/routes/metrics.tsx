@@ -12,7 +12,8 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
-import { TrendingUp, TrendingDown, Trophy, Star } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { TrendingUp, TrendingDown, Trophy, Star, Calendar } from "lucide-react";
 
 type UserStats = {
   user_id: string;
@@ -41,11 +42,9 @@ type ComparisonStats = {
 export async function loader({ request }: Route.LoaderArgs) {
   const { user, supabase, headers } = await requireAuth(request);
 
-  // Parse URL search parameters
   const url = new URL(request.url);
   const conferenceFilter = url.searchParams.get("conf") || "all";
 
-  // Get all stats in parallel for performance
   const [
     { data: overallStats },
     { data: conferenceStats },
@@ -54,6 +53,11 @@ export async function loader({ request }: Route.LoaderArgs) {
     { data: potdStats },
     { data: potdStreak },
     { data: potdComparison },
+    { data: weeklyStats },
+    { data: weeklyConferenceStats },
+    { data: weeklyStreak },
+    { data: weeklyPotdStats },
+    { data: weeklyPotdStreak },
   ] = await Promise.all([
     supabase.rpc("get_user_overall_stats", { user_uuid: user.id }),
     supabase.rpc("get_user_conference_stats", { user_uuid: user.id }),
@@ -62,9 +66,13 @@ export async function loader({ request }: Route.LoaderArgs) {
     supabase.rpc("get_user_potd_stats", { user_uuid: user.id }),
     supabase.rpc("get_user_potd_streak", { user_uuid: user.id }),
     supabase.rpc("get_user_potd_comparison", { user_uuid: user.id }),
+    supabase.rpc("get_user_weekly_stats", { user_uuid: user.id }),
+    supabase.rpc("get_user_weekly_conference_stats", { user_uuid: user.id }),
+    supabase.rpc("get_user_weekly_streak", { user_uuid: user.id }),
+    supabase.rpc("get_user_weekly_potd_stats", { user_uuid: user.id }),
+    supabase.rpc("get_user_weekly_potd_streak", { user_uuid: user.id }),
   ]);
 
-  // Filter out current user for comparison
   const comparisonStats = (allUsersStats || [])
     .filter((u: UserStats) => u.user_id !== user.id)
     .map((stats: UserStats) => ({
@@ -72,7 +80,6 @@ export async function loader({ request }: Route.LoaderArgs) {
       stats,
     }));
 
-  // Apply conference filter server-side
   const filteredConferenceStats = (conferenceStats || []).filter(
     (conf: ConferenceStats) => {
       if (conferenceFilter === "power") return conf.is_power_conference;
@@ -81,7 +88,14 @@ export async function loader({ request }: Route.LoaderArgs) {
     }
   );
 
-  // Calculate power vs mid-major stats
+  const filteredWeeklyConferenceStats = (weeklyConferenceStats || []).filter(
+    (conf: ConferenceStats) => {
+      if (conferenceFilter === "power") return conf.is_power_conference;
+      if (conferenceFilter === "midmajor") return !conf.is_power_conference;
+      return true;
+    }
+  );
+
   const powerStats = (conferenceStats || []).filter(
     (c: ConferenceStats) => c.is_power_conference
   );
@@ -127,7 +141,51 @@ export async function loader({ request }: Route.LoaderArgs) {
       ).toFixed(2)
     : "0.00";
 
-  // Sort comparison stats by win rate
+  const weeklyPowerStats = (weeklyConferenceStats || []).filter(
+    (c: ConferenceStats) => c.is_power_conference
+  );
+  const weeklyMidMajorStats = (weeklyConferenceStats || []).filter(
+    (c: ConferenceStats) => !c.is_power_conference
+  );
+
+  const weeklyPowerTotals = weeklyPowerStats.reduce(
+    (
+      acc: { picks: number; wins: number; losses: number },
+      curr: ConferenceStats
+    ) => ({
+      picks: acc.picks + Number(curr.total_picks),
+      wins: acc.wins + Number(curr.wins),
+      losses: acc.losses + Number(curr.losses),
+    }),
+    { picks: 0, wins: 0, losses: 0 }
+  );
+
+  const weeklyMidMajorTotals = weeklyMidMajorStats.reduce(
+    (
+      acc: { picks: number; wins: number; losses: number },
+      curr: ConferenceStats
+    ) => ({
+      picks: acc.picks + Number(curr.total_picks),
+      wins: acc.wins + Number(curr.wins),
+      losses: acc.losses + Number(curr.losses),
+    }),
+    { picks: 0, wins: 0, losses: 0 }
+  );
+
+  const weeklyPowerWinRate = weeklyPowerTotals.picks
+    ? (
+        (weeklyPowerTotals.wins / (weeklyPowerTotals.wins + weeklyPowerTotals.losses)) *
+        100
+      ).toFixed(2)
+    : "0.00";
+
+  const weeklyMidMajorWinRate = weeklyMidMajorTotals.picks
+    ? (
+        (weeklyMidMajorTotals.wins / (weeklyMidMajorTotals.wins + weeklyMidMajorTotals.losses)) *
+        100
+      ).toFixed(2)
+    : "0.00";
+
   const sortedComparisonStats = comparisonStats.sort(
     (a: ComparisonStats, b: ComparisonStats) =>
       Number(b.stats.win_rate || 0) - Number(a.stats.win_rate || 0)
@@ -147,6 +205,16 @@ export async function loader({ request }: Route.LoaderArgs) {
     potdStats: potdStats?.[0] || null,
     potdStreak: potdStreak?.[0] || null,
     potdComparison: potdComparison || [],
+    weeklyStats: weeklyStats?.[0] || null,
+    weeklyConferenceStats: filteredWeeklyConferenceStats,
+    allWeeklyConferenceStats: weeklyConferenceStats || [],
+    weeklyPowerTotals,
+    weeklyMidMajorTotals,
+    weeklyPowerWinRate,
+    weeklyMidMajorWinRate,
+    weeklyStreak: weeklyStreak?.[0] || null,
+    weeklyPotdStats: weeklyPotdStats?.[0] || null,
+    weeklyPotdStreak: weeklyPotdStreak?.[0] || null,
     headers,
   };
 }
@@ -175,25 +243,35 @@ export default function Metrics() {
     potdStats,
     potdStreak,
     potdComparison,
+    weeklyStats,
+    weeklyConferenceStats,
+    allWeeklyConferenceStats,
+    weeklyPowerTotals,
+    weeklyMidMajorTotals,
+    weeklyPowerWinRate,
+    weeklyMidMajorWinRate,
+    weeklyStreak,
+    weeklyPotdStats,
+    weeklyPotdStreak,
   } = useLoaderData<typeof loader>();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // Get current filter from URL params
   const conferenceFilter = searchParams.get("conf") || "all";
 
-  return (
+  const renderMetricsContent = (
+    stats: typeof overallStats,
+    confStats: typeof conferenceStats,
+    allConfStats: typeof allConferenceStats,
+    powerTots: typeof powerTotals,
+    midMajorTots: typeof midMajorTotals,
+    powerRate: string,
+    midMajorRate: string,
+    currentStreak: typeof streak,
+    potd: typeof potdStats,
+    potdStrk: typeof potdStreak,
+    isWeekly: boolean = false
+  ) => (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
-          Your Performance
-        </h1>
-        <p className="mt-2 text-base font-medium text-slate-600 dark:text-slate-400">
-          Track your picking accuracy and compare with others
-        </p>
-      </div>
-
-      {/* Overall Stats */}
-
       <div className="grid gap-6 md:grid-cols-4">
         <Card className="hover:shadow-lg transition-shadow bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-900/50 border-slate-200 dark:border-slate-800">
           <CardHeader className="pb-3">
@@ -203,7 +281,7 @@ export default function Metrics() {
           </CardHeader>
           <CardContent>
             <div className="text-4xl font-bold text-slate-900 dark:text-slate-100 tabular-nums">
-              {overallStats.total_picks}
+              {stats?.total_picks || 0}
             </div>
           </CardContent>
         </Card>
@@ -216,7 +294,7 @@ export default function Metrics() {
           </CardHeader>
           <CardContent>
             <div className="text-4xl font-bold text-green-600 dark:text-green-400 tabular-nums">
-              {overallStats.wins}
+              {stats?.wins || 0}
             </div>
           </CardContent>
         </Card>
@@ -229,7 +307,7 @@ export default function Metrics() {
           </CardHeader>
           <CardContent>
             <div className="text-4xl font-bold text-red-600 dark:text-red-400 tabular-nums">
-              {overallStats.losses}
+              {stats?.losses || 0}
             </div>
           </CardContent>
         </Card>
@@ -243,9 +321,9 @@ export default function Metrics() {
           <CardContent>
             <div className="flex items-center space-x-3">
               <div className="text-4xl font-bold text-blue-600 dark:text-blue-400 tabular-nums">
-                {overallStats.win_rate || "0"}%
+                {stats?.win_rate || "0"}%
               </div>
-              {overallStats.win_rate && Number(overallStats.win_rate) > 50 ? (
+              {stats?.win_rate && Number(stats.win_rate) > 50 ? (
                 <TrendingUp className="h-6 w-6 text-green-600 dark:text-green-400" />
               ) : (
                 <TrendingDown className="h-6 w-6 text-red-600 dark:text-red-400" />
@@ -255,12 +333,11 @@ export default function Metrics() {
         </Card>
       </div>
 
-      {/* Streak */}
-      {streak && (
+      {currentStreak && (
         <Card className="bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-amber-950/30 dark:to-yellow-950/30 border-amber-200 dark:border-amber-900 hover:shadow-lg transition-shadow">
           <CardHeader>
             <CardTitle className="text-amber-900 dark:text-amber-100">
-              Current Streak
+              {isWeekly ? "Weekly" : "Current"} Streak
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -270,8 +347,8 @@ export default function Metrics() {
               </div>
               <div>
                 <div className="text-3xl font-bold text-amber-900 dark:text-amber-100">
-                  {streak.streak_count}{" "}
-                  {streak.streak_type === "won" ? "Wins" : "Losses"}
+                  {currentStreak.streak_count}{" "}
+                  {currentStreak.streak_type === "won" ? "Wins" : "Losses"}
                 </div>
                 <p className="text-sm text-amber-700 dark:text-amber-400 font-medium">
                   Keep it going!
@@ -282,8 +359,7 @@ export default function Metrics() {
         </Card>
       )}
 
-      {/* Pick of the Day Stats */}
-      {potdStats && potdStats.total_potd > 0 && (
+      {potd && potd.total_potd > 0 && (
         <>
           <div className="mt-8 mb-4">
             <h2 className="text-2xl font-bold bg-gradient-to-r from-yellow-600 to-amber-600 dark:from-yellow-400 dark:to-amber-400 bg-clip-text text-transparent flex items-center gap-2">
@@ -295,7 +371,6 @@ export default function Metrics() {
             </p>
           </div>
 
-          {/* POTD Stats Cards */}
           <div className="grid gap-6 md:grid-cols-4">
             <Card className="hover:shadow-lg transition-shadow bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-950/30 dark:to-amber-950/30 border-yellow-200 dark:border-yellow-900">
               <CardHeader className="pb-3">
@@ -306,7 +381,7 @@ export default function Metrics() {
               </CardHeader>
               <CardContent>
                 <div className="text-4xl font-bold text-yellow-600 dark:text-yellow-400 tabular-nums">
-                  {potdStats.total_potd}
+                  {potd.total_potd}
                 </div>
               </CardContent>
             </Card>
@@ -319,7 +394,7 @@ export default function Metrics() {
               </CardHeader>
               <CardContent>
                 <div className="text-4xl font-bold text-green-600 dark:text-green-400 tabular-nums">
-                  {potdStats.wins}
+                  {potd.wins}
                 </div>
               </CardContent>
             </Card>
@@ -332,7 +407,7 @@ export default function Metrics() {
               </CardHeader>
               <CardContent>
                 <div className="text-4xl font-bold text-red-600 dark:text-red-400 tabular-nums">
-                  {potdStats.losses}
+                  {potd.losses}
                 </div>
               </CardContent>
             </Card>
@@ -346,9 +421,9 @@ export default function Metrics() {
               <CardContent>
                 <div className="flex items-center space-x-3">
                   <div className="text-4xl font-bold text-blue-600 dark:text-blue-400 tabular-nums">
-                    {potdStats.win_rate || "0"}%
+                    {potd.win_rate || "0"}%
                   </div>
-                  {potdStats.win_rate && Number(potdStats.win_rate) > 50 ? (
+                  {potd.win_rate && Number(potd.win_rate) > 50 ? (
                     <TrendingUp className="h-6 w-6 text-green-600 dark:text-green-400" />
                   ) : (
                     <TrendingDown className="h-6 w-6 text-red-600 dark:text-red-400" />
@@ -358,8 +433,7 @@ export default function Metrics() {
             </Card>
           </div>
 
-          {/* POTD Streak */}
-          {potdStreak && potdStreak.streak_count > 0 && (
+          {potdStrk && potdStrk.streak_count > 0 && (
             <Card className="bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-950/30 dark:to-amber-950/30 border-yellow-200 dark:border-yellow-900 hover:shadow-lg transition-shadow">
               <CardHeader>
                 <CardTitle className="text-yellow-900 dark:text-yellow-100 flex items-center gap-2">
@@ -374,8 +448,8 @@ export default function Metrics() {
                   </div>
                   <div>
                     <div className="text-3xl font-bold text-yellow-900 dark:text-yellow-100">
-                      {potdStreak.streak_count}{" "}
-                      {potdStreak.streak_type === "won" ? "Wins" : "Losses"}
+                      {potdStrk.streak_count}{" "}
+                      {potdStrk.streak_type === "won" ? "Wins" : "Losses"}
                     </div>
                     <p className="text-sm text-yellow-700 dark:text-yellow-400 font-medium">
                       Your most confident picks streak!
@@ -385,8 +459,228 @@ export default function Metrics() {
               </CardContent>
             </Card>
           )}
+        </>
+      )}
 
-          {/* POTD vs Regular Picks Comparison */}
+      {(powerTots.picks > 0 || midMajorTots.picks > 0) && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Power Conferences vs Mid-Majors</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold">Power Conferences</span>
+                  <Badge variant="default">★</Badge>
+                </div>
+                <div className="space-y-1 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Total Picks:
+                    </span>
+                    <span className="font-medium">{powerTots.picks}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Wins:
+                    </span>
+                    <span className="font-medium text-green-600">
+                      {powerTots.wins}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Losses:
+                    </span>
+                    <span className="font-medium text-red-600">
+                      {powerTots.losses}
+                    </span>
+                  </div>
+                  <div className="flex justify-between font-semibold border-t pt-1">
+                    <span>Win Rate:</span>
+                    <span>{powerRate}%</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold">Mid-Majors</span>
+                  <Badge variant="secondary">MM</Badge>
+                </div>
+                <div className="space-y-1 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Total Picks:
+                    </span>
+                    <span className="font-medium">{midMajorTots.picks}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Wins:
+                    </span>
+                    <span className="font-medium text-green-600">
+                      {midMajorTots.wins}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Losses:
+                    </span>
+                    <span className="font-medium text-red-600">
+                      {midMajorTots.losses}
+                    </span>
+                  </div>
+                  <div className="flex justify-between font-semibold border-t pt-1">
+                    <span>Win Rate:</span>
+                    <span>{midMajorRate}%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {allConfStats.length > 0 && (
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle>Performance by Conference</CardTitle>
+              <div className="flex gap-2">
+                <Button
+                  variant={conferenceFilter === "all" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => {
+                    const newParams = new URLSearchParams(searchParams);
+                    newParams.delete("conf");
+                    setSearchParams(newParams, { replace: true });
+                  }}
+                >
+                  All
+                </Button>
+                <Button
+                  variant={conferenceFilter === "power" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => {
+                    const newParams = new URLSearchParams(searchParams);
+                    newParams.set("conf", "power");
+                    setSearchParams(newParams, { replace: true });
+                  }}
+                >
+                  Power
+                </Button>
+                <Button
+                  variant={
+                    conferenceFilter === "midmajor" ? "default" : "outline"
+                  }
+                  size="sm"
+                  onClick={() => {
+                    const newParams = new URLSearchParams(searchParams);
+                    newParams.set("conf", "midmajor");
+                    setSearchParams(newParams, { replace: true });
+                  }}
+                >
+                  Mid-Major
+                </Button>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Conference</TableHead>
+                  <TableHead className="text-right">Picks</TableHead>
+                  <TableHead className="text-right">Wins</TableHead>
+                  <TableHead className="text-right">Losses</TableHead>
+                  <TableHead className="text-right">Win Rate</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {confStats.map((conf: ConferenceStats) => (
+                  <TableRow key={conf.conference_id}>
+                    <TableCell className="font-medium">
+                      <div className="flex items-center gap-2">
+                        {conf.conference_short_name}
+                        {conf.is_power_conference && (
+                          <Badge variant="outline" className="text-xs">
+                            ★
+                          </Badge>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {conf.total_picks}
+                    </TableCell>
+                    <TableCell className="text-right text-green-600">
+                      {conf.wins}
+                    </TableCell>
+                    <TableCell className="text-right text-red-600">
+                      {conf.losses}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Badge
+                        variant={
+                          Number(conf.win_rate) > 50 ? "default" : "secondary"
+                        }
+                      >
+                        {conf.win_rate || "0"}%
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+
+  return (
+    <div className="container mx-auto py-8 px-4 space-y-8">
+      <div>
+        <h1 className="text-4xl font-bold">Performance Metrics</h1>
+        <p className="text-muted-foreground mt-2">
+          Track your picking performance and statistics
+        </p>
+      </div>
+
+      <Tabs defaultValue="weekly" className="space-y-6">
+        <TabsList className="grid w-full max-w-md grid-cols-2 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
+          <TabsTrigger
+            value="weekly"
+            className="flex items-center gap-2 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-900 data-[state=active]:shadow-sm data-[state=active]:text-slate-900 dark:data-[state=active]:text-slate-100 transition-all"
+          >
+            <Calendar className="h-4 w-4" />
+            This Week
+          </TabsTrigger>
+          <TabsTrigger
+            value="season"
+            className="flex items-center gap-2 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-900 data-[state=active]:shadow-sm data-[state=active]:text-slate-900 dark:data-[state=active]:text-slate-100 transition-all"
+          >
+            <Trophy className="h-4 w-4" />
+            Season
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="season" className="space-y-6">
+          {renderMetricsContent(
+            overallStats,
+            conferenceStats,
+            allConferenceStats,
+            powerTotals,
+            midMajorTotals,
+            powerWinRate,
+            midMajorWinRate,
+            streak,
+            potdStats,
+            potdStreak,
+            false
+          )}
+
           {potdComparison.length > 0 && (
             <Card>
               <CardHeader>
@@ -464,251 +758,87 @@ export default function Metrics() {
               </CardContent>
             </Card>
           )}
-        </>
-      )}
 
-      {/* Power vs Mid-Major */}
-      {(powerTotals.picks > 0 || midMajorTotals.picks > 0) && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Power Conferences vs Mid-Majors</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="font-semibold">Power Conferences</span>
-                  <Badge variant="default">★</Badge>
-                </div>
-                <div className="space-y-1 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">
-                      Total Picks:
-                    </span>
-                    <span className="font-medium">{powerTotals.picks}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">
-                      Wins:
-                    </span>
-                    <span className="font-medium text-green-600">
-                      {powerTotals.wins}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">
-                      Losses:
-                    </span>
-                    <span className="font-medium text-red-600">
-                      {powerTotals.losses}
-                    </span>
-                  </div>
-                  <div className="flex justify-between font-semibold border-t pt-1">
-                    <span>Win Rate:</span>
-                    <span>{powerWinRate}%</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="font-semibold">Mid-Majors</span>
-                  <Badge variant="secondary">MM</Badge>
-                </div>
-                <div className="space-y-1 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">
-                      Total Picks:
-                    </span>
-                    <span className="font-medium">{midMajorTotals.picks}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">
-                      Wins:
-                    </span>
-                    <span className="font-medium text-green-600">
-                      {midMajorTotals.wins}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">
-                      Losses:
-                    </span>
-                    <span className="font-medium text-red-600">
-                      {midMajorTotals.losses}
-                    </span>
-                  </div>
-                  <div className="flex justify-between font-semibold border-t pt-1">
-                    <span>Win Rate:</span>
-                    <span>{midMajorWinRate}%</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Conference Breakdown */}
-      {allConferenceStats.length > 0 && (
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle>Performance by Conference</CardTitle>
-              <div className="flex gap-2">
-                <Button
-                  variant={conferenceFilter === "all" ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => {
-                    const newParams = new URLSearchParams(searchParams);
-                    newParams.delete("conf");
-                    setSearchParams(newParams, { replace: true });
-                  }}
-                >
-                  All
-                </Button>
-                <Button
-                  variant={conferenceFilter === "power" ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => {
-                    const newParams = new URLSearchParams(searchParams);
-                    newParams.set("conf", "power");
-                    setSearchParams(newParams, { replace: true });
-                  }}
-                >
-                  Power
-                </Button>
-                <Button
-                  variant={
-                    conferenceFilter === "midmajor" ? "default" : "outline"
-                  }
-                  size="sm"
-                  onClick={() => {
-                    const newParams = new URLSearchParams(searchParams);
-                    newParams.set("conf", "midmajor");
-                    setSearchParams(newParams, { replace: true });
-                  }}
-                >
-                  Mid-Major
-                </Button>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Conference</TableHead>
-                  <TableHead className="text-right">Picks</TableHead>
-                  <TableHead className="text-right">Wins</TableHead>
-                  <TableHead className="text-right">Losses</TableHead>
-                  <TableHead className="text-right">Win Rate</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {conferenceStats.map((conf: ConferenceStats) => (
-                  <TableRow key={conf.conference_id}>
-                    <TableCell className="font-medium">
-                      <div className="flex items-center gap-2">
-                        {conf.conference_short_name}
-                        {conf.is_power_conference && (
-                          <Badge variant="outline" className="text-xs">
-                            ★
-                          </Badge>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {conf.total_picks}
-                    </TableCell>
-                    <TableCell className="text-right text-green-600">
-                      {conf.wins}
-                    </TableCell>
-                    <TableCell className="text-right text-red-600">
-                      {conf.losses}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Badge
-                        variant={
-                          Number(conf.win_rate) > 50 ? "default" : "secondary"
-                        }
-                      >
-                        {conf.win_rate || "0"}%
-                      </Badge>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Head-to-Head Comparison */}
-      {comparisonStats.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Head-to-Head Comparison</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>User</TableHead>
-                  <TableHead className="text-right">Total Picks</TableHead>
-                  <TableHead className="text-right">Wins</TableHead>
-                  <TableHead className="text-right">Losses</TableHead>
-                  <TableHead className="text-right">Win Rate</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {/* Current user row */}
-                {overallStats && (
-                  <TableRow className="bg-blue-50 dark:bg-blue-900/20">
-                    <TableCell className="font-semibold">You</TableCell>
-                    <TableCell className="text-right">
-                      {overallStats.total_picks}
-                    </TableCell>
-                    <TableCell className="text-right text-green-600">
-                      {overallStats.wins}
-                    </TableCell>
-                    <TableCell className="text-right text-red-600">
-                      {overallStats.losses}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Badge variant="default">
-                        {overallStats.win_rate || "0"}%
-                      </Badge>
-                    </TableCell>
-                  </TableRow>
-                )}
-                {/* Other users */}
-                {comparisonStats
-                  .filter((comp: ComparisonStats) => comp.stats)
-                  .map((comp: ComparisonStats) => (
-                    <TableRow key={comp.user.id}>
-                      <TableCell>{comp.user.username}</TableCell>
-                      <TableCell className="text-right">
-                        {comp.stats.total_picks}
-                      </TableCell>
-                      <TableCell className="text-right text-green-600">
-                        {comp.stats.wins}
-                      </TableCell>
-                      <TableCell className="text-right text-red-600">
-                        {comp.stats.losses}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Badge variant="secondary">
-                          {comp.stats.win_rate || "0"}%
-                        </Badge>
-                      </TableCell>
+          {comparisonStats.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Head-to-Head Comparison</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>User</TableHead>
+                      <TableHead className="text-right">Total Picks</TableHead>
+                      <TableHead className="text-right">Wins</TableHead>
+                      <TableHead className="text-right">Losses</TableHead>
+                      <TableHead className="text-right">Win Rate</TableHead>
                     </TableRow>
-                  ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      )}
+                  </TableHeader>
+                  <TableBody>
+                    {overallStats && (
+                      <TableRow className="bg-blue-50 dark:bg-blue-900/20">
+                        <TableCell className="font-semibold">You</TableCell>
+                        <TableCell className="text-right">
+                          {overallStats.total_picks}
+                        </TableCell>
+                        <TableCell className="text-right text-green-600">
+                          {overallStats.wins}
+                        </TableCell>
+                        <TableCell className="text-right text-red-600">
+                          {overallStats.losses}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Badge variant="default">
+                            {overallStats.win_rate || "0"}%
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                    {comparisonStats
+                      .filter((comp: ComparisonStats) => comp.stats)
+                      .map((comp: ComparisonStats) => (
+                        <TableRow key={comp.user.id}>
+                          <TableCell>{comp.user.username}</TableCell>
+                          <TableCell className="text-right">
+                            {comp.stats.total_picks}
+                          </TableCell>
+                          <TableCell className="text-right text-green-600">
+                            {comp.stats.wins}
+                          </TableCell>
+                          <TableCell className="text-right text-red-600">
+                            {comp.stats.losses}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Badge variant="secondary">
+                              {comp.stats.win_rate || "0"}%
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
+        <TabsContent value="weekly" className="space-y-6">
+          {renderMetricsContent(
+            weeklyStats,
+            weeklyConferenceStats,
+            allWeeklyConferenceStats,
+            weeklyPowerTotals,
+            weeklyMidMajorTotals,
+            weeklyPowerWinRate,
+            weeklyMidMajorWinRate,
+            weeklyStreak,
+            weeklyPotdStats,
+            weeklyPotdStreak,
+            true
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

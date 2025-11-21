@@ -10,10 +10,13 @@ import { scrapeKenPomStats } from '../../inngest/functions/scrape-kenpom-stats'
 import { scrapeESPNStats } from '../../inngest/functions/scrape-espn-stats'
 import { scrapeESPNPlayers } from '../../inngest/functions/scrape-espn-players'
 import { analyzeMatchup } from '../../inngest/functions/analyze-matchup'
+import { dataPipelineOrchestrator, triggerDataPipeline } from '../../inngest/functions/data-pipeline-orchestrator'
+import { generateDailyPuzzle, backfillPuzzles } from '../../inngest/functions/generate-daily-puzzle'
 
 const handler = serve({
   client: inngest,
   functions: [
+    // Legacy individual scrapers (still functional)
     scrapeGames,
     updateScores,
     scrapeInjuries,
@@ -23,6 +26,14 @@ const handler = serve({
     scrapeESPNStats,
     scrapeESPNPlayers,
     analyzeMatchup,
+
+    // New orchestrated pipeline
+    dataPipelineOrchestrator,
+    triggerDataPipeline,
+
+    // Stat Chain puzzle generation
+    generateDailyPuzzle,
+    backfillPuzzles,
   ],
 })
 

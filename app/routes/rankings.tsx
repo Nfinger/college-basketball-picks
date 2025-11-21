@@ -1,4 +1,4 @@
-import { Link, useLoaderData } from "react-router";
+import { Link, Outlet, useLoaderData, useLocation } from "react-router";
 import { requireAuth } from "~/lib/auth.server";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
@@ -11,7 +11,8 @@ import {
   TableRow,
 } from "~/components/ui/table";
 import { Badge } from "~/components/ui/badge";
-import { Plus } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "~/components/ui/tabs";
+import { Plus, Trophy } from "lucide-react";
 import { data } from "react-router";
 import { format } from "date-fns";
 
@@ -125,6 +126,9 @@ export async function loader({ request }: { request: Request }) {
 
 export default function RankingsPage() {
   const { allRankings, profiles } = useLoaderData<typeof loader>();
+  const location = useLocation();
+
+  const currentTab = location.pathname === '/rankings/bracketology' ? 'bracketology' : 'rankings';
 
   // Group rankings by week and season
   const rankingsByWeek = allRankings.reduce((acc: any, ranking: UserRanking) => {
@@ -152,7 +156,7 @@ export default function RankingsPage() {
           <div>
             <h1 className="text-3xl font-bold mb-2">Community Rankings</h1>
             <p className="text-muted-foreground">
-              Compare rankings from college basketball fans
+              Compare rankings and bracket predictions from college basketball fans
             </p>
           </div>
           <Button asChild>
@@ -164,83 +168,109 @@ export default function RankingsPage() {
         </div>
       </div>
 
-      {allRankings.length === 0 ? (
-              <Card>
-                <CardContent className="flex flex-col items-center justify-center py-12">
-                  <p className="text-muted-foreground">
-                    No published rankings yet
-                  </p>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="space-y-8">
-                {sortedWeeks.map((weekData: any) => {
-                  const { week, season, rankings } = weekData;
+      <Tabs value={currentTab} className="w-full">
+        <TabsList>
+          <TabsTrigger value="rankings" asChild>
+            <Link to="/rankings">Weekly Rankings</Link>
+          </TabsTrigger>
+          <TabsTrigger value="bracketology" asChild>
+            <Link to="/rankings/bracketology">
+              <Trophy className="mr-2 h-4 w-4" />
+              Bracketology
+            </Link>
+          </TabsTrigger>
+        </TabsList>
 
-                  // Find the maximum rank across all rankings for this week
-                  const maxRank = Math.max(
-                    ...rankings.map((r: UserRanking) =>
-                      Math.max(...r.ranking_entries.map((e) => e.rank), 0)
-                    )
-                  );
+        <TabsContent value="rankings" className="mt-6">
+          {allRankings.length === 0 ? (
+            <Card>
+              <CardContent className="flex flex-col items-center justify-center py-12">
+                <p className="text-muted-foreground">
+                  No published rankings yet
+                </p>
+              </CardContent>
+            </Card>
+          ) : (
+            <RankingsContent sortedWeeks={sortedWeeks} profiles={profiles} />
+          )}
+        </TabsContent>
 
-                  return (
-                    <Card key={`${season}-W${week}`}>
-                      <CardHeader>
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <CardTitle>Week {week} Rankings</CardTitle>
-                            <div className="mt-1 text-sm text-muted-foreground">
-                              {season} Season • {rankings.length} {rankings.length === 1 ? 'ranking' : 'rankings'}
-                            </div>
-                          </div>
-                        </div>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="overflow-x-auto">
-                          <Table>
-                            <TableHeader>
-                              <TableRow>
-                                <TableHead className="w-16 sticky left-0 bg-background z-10">Rank</TableHead>
-                                {rankings.map((ranking: UserRanking) => {
-                                  const profile = profiles[ranking.user_id];
-                                  const userName = profile?.username || 'Anonymous';
-                                  return (
-                                    <TableHead key={ranking.id} className="min-w-[200px]">
-                                      <div className="flex flex-col">
-                                        <span className="font-semibold">{userName}</span>
-                                        <span className="text-xs text-muted-foreground">
-                                          {format(new Date(ranking.published_at!), "MMM d, h:mm a")}
-                                        </span>
-                                      </div>
-                                    </TableHead>
-                                  );
-                                })}
-                              </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                              {Array.from({ length: maxRank }, (_, i) => i + 1).map((rank) => (
-                                <TableRow key={rank}>
-                                  <TableCell className="font-bold sticky left-0 bg-background z-10">{rank}</TableCell>
-                                  {rankings.map((ranking: UserRanking) => {
-                                    const entry = ranking.ranking_entries.find((e) => e.rank === rank);
-                                    return (
-                                      <TableCell key={ranking.id} className="font-medium">
-                                        {entry ? entry.teams.name : <span className="text-muted-foreground">—</span>}
-                                      </TableCell>
-                                    );
-                                  })}
-                                </TableRow>
-                              ))}
-                            </TableBody>
-                          </Table>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
+        <TabsContent value="bracketology" className="mt-6">
+          <Outlet />
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
+
+function RankingsContent({ sortedWeeks, profiles }: { sortedWeeks: any[]; profiles: any }) {
+  return (
+    <div className="space-y-8">
+      {sortedWeeks.map((weekData: any) => {
+        const { week, season, rankings } = weekData;
+
+        // Find the maximum rank across all rankings for this week
+        const maxRank = Math.max(
+          ...rankings.map((r: UserRanking) =>
+            Math.max(...r.ranking_entries.map((e) => e.rank), 0)
+          )
+        );
+
+        return (
+          <Card key={`${season}-W${week}`}>
+            <CardHeader>
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <CardTitle>Week {week} Rankings</CardTitle>
+                  <div className="mt-1 text-sm text-muted-foreground">
+                    {season} Season • {rankings.length} {rankings.length === 1 ? 'ranking' : 'rankings'}
+                  </div>
+                </div>
               </div>
-            )}
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-16 sticky left-0 bg-background z-10">Rank</TableHead>
+                      {rankings.map((ranking: UserRanking) => {
+                        const profile = profiles[ranking.user_id];
+                        const userName = profile?.username || 'Anonymous';
+                        return (
+                          <TableHead key={ranking.id} className="min-w-[200px]">
+                            <div className="flex flex-col">
+                              <span className="font-semibold">{userName}</span>
+                              <span className="text-xs text-muted-foreground">
+                                {format(new Date(ranking.published_at!), "MMM d, h:mm a")}
+                              </span>
+                            </div>
+                          </TableHead>
+                        );
+                      })}
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {Array.from({ length: maxRank }, (_, i) => i + 1).map((rank) => (
+                      <TableRow key={rank}>
+                        <TableCell className="font-bold sticky left-0 bg-background z-10">{rank}</TableCell>
+                        {rankings.map((ranking: UserRanking) => {
+                          const entry = ranking.ranking_entries.find((e) => e.rank === rank);
+                          return (
+                            <TableCell key={ranking.id} className="font-medium">
+                              {entry ? entry.teams.name : <span className="text-muted-foreground">—</span>}
+                            </TableCell>
+                          );
+                        })}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })}
     </div>
   );
 }

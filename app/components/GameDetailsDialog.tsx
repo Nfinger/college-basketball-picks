@@ -139,15 +139,19 @@ export function GameDetailsDialog({
           </DialogTitle>
           <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm text-gray-600">
             <span>{formattedDate} at {formattedTime}</span>
-            <span className="hidden sm:inline">•</span>
-            <span className="flex items-center gap-1">
-              {game.conference.name}
-              {game.conference.is_power_conference && (
-                <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
-                  Power
+            {game.conference && (
+              <>
+                <span className="hidden sm:inline">•</span>
+                <span className="flex items-center gap-1">
+                  {game.conference.name}
+                  {game.conference.is_power_conference && (
+                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
+                      Power
+                    </span>
+                  )}
                 </span>
-              )}
-            </span>
+              </>
+            )}
           </div>
         </DialogHeader>
 

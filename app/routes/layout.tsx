@@ -32,10 +32,9 @@ export default function Layout() {
   const navigation = [
     { name: 'Games', href: '/' },
     { name: 'My Picks', href: '/mypicks' },
-    { name: 'Fantasy', href: '/fantasy' },
+    { name: 'Daily', href: '/daily' },
     { name: 'Rankings', href: '/rankings' },
-    { name: 'Injuries', href: '/injuries' },
-    { name: 'News', href: '/news' },
+    { name: 'Updates', href: '/updates' },
     { name: 'Metrics', href: '/metrics' },
   ]
 

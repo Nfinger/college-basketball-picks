@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { useFetcher } from "react-router";
+import { useFetcher, Link } from "react-router";
 import { Card, CardContent } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
 import { format, isPast } from "date-fns";
 import { cn } from "~/lib/utils";
-import { Loader2, Star, AlertCircle } from "lucide-react";
+import { Loader2, Star, AlertCircle, Trophy } from "lucide-react";
 import { OthersPicksPopover } from "~/components/OthersPicksPopover";
 import { GameDetailsDialogCompact } from "~/components/GameDetailsDialog";
 import { ShareButton } from "~/components/ShareButton";
@@ -49,11 +49,20 @@ interface MatchupAnalysisData {
   analyzed_at: string;
 }
 
+interface Tournament {
+  id: string;
+  name: string;
+  type: "mte" | "conference" | "ncaa";
+  status: "upcoming" | "in_progress" | "completed";
+}
+
 interface Game {
   id: string;
   game_date: string;
   home_team_id: string;
   away_team_id: string;
+  tournament_round: string | null;
+  tournament_metadata: { seed_home?: number; seed_away?: number; region?: string } | null;
   home_team: Team;
   away_team: Team;
   home_score: number | null;
@@ -62,6 +71,7 @@ interface Game {
   favorite_team_id: string | null;
   status: "scheduled" | "in_progress" | "completed" | "postponed" | "cancelled";
   conference: Conference;
+  tournament?: Tournament | null;
   picks?: Pick[];
   matchup_analysis?: MatchupAnalysisData | null;
   home_team_injury_count?: number;
@@ -164,6 +174,20 @@ export function GameCard({
     ? game.home_team
     : game.away_team;
 
+  // Get tournament type display name
+  const getTournamentTypeBadge = (type: Tournament["type"]) => {
+    switch (type) {
+      case "ncaa":
+        return "NCAA";
+      case "mte":
+        return "MTE";
+      case "conference":
+        return "CONF";
+      default:
+        return "TOURN";
+    }
+  };
+
   return (
     <Card className="hover:shadow-lg transition-all duration-300 bg-white dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col h-[200px] pb-0">
       <div className="relative">
@@ -264,7 +288,7 @@ export function GameCard({
             />
 
             <div className="text-center space-y-1 w-full">
-              {/* Line 1: Team Name + Ranking + Injury Icon */}
+              {/* Line 1: Team Name + Ranking + Seed + Injury Icon */}
               <div
                 className="flex items-center justify-center gap-1.5"
                 title={game.away_team.name}
@@ -272,6 +296,11 @@ export function GameCard({
                 {game.away_team_rank && (
                   <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
                     #{game.away_team_rank}
+                  </span>
+                )}
+                {game.tournament_metadata?.seed_away && (
+                  <span className="flex items-center justify-center w-5 h-5 rounded-full bg-blue-600 text-white text-xs font-bold">
+                    {game.tournament_metadata.seed_away}
                   </span>
                 )}
                 <span className="font-bold text-base text-slate-900 dark:text-slate-100 truncate max-w-[100px]">
@@ -386,7 +415,7 @@ export function GameCard({
             />
 
             <div className="text-center space-y-1 w-full">
-              {/* Line 1: Team Name + Ranking + Injury Icon */}
+              {/* Line 1: Team Name + Ranking + Seed + Injury Icon */}
               <div
                 className="flex items-center justify-center gap-1.5"
                 title={game.home_team.name}
@@ -394,6 +423,11 @@ export function GameCard({
                 {game.home_team_rank && (
                   <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
                     #{game.home_team_rank}
+                  </span>
+                )}
+                {game.tournament_metadata?.seed_home && (
+                  <span className="flex items-center justify-center w-5 h-5 rounded-full bg-blue-600 text-white text-xs font-bold">
+                    {game.tournament_metadata.seed_home}
                   </span>
                 )}
                 <span className="font-bold text-base text-slate-900 dark:text-slate-100 truncate max-w-[100px]">
@@ -441,14 +475,27 @@ export function GameCard({
       <div className="px-2 pb-2 pt-1 border-t border-slate-200 dark:border-slate-800 bg-gradient-to-br from-slate-50 to-white dark:from-slate-900 dark:to-slate-900/50">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5 flex-wrap">
-            <Badge
-              variant={
-                game.conference.is_power_conference ? "default" : "secondary"
-              }
-              className="font-semibold text-xs px-1.5 py-0.5"
-            >
-              {game.conference.short_name}
-            </Badge>
+            {game.conference && (
+              <Badge
+                variant={
+                  game.conference.is_power_conference ? "default" : "secondary"
+                }
+                className="font-semibold text-xs px-1.5 py-0.5"
+              >
+                {game.conference.short_name}
+              </Badge>
+            )}
+            {game.tournament && (
+              <Link to={`/tournaments/${game.tournament.id}`}>
+                <Badge className="bg-blue-600 hover:bg-blue-700 text-white border-0 text-xs px-1.5 py-0.5 cursor-pointer transition-colors flex items-center gap-1">
+                  <Trophy className="w-3 h-3" />
+                  {game.tournament.name}
+                  <span className="ml-0.5 opacity-75">
+                    ({getTournamentTypeBadge(game.tournament.type)})
+                  </span>
+                </Badge>
+              </Link>
+            )}
             {game.status === "in_progress" && (
               <Badge className="bg-red-600 text-white border-0 animate-pulse-soft shadow-lg shadow-red-600/50 text-xs px-1.5 py-0.5">
                 <span className="inline-block w-1 h-1 rounded-full bg-white mr-1 animate-pulse"></span>

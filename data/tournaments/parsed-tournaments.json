@@ -1,0 +1,3259 @@
+{
+  "tournaments": [
+    {
+      "name": "Shriners Hospitals Charleston Classic - Palmetto Bracket",
+      "dates": {
+        "start": "2025-11-21",
+        "end": "2025-11-23",
+        "raw": "Nov. 21 and 23"
+      },
+      "location": "Charleston, S.C.: 2 games",
+      "teams": [
+        {
+          "name": "Clemson",
+          "conference": "ACC",
+          "isTBD": false,
+          "bracket": "Palmetto Bracket"
+        },
+        {
+          "name": "Georgia",
+          "conference": "SEC",
+          "isTBD": false,
+          "bracket": "Palmetto Bracket"
+        },
+        {
+          "name": "West Virginia",
+          "conference": "Big 12",
+          "isTBD": false,
+          "bracket": "Palmetto Bracket"
+        },
+        {
+          "name": "Xavier",
+          "conference": "Big East",
+          "isTBD": false,
+          "bracket": "Palmetto Bracket"
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games (Palmetto Bracket)"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.215Z",
+        "section": 1,
+        "originalTournamentName": "Shriners Hospitals Charleston Classic",
+        "bracket": "Palmetto Bracket"
+      }
+    },
+    {
+      "name": "Shriners Hospitals Charleston Classic - Lowcountry Bracket",
+      "dates": {
+        "start": "2025-11-21",
+        "end": "2025-11-23",
+        "raw": "Nov. 21 and 23"
+      },
+      "location": "Charleston, S.C.: 2 games",
+      "teams": [
+        {
+          "name": "Boston College",
+          "conference": "ACC",
+          "isTBD": false,
+          "bracket": "Lowcountry Bracket"
+        },
+        {
+          "name": "Davidson",
+          "conference": "A 10",
+          "isTBD": false,
+          "bracket": "Lowcountry Bracket"
+        },
+        {
+          "name": "Tulane",
+          "conference": "American",
+          "isTBD": false,
+          "bracket": "Lowcountry Bracket"
+        },
+        {
+          "name": "Utah State",
+          "conference": "MW",
+          "isTBD": false,
+          "bracket": "Lowcountry Bracket"
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games (Lowcountry Bracket)"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.216Z",
+        "section": 1,
+        "originalTournamentName": "Shriners Hospitals Charleston Classic",
+        "bracket": "Lowcountry Bracket"
+      }
+    },
+    {
+      "name": "Baha Mar Bahamas Championship",
+      "dates": {
+        "start": "2025-11-20",
+        "end": "2025-11-21",
+        "raw": "Nov. 20 and 21"
+      },
+      "location": "Nassau, Bahamas: 2 games",
+      "teams": [
+        {
+          "name": "Memphis",
+          "conference": "American",
+          "isTBD": false
+        },
+        {
+          "name": "Purdue",
+          "conference": "Big Ten",
+          "isTBD": false
+        },
+        {
+          "name": "Texas Tech",
+          "conference": "Big 12",
+          "isTBD": false
+        },
+        {
+          "name": "Wake Forest",
+          "conference": "ACC",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.216Z",
+        "section": 2
+      }
+    },
+    {
+      "name": "Hall of Fame Classic",
+      "dates": {
+        "start": "2025-11-20",
+        "end": "2025-11-21",
+        "raw": "Nov. 20 and 21"
+      },
+      "location": "Kansas City",
+      "teams": [
+        {
+          "name": "Kansas State",
+          "conference": "Big 12",
+          "isTBD": false
+        },
+        {
+          "name": "Mississippi State",
+          "conference": "SEC",
+          "isTBD": false
+        },
+        {
+          "name": "Nebraska",
+          "conference": "Big Ten",
+          "isTBD": false
+        },
+        {
+          "name": "New Mexico",
+          "conference": "MW",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.216Z",
+        "section": 3
+      }
+    },
+    {
+      "name": "Boardwalk Battle",
+      "dates": {
+        "start": "2025-11-20",
+        "end": "2025-11-22",
+        "raw": "Nov. 20 and 22"
+      },
+      "location": "Daytona Beach, Fla.",
+      "teams": [
+        {
+          "name": "High Point",
+          "conference": "Big South",
+          "isTBD": false
+        },
+        {
+          "name": "Incarnate Word",
+          "conference": "Southland",
+          "isTBD": false
+        },
+        {
+          "name": "Southern Indiana",
+          "conference": "OVC",
+          "isTBD": false
+        },
+        {
+          "name": "UIC",
+          "conference": "MVC",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.216Z",
+        "section": 4
+      }
+    },
+    {
+      "name": "U.S. Virgin Islands Paradise Jam",
+      "dates": {
+        "start": "2025-11-21",
+        "end": "2025-11-24",
+        "raw": "Nov. 21–24"
+      },
+      "location": "Charlotte Amalie, V.I.",
+      "teams": [
+        {
+          "name": "Akron",
+          "conference": "MAC",
+          "isTBD": false
+        },
+        {
+          "name": "Charleston",
+          "conference": "CAA",
+          "isTBD": false
+        },
+        {
+          "name": "Evansville",
+          "conference": "MVC",
+          "isTBD": false
+        },
+        {
+          "name": "Green Bay",
+          "conference": "Horizon",
+          "isTBD": false
+        },
+        {
+          "name": "Iona",
+          "conference": "MAAC",
+          "isTBD": false
+        },
+        {
+          "name": "Oregon State",
+          "conference": "WCC",
+          "isTBD": false
+        },
+        {
+          "name": "UMass",
+          "conference": "MAC",
+          "isTBD": false
+        },
+        {
+          "name": "Yale",
+          "conference": "Ivy",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 3,
+        "description": "3 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.217Z",
+        "section": 5
+      }
+    },
+    {
+      "name": "Pensacola Bay Center MTE",
+      "dates": {
+        "start": "2025-11-22",
+        "end": "2025-11-23",
+        "raw": "Nov. 22 and 23"
+      },
+      "location": "Pensacola, Fla.",
+      "teams": [
+        {
+          "name": "North Florida",
+          "conference": "ASUN",
+          "isTBD": false
+        },
+        {
+          "name": "Prairie View A&M",
+          "conference": "SWAC",
+          "isTBD": false
+        },
+        {
+          "name": "Southern Miss.",
+          "conference": "Sun Belt",
+          "isTBD": false
+        },
+        {
+          "name": "UT Martin (OVC)",
+          "conference": "Rocco Miller",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.217Z",
+        "section": 6
+      }
+    },
+    {
+      "name": "Sunshine Slam - Beach Bracket",
+      "dates": {
+        "start": "2025-11-24",
+        "end": "2025-11-25",
+        "raw": "Nov. 24 and 25"
+      },
+      "location": "Daytona Beach, Fla.: 2 games",
+      "teams": [
+        {
+          "name": "Florida Atlantic",
+          "conference": "American",
+          "isTBD": false,
+          "bracket": "Beach Bracket"
+        },
+        {
+          "name": "George Mason",
+          "conference": "A 10",
+          "isTBD": false,
+          "bracket": "Beach Bracket"
+        },
+        {
+          "name": "Loyola Marymount",
+          "conference": "WCC",
+          "isTBD": false,
+          "bracket": "Beach Bracket"
+        },
+        {
+          "name": "Ohio",
+          "conference": "MAC",
+          "isTBD": false,
+          "bracket": "Beach Bracket"
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games (Beach Bracket)"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.217Z",
+        "section": 7,
+        "originalTournamentName": "Sunshine Slam",
+        "bracket": "Beach Bracket"
+      }
+    },
+    {
+      "name": "Sunshine Slam - Ocean Bracket",
+      "dates": {
+        "start": "2025-11-24",
+        "end": "2025-11-25",
+        "raw": "Nov. 24 and 25"
+      },
+      "location": "Daytona Beach, Fla.: 2 games",
+      "teams": [
+        {
+          "name": "Bethune-Cookman",
+          "conference": "SWAC",
+          "isTBD": false,
+          "bracket": "Ocean Bracket"
+        },
+        {
+          "name": "Jacksonville",
+          "conference": "ASUN",
+          "isTBD": false,
+          "bracket": "Ocean Bracket"
+        },
+        {
+          "name": "Pacific",
+          "conference": "WCC",
+          "isTBD": false,
+          "bracket": "Ocean Bracket"
+        },
+        {
+          "name": "Stony Brook",
+          "conference": "CAA",
+          "isTBD": false,
+          "bracket": "Ocean Bracket"
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games (Ocean Bracket)"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.217Z",
+        "section": 7,
+        "originalTournamentName": "Sunshine Slam",
+        "bracket": "Ocean Bracket"
+      }
+    },
+    {
+      "name": "Coconut Hoops Royal Palm Division",
+      "dates": {
+        "start": "2025-11-24",
+        "end": "2025-11-26",
+        "raw": "Nov. 24 and 26"
+      },
+      "location": "Fort Myers, Fla.",
+      "teams": [
+        {
+          "name": "Belmont",
+          "conference": "MVC",
+          "isTBD": false
+        },
+        {
+          "name": "Saint Francis",
+          "conference": "NEC",
+          "isTBD": false
+        },
+        {
+          "name": "Toledo",
+          "conference": "MAC",
+          "isTBD": false
+        },
+        {
+          "name": "Troy",
+          "conference": "Sun Belt",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.217Z",
+        "section": 8
+      }
+    },
+    {
+      "name": "Southwest Maui Invitational",
+      "dates": {
+        "start": "2025-11-24",
+        "end": "2025-11-26",
+        "raw": "Nov. 24–26"
+      },
+      "location": "Lahaina, Hawai‘i",
+      "teams": [
+        {
+          "name": "Arizona State",
+          "conference": "Big 12",
+          "isTBD": false
+        },
+        {
+          "name": "Boise State",
+          "conference": "MW",
+          "isTBD": false
+        },
+        {
+          "name": "Chaminade",
+          "conference": "DII",
+          "isTBD": false
+        },
+        {
+          "name": "NC State",
+          "conference": "ACC",
+          "isTBD": false
+        },
+        {
+          "name": "Seton Hall",
+          "conference": "Big East",
+          "isTBD": false
+        },
+        {
+          "name": "Texas",
+          "conference": "SEC",
+          "isTBD": false
+        },
+        {
+          "name": "USC",
+          "conference": "Big Ten",
+          "isTBD": false
+        },
+        {
+          "name": "Washington State",
+          "conference": "WCC",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 3,
+        "description": "3 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.217Z",
+        "section": 9
+      }
+    },
+    {
+      "name": "Players Era Festival",
+      "dates": {
+        "start": "2025-11-24",
+        "end": "2025-11-26",
+        "raw": "Nov. 24–26"
+      },
+      "location": "Las Vegas, 2 set games + 1 results-based game",
+      "teams": [
+        {
+          "name": "Alabama",
+          "conference": "SEC",
+          "isTBD": false
+        },
+        {
+          "name": "Auburn",
+          "conference": "SEC",
+          "isTBD": false
+        },
+        {
+          "name": "Baylor",
+          "conference": "Big 12",
+          "isTBD": false
+        },
+        {
+          "name": "Creighton",
+          "conference": "Big East",
+          "isTBD": false
+        },
+        {
+          "name": "Gonzaga",
+          "conference": "WCC",
+          "isTBD": false
+        },
+        {
+          "name": "Houston",
+          "conference": "Big 12",
+          "isTBD": false
+        },
+        {
+          "name": "Iowa State",
+          "conference": "Big 12",
+          "isTBD": false
+        },
+        {
+          "name": "Kansas",
+          "conference": "Big 12",
+          "isTBD": false
+        },
+        {
+          "name": "Maryland",
+          "conference": "Big Ten",
+          "isTBD": false
+        },
+        {
+          "name": "Michigan",
+          "conference": "Big Ten",
+          "isTBD": false
+        },
+        {
+          "name": "Notre Dame",
+          "conference": "ACC",
+          "isTBD": false
+        },
+        {
+          "name": "Oregon",
+          "conference": "Big Ten",
+          "isTBD": false
+        },
+        {
+          "name": "Rutgers",
+          "conference": "Big Ten",
+          "isTBD": false
+        },
+        {
+          "name": "San Diego State",
+          "conference": "MW",
+          "isTBD": false
+        },
+        {
+          "name": "St. John’s",
+          "conference": "Big East",
+          "isTBD": false
+        },
+        {
+          "name": "Syracuse",
+          "conference": "ACC",
+          "isTBD": false
+        },
+        {
+          "name": "Tennessee",
+          "conference": "SEC",
+          "isTBD": false
+        },
+        {
+          "name": "UNLV",
+          "conference": "MW",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.217Z",
+        "section": 10
+      }
+    },
+    {
+      "name": "Acrisure Series - Classic",
+      "dates": {
+        "start": "2025-11-25",
+        "end": "2025-11-26",
+        "raw": "Nov. 25 and 26"
+      },
+      "location": "Palm Desert, Calif.",
+      "teams": [
+        {
+          "name": "Grand Canyon",
+          "conference": "MW",
+          "isTBD": false
+        },
+        {
+          "name": "Iowa",
+          "conference": "Big Ten",
+          "isTBD": false
+        },
+        {
+          "name": "Mississippi",
+          "conference": "SEC",
+          "isTBD": false
+        },
+        {
+          "name": "Utah",
+          "conference": "Big 12",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.217Z",
+        "section": 11,
+        "originalTournamentName": "Acrisure Series",
+        "bracket": "Classic"
+      }
+    },
+    {
+      "name": "Acrisure Holiday Invitational",
+      "dates": {
+        "start": "2025-11-25",
+        "end": "2025-11-26",
+        "raw": "Nov. 25 and 26"
+      },
+      "location": "Palm Desert, Calif.",
+      "teams": [
+        {
+          "name": "Loyola Chicago",
+          "conference": "A 10",
+          "isTBD": false
+        },
+        {
+          "name": "Northern Iowa",
+          "conference": "MVC",
+          "isTBD": false
+        },
+        {
+          "name": "San José State",
+          "conference": "MW",
+          "isTBD": false
+        },
+        {
+          "name": "Tulsa",
+          "conference": "American",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.217Z",
+        "section": 12
+      }
+    },
+    {
+      "name": "Acrisure Holiday Classic",
+      "dates": {
+        "start": "2025-11-27",
+        "end": "2025-11-28",
+        "raw": "Nov. 27 and 28"
+      },
+      "location": "Palm Desert, Calif.",
+      "teams": [
+        {
+          "name": "Colorado",
+          "conference": "Big 12",
+          "isTBD": false
+        },
+        {
+          "name": "Nevada",
+          "conference": "MW",
+          "isTBD": false
+        },
+        {
+          "name": "San Francisco",
+          "conference": "WCC",
+          "isTBD": false
+        },
+        {
+          "name": "Washington",
+          "conference": "Big Ten",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.217Z",
+        "section": 13
+      }
+    },
+    {
+      "name": "Acrisure Invitational",
+      "dates": {
+        "start": "2025-11-27",
+        "end": "2025-11-28",
+        "raw": "Nov. 27 and 28"
+      },
+      "location": "Palm Desert, Calif.",
+      "teams": [
+        {
+          "name": "Minnesota",
+          "conference": "Big Ten",
+          "isTBD": false
+        },
+        {
+          "name": "Saint Louis",
+          "conference": "A 10",
+          "isTBD": false
+        },
+        {
+          "name": "Santa Clara",
+          "conference": "WCC",
+          "isTBD": false
+        },
+        {
+          "name": "Stanford",
+          "conference": "ACC",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.217Z",
+        "section": 14
+      }
+    },
+    {
+      "name": "Battle 4 Atlantis",
+      "dates": {
+        "start": "2025-11-26",
+        "end": "2025-11-28",
+        "raw": "Nov. 26–28"
+      },
+      "location": "Paradise Island, Bahamas",
+      "teams": [
+        {
+          "name": "Colorado State",
+          "conference": "MW",
+          "isTBD": false
+        },
+        {
+          "name": "Saint Mary’s",
+          "conference": "WCC",
+          "isTBD": false
+        },
+        {
+          "name": "South Florida",
+          "conference": "American",
+          "isTBD": false
+        },
+        {
+          "name": "Vanderbilt",
+          "conference": "SEC",
+          "isTBD": false
+        },
+        {
+          "name": "VCU",
+          "conference": "A 10",
+          "isTBD": false
+        },
+        {
+          "name": "Virginia Tech",
+          "conference": "ACC",
+          "isTBD": false
+        },
+        {
+          "name": "Western Kentucky",
+          "conference": "CUSA",
+          "isTBD": false
+        },
+        {
+          "name": "Wichita State",
+          "conference": "American",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 3,
+        "description": "3 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.217Z",
+        "section": 15
+      }
+    },
+    {
+      "name": "ESPN Events Invitational - Adventure Bracket",
+      "dates": {
+        "start": "2025-11-24",
+        "end": "2025-11-26",
+        "raw": "Nov. 24–26"
+      },
+      "location": "Lake Buena Vista, Fla.",
+      "teams": [
+        {
+          "name": "Bradley",
+          "conference": "MVC",
+          "isTBD": false
+        },
+        {
+          "name": "Liberty",
+          "conference": "CUSA",
+          "isTBD": false
+        },
+        {
+          "name": "Princeton",
+          "conference": "Ivy",
+          "isTBD": false
+        },
+        {
+          "name": "Rhode Island",
+          "conference": "A 10",
+          "isTBD": false
+        },
+        {
+          "name": "Temple",
+          "conference": "American",
+          "isTBD": false
+        },
+        {
+          "name": "Towson",
+          "conference": "CAA",
+          "isTBD": false
+        },
+        {
+          "name": "UC San Diego",
+          "conference": "Big West",
+          "isTBD": false
+        },
+        {
+          "name": "and Vermont",
+          "conference": "AE",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 3,
+        "description": "3 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.217Z",
+        "section": 16,
+        "originalTournamentName": "ESPN Events Invitational",
+        "bracket": "Adventure Bracket"
+      }
+    },
+    {
+      "name": "ESPN Events Invitational - Imagination Bracket",
+      "dates": {
+        "start": "2025-11-27",
+        "end": "2025-11-28",
+        "raw": "Nov. 27 and 28"
+      },
+      "location": "Lake Buena Vista, Fla.",
+      "teams": [
+        {
+          "name": "Charlotte",
+          "conference": "American",
+          "isTBD": false
+        },
+        {
+          "name": "Furman",
+          "conference": "SoCon",
+          "isTBD": false
+        },
+        {
+          "name": "Illinois State",
+          "conference": "MVC",
+          "isTBD": false
+        },
+        {
+          "name": "Richmond",
+          "conference": "A 10",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.217Z",
+        "section": 17,
+        "originalTournamentName": "ESPN Events Invitational",
+        "bracket": "Imagination Bracket"
+      }
+    },
+    {
+      "name": "ESPN Events Invitational - Magic Bracket",
+      "dates": {
+        "start": "2025-11-27",
+        "end": "2025-11-28",
+        "raw": "Nov. 27 and 28"
+      },
+      "location": "Lake Buena Vista, Fla.",
+      "teams": [
+        {
+          "name": "BYU",
+          "conference": "Big 12",
+          "isTBD": false
+        },
+        {
+          "name": "Dayton",
+          "conference": "A 10",
+          "isTBD": false
+        },
+        {
+          "name": "Georgetown",
+          "conference": "Big East",
+          "isTBD": false
+        },
+        {
+          "name": "Miami",
+          "conference": "ACC",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.217Z",
+        "section": 18,
+        "originalTournamentName": "ESPN Events Invitational",
+        "bracket": "Magic Bracket"
+      }
+    },
+    {
+      "name": "Rady Children’s Invitational",
+      "dates": {
+        "start": "2025-11-27",
+        "end": "2025-11-28",
+        "raw": "Nov. 27 and 28"
+      },
+      "location": "San Diego",
+      "teams": [
+        {
+          "name": "Florida",
+          "conference": "SEC",
+          "isTBD": false
+        },
+        {
+          "name": "Providence",
+          "conference": "Big East",
+          "isTBD": false
+        },
+        {
+          "name": "TCU",
+          "conference": "Big 12",
+          "isTBD": false
+        },
+        {
+          "name": "Wisconsin",
+          "conference": "Big Ten",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.217Z",
+        "section": 19
+      }
+    },
+    {
+      "name": "Resorts World Las Vegas Classic",
+      "dates": {
+        "start": "2025-11-27",
+        "end": "2025-11-28",
+        "raw": "Nov. 27 and 28"
+      },
+      "location": "Las Vegas",
+      "teams": [
+        {
+          "name": "Lehigh",
+          "conference": "Patriot",
+          "isTBD": false
+        },
+        {
+          "name": "Seattle U",
+          "conference": "WCC",
+          "isTBD": false
+        },
+        {
+          "name": "Texas State",
+          "conference": "Sun Belt",
+          "isTBD": false
+        },
+        {
+          "name": "UC Santa Barbara",
+          "conference": "Big West",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.217Z",
+        "section": 20
+      }
+    },
+    {
+      "name": "Emerald Coast Classic",
+      "dates": {
+        "start": "2025-11-28",
+        "end": "2025-11-29",
+        "raw": "Nov. 28 and 29"
+      },
+      "location": "Niceville, Fla.",
+      "teams": [
+        {
+          "name": "DePaul",
+          "conference": "Big East",
+          "isTBD": false
+        },
+        {
+          "name": "Drake",
+          "conference": "MVC",
+          "isTBD": false
+        },
+        {
+          "name": "Georgia Tech",
+          "conference": "ACC",
+          "isTBD": false
+        },
+        {
+          "name": "LSU",
+          "conference": "SEC",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.217Z",
+        "section": 21
+      }
+    },
+    {
+      "name": "SMU MTE",
+      "dates": {
+        "start": "2025-11-03",
+        "end": "2025-11-08",
+        "raw": "Nov. 3–8"
+      },
+      "location": "campus sites",
+      "teams": [
+        {
+          "name": "SMU",
+          "conference": "ACC",
+          "isTBD": false
+        },
+        {
+          "name": "Tarleton",
+          "conference": "WAC",
+          "isTBD": false
+        },
+        {
+          "name": "Texas A&M-Corpus Christi",
+          "conference": "Southland",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.218Z",
+        "section": 22
+      }
+    },
+    {
+      "name": "UConn MTE",
+      "dates": {
+        "start": "2025-11-03",
+        "end": "2025-11-10",
+        "raw": "Nov. 3–10"
+      },
+      "location": "campus sites",
+      "teams": [
+        {
+          "name": "Columbia",
+          "conference": "Ivy",
+          "isTBD": false
+        },
+        {
+          "name": "New Haven",
+          "conference": "NEC",
+          "isTBD": false
+        },
+        {
+          "name": "UConn",
+          "conference": "Big East",
+          "isTBD": false
+        },
+        {
+          "name": "UMass Lowell",
+          "conference": "AE",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 3,
+        "description": "3 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.218Z",
+        "section": 23
+      }
+    },
+    {
+      "name": "Kentucky MTE",
+      "dates": {
+        "start": "2025-11-04",
+        "end": "2025-11-14",
+        "raw": "Nov. 4–14"
+      },
+      "location": "campus sites",
+      "teams": [
+        {
+          "name": "Eastern Illinois",
+          "conference": "OVC",
+          "isTBD": false
+        },
+        {
+          "name": "Kentucky",
+          "conference": "SEC",
+          "isTBD": false
+        },
+        {
+          "name": "Nicholls",
+          "conference": "Southland",
+          "isTBD": false
+        },
+        {
+          "name": "Valparaiso",
+          "conference": "MVC",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 3,
+        "description": "3 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.218Z",
+        "section": 24
+      }
+    },
+    {
+      "name": "Field of 68 Tip-Off",
+      "dates": {
+        "start": "2025-11-07",
+        "end": "2025-11-09",
+        "raw": "Nov. 7–9"
+      },
+      "location": "Lynchburg, Va.",
+      "teams": [
+        {
+          "name": "(Non-Exempt)Charleston",
+          "conference": "CAA",
+          "isTBD": false
+        },
+        {
+          "name": "Florida Atlantic",
+          "conference": "American",
+          "isTBD": false
+        },
+        {
+          "name": "Liberty",
+          "conference": "CUSA",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.218Z",
+        "section": 25
+      }
+    },
+    {
+      "name": "Villanova MTE",
+      "dates": {
+        "start": "2025-11-08",
+        "end": "2025-11-15",
+        "raw": "Nov. 8–15"
+      },
+      "location": "campus sites",
+      "teams": [
+        {
+          "name": "Duquesne",
+          "conference": "A 10",
+          "isTBD": false
+        },
+        {
+          "name": "; Queens",
+          "conference": "ASUN",
+          "isTBD": false
+        },
+        {
+          "name": "; Sacred Heart (MAAC); Villanova",
+          "conference": "Big East",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 3,
+        "description": "3 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.218Z",
+        "section": 26
+      }
+    },
+    {
+      "name": "Gotham Classic",
+      "dates": {
+        "start": "2025-11-09",
+        "end": "2025-11-12",
+        "raw": "Nov. 10 and 12 and Nov. 9"
+      },
+      "location": "Chicago",
+      "teams": [
+        {
+          "name": "Indiana",
+          "conference": "Big Ten",
+          "isTBD": false
+        },
+        {
+          "name": "Little Rock",
+          "conference": "OVC",
+          "isTBD": false
+        },
+        {
+          "name": "Marquette",
+          "conference": "Big East",
+          "isTBD": false
+        },
+        {
+          "name": "Milwaukee",
+          "conference": "Horizon",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.218Z",
+        "section": 27
+      }
+    },
+    {
+      "name": "Piedmont Triangular",
+      "dates": {
+        "start": "2025-11-11",
+        "end": "2025-11-22",
+        "raw": "Nov. 11–22"
+      },
+      "location": "campus sites",
+      "teams": [
+        {
+          "name": "Lipscomb",
+          "conference": "ASUN",
+          "isTBD": false
+        },
+        {
+          "name": "UNC Asheville",
+          "conference": "Big South",
+          "isTBD": false
+        },
+        {
+          "name": "Western Carolina",
+          "conference": "SoCon",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.218Z",
+        "section": 28
+      }
+    },
+    {
+      "name": "Rainbow Classic",
+      "dates": {
+        "start": "2025-11-12",
+        "end": "2025-11-15",
+        "raw": "Nov. 12–15"
+      },
+      "location": "Honolulu",
+      "teams": [
+        {
+          "name": "Hawai’i",
+          "conference": "Big West",
+          "isTBD": false
+        },
+        {
+          "name": "Manhattan",
+          "conference": "MAAC",
+          "isTBD": false
+        },
+        {
+          "name": "Mississippi Valley State",
+          "conference": "SWAC",
+          "isTBD": false
+        },
+        {
+          "name": "Utah Tech",
+          "conference": "WAC",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 3,
+        "description": "3 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.218Z",
+        "section": 29
+      }
+    },
+    {
+      "name": "Showdown in St. Pete",
+      "dates": {
+        "start": "2025-11-13",
+        "end": "2025-11-15",
+        "raw": "Nov. 13–15"
+      },
+      "location": "St. Petersburg",
+      "teams": [
+        {
+          "name": "Central Michigan",
+          "conference": "MAC",
+          "isTBD": false
+        },
+        {
+          "name": "Coppin State",
+          "conference": "MEAC",
+          "isTBD": false
+        },
+        {
+          "name": "South Alabama",
+          "conference": "Sun Belt",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.218Z",
+        "section": 30
+      }
+    },
+    {
+      "name": "Bulldog Bash",
+      "dates": {
+        "start": "2025-11-13",
+        "end": "2025-11-15",
+        "raw": "Nov. 13–15"
+      },
+      "location": "Huntsville, Ala.: 2 games",
+      "teams": [
+        {
+          "name": "Alabama A&M",
+          "conference": "SWAC",
+          "isTBD": false
+        },
+        {
+          "name": "Charleston Southern",
+          "conference": "Big South",
+          "isTBD": false
+        },
+        {
+          "name": "Lindenwood",
+          "conference": "OVC",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.218Z",
+        "section": 31
+      }
+    },
+    {
+      "name": "Brown MTE",
+      "dates": {
+        "start": "2025-11-14",
+        "end": "2025-11-16",
+        "raw": "Nov. 14–16"
+      },
+      "location": "Providence, R.I.: 2 games",
+      "teams": [
+        {
+          "name": "Brown",
+          "conference": "Ivy",
+          "isTBD": false
+        },
+        {
+          "name": "Hampton",
+          "conference": "CAA",
+          "isTBD": false
+        },
+        {
+          "name": "Holy Cross",
+          "conference": "Patriot",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.218Z",
+        "section": 32
+      }
+    },
+    {
+      "name": "Greenbrier Tip-Off River Division",
+      "dates": {
+        "start": "2025-11-15",
+        "end": "2025-11-16",
+        "raw": "Nov. 15 and 16"
+      },
+      "location": "White Sulphur Springs, W.V.: 2 games",
+      "teams": [
+        {
+          "name": "Cleveland State (Horizon) and Wright State (Horizon) vs. Kent State (MAC) and Radford",
+          "conference": "Big South",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.218Z",
+        "section": 33
+      }
+    },
+    {
+      "name": "Heritage Bank Arena MTE",
+      "dates": {
+        "start": "2025-11-15",
+        "end": "2025-11-26",
+        "raw": "Nov. 15–26 and Nov. 21"
+      },
+      "location": "Cincinnati",
+      "teams": [
+        {
+          "name": "Cincinnati",
+          "conference": "Big 12",
+          "isTBD": false
+        },
+        {
+          "name": "Eastern Michigan",
+          "conference": "MAC",
+          "isTBD": false
+        },
+        {
+          "name": "Louisville",
+          "conference": "ACC",
+          "isTBD": false
+        },
+        {
+          "name": "NJIT",
+          "conference": "AE",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 3,
+        "description": "3 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.218Z",
+        "section": 34
+      }
+    },
+    {
+      "name": "Fairfield MTE",
+      "dates": {
+        "start": "2025-11-15",
+        "end": "2025-11-17",
+        "raw": "Nov. 15–17"
+      },
+      "location": "Fairfield, Conn.",
+      "teams": [
+        {
+          "name": "Fairfield",
+          "conference": "MAAC",
+          "isTBD": false
+        },
+        {
+          "name": "Loyola Maryland",
+          "conference": "Patriot",
+          "isTBD": false
+        },
+        {
+          "name": "Stonehill",
+          "conference": "NEC",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.218Z",
+        "section": 35
+      }
+    },
+    {
+      "name": "Empire Classic",
+      "dates": {
+        "start": "2025-11-16",
+        "end": "2025-11-26",
+        "raw": "Nov. 16–21 and Nov. 26"
+      },
+      "location": "San Francisco",
+      "teams": [
+        {
+          "name": "California",
+          "conference": "ACC",
+          "isTBD": false
+        },
+        {
+          "name": "Presbyterian",
+          "conference": "Big South",
+          "isTBD": false
+        },
+        {
+          "name": "Sacramento State",
+          "conference": "Big Sky",
+          "isTBD": false
+        },
+        {
+          "name": "UCLA",
+          "conference": "Big Ten",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 3,
+        "description": "3 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.218Z",
+        "section": 36
+      }
+    },
+    {
+      "name": "Southern Triangular",
+      "dates": {
+        "start": "2025-11-17",
+        "end": "2025-11-21",
+        "raw": "Nov. 17–21"
+      },
+      "location": "campus sites",
+      "teams": [
+        {
+          "name": "Tennessee Tech",
+          "conference": "OVC",
+          "isTBD": false
+        },
+        {
+          "name": "USC Upstate",
+          "conference": "Big South",
+          "isTBD": false
+        },
+        {
+          "name": "West Georgia",
+          "conference": "ASUN",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.218Z",
+        "section": 37
+      }
+    },
+    {
+      "name": "Missouri MTE",
+      "dates": {
+        "start": "2025-11-17",
+        "end": "2025-11-25",
+        "raw": "Nov. 17–25"
+      },
+      "location": "campus sites",
+      "teams": [
+        {
+          "name": "Missouri",
+          "conference": "SEC",
+          "isTBD": false
+        },
+        {
+          "name": "South Carolina State",
+          "conference": "MEAC",
+          "isTBD": false
+        },
+        {
+          "name": "South Dakota",
+          "conference": "Summit",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.218Z",
+        "section": 38
+      }
+    },
+    {
+      "name": "Arkansas MTE",
+      "dates": {
+        "start": "2025-11-18",
+        "end": "2025-11-23",
+        "raw": "Nov. 18–23"
+      },
+      "location": "campus sites",
+      "teams": [
+        {
+          "name": "Arkansas",
+          "conference": "SEC",
+          "isTBD": false
+        },
+        {
+          "name": "Jackson State",
+          "conference": "SWAC",
+          "isTBD": false
+        },
+        {
+          "name": "Winthrop",
+          "conference": "Big South",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.218Z",
+        "section": 39
+      }
+    },
+    {
+      "name": "Long Beach State MTE",
+      "dates": {
+        "start": "2025-11-18",
+        "end": "2025-11-20",
+        "raw": "Nov. 18–20"
+      },
+      "location": "Long Beach, Calif.",
+      "teams": [
+        {
+          "name": "Long Beach State",
+          "conference": "Big West",
+          "isTBD": false
+        },
+        {
+          "name": "Montana State",
+          "conference": "Big Sky",
+          "isTBD": false
+        },
+        {
+          "name": "Nobel (Calif.)",
+          "conference": "non-D1",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.218Z",
+        "section": 40
+      }
+    },
+    {
+      "name": "Naismith Basketball Hall of Fame Showcase",
+      "dates": {
+        "start": "2025-11-19",
+        "end": "2025-11-25",
+        "raw": "Nov. 19 and 25"
+      },
+      "location": "University Park, Pa. and Nov. 22: Uncasville, Conn.",
+      "teams": [
+        {
+          "name": "Boston University (Patriot) and Harvard (Ivy)",
+          "conference": "pair will meet at the Mohegan Sun",
+          "isTBD": false
+        },
+        {
+          "name": "Penn State",
+          "conference": "Big Ten",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.218Z",
+        "section": 41
+      }
+    },
+    {
+      "name": "Cancún Challenge",
+      "dates": {
+        "start": "2025-11-19",
+        "end": "2025-11-21",
+        "raw": "Nov. 19 and 21"
+      },
+      "location": "campus sites and Nov. 25 and 26: Cancún, Mexico",
+      "teams": [
+        {
+          "name": "Georgia State",
+          "conference": "Sun Belt",
+          "isTBD": false
+        },
+        {
+          "name": "New Mexico State",
+          "conference": "CUSA",
+          "isTBD": false
+        },
+        {
+          "name": "Samford",
+          "conference": "SoCon",
+          "isTBD": false
+        },
+        {
+          "name": "South Dakota State",
+          "conference": "Summit",
+          "isTBD": false
+        },
+        {
+          "name": "UC Irvine",
+          "conference": "Big West",
+          "isTBD": false
+        },
+        {
+          "name": "Utah Valley",
+          "conference": "WAC",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 3,
+        "description": "3 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.218Z",
+        "section": 42
+      }
+    },
+    {
+      "name": "Weber State Tournament",
+      "dates": {
+        "start": "2025-11-19",
+        "end": "2025-11-21",
+        "raw": "Nov. 19–21"
+      },
+      "location": "Ogden, Utah",
+      "teams": [
+        {
+          "name": "Campbell",
+          "conference": "CAA",
+          "isTBD": false
+        },
+        {
+          "name": "UT Arlington",
+          "conference": "WAC",
+          "isTBD": false
+        },
+        {
+          "name": "Weber State",
+          "conference": "Big Sky",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.218Z",
+        "section": 43
+      }
+    },
+    {
+      "name": "Legends Classic",
+      "dates": {
+        "start": "2025-11-23",
+        "end": "2025-11-25",
+        "raw": "Nov. 23 and 25"
+      },
+      "location": "campus sites and Nov. 20: Daytona Beach, Fla.",
+      "teams": [
+        {
+          "name": "Pittsburgh",
+          "conference": "ACC",
+          "isTBD": false
+        },
+        {
+          "name": "Quinnipiac",
+          "conference": "MAAC",
+          "isTBD": false
+        },
+        {
+          "name": "UCF",
+          "conference": "Big 12",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.218Z",
+        "section": 44
+      }
+    },
+    {
+      "name": "Ohio State MTE",
+      "dates": {
+        "start": "2025-11-20",
+        "end": "2025-11-25",
+        "raw": "Nov. 20–25"
+      },
+      "location": "campus sites",
+      "teams": [
+        {
+          "name": "Mount St. Mary’s",
+          "conference": "MAAC",
+          "isTBD": false
+        },
+        {
+          "name": "Ohio State",
+          "conference": "Big Ten",
+          "isTBD": false
+        },
+        {
+          "name": "Western Michigan",
+          "conference": "MAC",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.218Z",
+        "section": 45
+      }
+    },
+    {
+      "name": "Marshall/Miami - Marshall/Miami",
+      "dates": {
+        "start": "2025-11-20",
+        "end": "2025-11-26",
+        "raw": "Ohio) MTE (Nov. 20–26: campus sites"
+      },
+      "location": "Ohio",
+      "teams": [
+        {
+          "name": "Arkansas-Pine Bluff (SWAC) and Mercyhurst",
+          "conference": "NEC",
+          "isTBD": false
+        },
+        {
+          "name": "at Marshall (Sun Belt) and Miami (Ohio)",
+          "conference": "MAC",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.218Z",
+        "section": 46,
+        "originalTournamentName": "Marshall/Miami",
+        "bracket": "Marshall/Miami"
+      }
+    },
+    {
+      "name": "North Texas MTE",
+      "dates": {
+        "start": "2025-11-20",
+        "end": "2025-11-26",
+        "raw": "Nov. 20–26"
+      },
+      "location": "campus sites",
+      "teams": [
+        {
+          "name": "Central Arkansas",
+          "conference": "ASUN",
+          "isTBD": false
+        },
+        {
+          "name": "Eastern Washington",
+          "conference": "Big Sky",
+          "isTBD": false
+        },
+        {
+          "name": "North Texas",
+          "conference": "American",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.218Z",
+        "section": 47
+      }
+    },
+    {
+      "name": "Greenbrier Tip-Off Mountain Division",
+      "dates": {
+        "start": "2025-11-21",
+        "end": "2025-11-23",
+        "raw": "Nov. 21 and 23"
+      },
+      "location": "White Sulphur Springs, W.V.: 2 games",
+      "teams": [
+        {
+          "name": "Butler (Big East) and Northwestern (Big Ten) vs. South Carolina (SEC) and Virginia",
+          "conference": "ACC",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.218Z",
+        "section": 48
+      }
+    },
+    {
+      "name": "Brotherhood Run MTE",
+      "dates": {
+        "start": "2025-11-21",
+        "end": "2025-11-23",
+        "raw": "Nov. 21 and 23"
+      },
+      "location": "Durham, N.C.",
+      "teams": [
+        {
+          "name": "Duke",
+          "conference": "ACC",
+          "isTBD": false
+        },
+        {
+          "name": "Howard",
+          "conference": "MEAC",
+          "isTBD": false
+        },
+        {
+          "name": "Niagara",
+          "conference": "MAAC",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.218Z",
+        "section": 49
+      }
+    },
+    {
+      "name": "ETSU MTE",
+      "dates": {
+        "start": "2025-11-21",
+        "end": "2025-11-23",
+        "raw": "Nov. 21–23"
+      },
+      "location": "Johnson City, Tenn.",
+      "teams": [
+        {
+          "name": "ETSU",
+          "conference": "SoCon",
+          "isTBD": false
+        },
+        {
+          "name": "Morehead State",
+          "conference": "OVC",
+          "isTBD": false
+        },
+        {
+          "name": "ULM",
+          "conference": "Sun Belt",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.218Z",
+        "section": 50
+      }
+    },
+    {
+      "name": "Air Force Classic",
+      "dates": {
+        "start": "2025-11-21",
+        "end": "2025-11-23",
+        "raw": "Nov. 21–23"
+      },
+      "location": "Colorado Springs",
+      "teams": [
+        {
+          "name": "Air Force",
+          "conference": "MW",
+          "isTBD": false
+        },
+        {
+          "name": "and IU Indy (Horizon) vs. Alabama State (SWAC) and SIU Edwardsville",
+          "conference": "OVC",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.218Z",
+        "section": 51
+      }
+    },
+    {
+      "name": "Western Illinois MTE",
+      "dates": {
+        "start": "2025-11-21",
+        "end": "2025-11-23",
+        "raw": "Nov. 21–23"
+      },
+      "location": "Macomb, Ill.",
+      "teams": [
+        {
+          "name": "Coastal Carolina",
+          "conference": "Sun Belt",
+          "isTBD": false
+        },
+        {
+          "name": "North Dakota",
+          "conference": "Summit",
+          "isTBD": false
+        },
+        {
+          "name": "Western Illinois",
+          "conference": "OVC",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.218Z",
+        "section": 52
+      }
+    },
+    {
+      "name": "Portland Invitational",
+      "dates": {
+        "start": "2025-11-21",
+        "end": "2025-11-23",
+        "raw": "Nov. 21–23"
+      },
+      "location": "Portland, Ore.",
+      "teams": [
+        {
+          "name": "Cal State Fullerton",
+          "conference": "Big West",
+          "isTBD": false
+        },
+        {
+          "name": "Northern Colorado",
+          "conference": "Big Sky",
+          "isTBD": false
+        },
+        {
+          "name": "Portland",
+          "conference": "WCC",
+          "isTBD": false
+        },
+        {
+          "name": "St. Thomas",
+          "conference": "Summit",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 3,
+        "description": "3 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.218Z",
+        "section": 53
+      }
+    },
+    {
+      "name": "Mid-Atlantic Triangular",
+      "dates": {
+        "start": "2025-11-21",
+        "end": "2025-11-25",
+        "raw": "Nov. 21–25"
+      },
+      "location": "campus sites",
+      "teams": [
+        {
+          "name": "Drexel",
+          "conference": "CAA",
+          "isTBD": false
+        },
+        {
+          "name": "Morgan State",
+          "conference": "MEAC",
+          "isTBD": false
+        },
+        {
+          "name": "Old Dominion",
+          "conference": "Sun Belt",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.218Z",
+        "section": 54
+      }
+    },
+    {
+      "name": "Queen City Classic",
+      "dates": {
+        "start": "2025-11-21",
+        "end": "2025-11-23",
+        "raw": "Nov. 21–23"
+      },
+      "location": "Buffalo, N.Y.",
+      "teams": [
+        {
+          "name": "Binghamton",
+          "conference": "AE",
+          "isTBD": false
+        },
+        {
+          "name": "Canisius",
+          "conference": "MAAC",
+          "isTBD": false
+        },
+        {
+          "name": "Maryland-Eastern Shore",
+          "conference": "MEAC",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.218Z",
+        "section": 55
+      }
+    },
+    {
+      "name": "Illinois/Missouri State MTE",
+      "dates": {
+        "start": "2025-11-22",
+        "end": "2025-11-24",
+        "raw": "Nov. 22 and 24"
+      },
+      "location": "campus sites",
+      "teams": [
+        {
+          "name": "LIU (NEC) and UTRGV (Southland) vs. Illinois (Big Ten) and Missouri State",
+          "conference": "CUSA",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.218Z",
+        "section": 56
+      }
+    },
+    {
+      "name": "Tampa MTE",
+      "dates": {
+        "start": "2025-11-22",
+        "end": "2025-11-28",
+        "raw": "Nov. 22 and 25 and Nov. 28"
+      },
+      "location": "Tampa",
+      "teams": [
+        {
+          "name": "Cal State Bakersfield",
+          "conference": "Big West",
+          "isTBD": false
+        },
+        {
+          "name": "Florida State",
+          "conference": "ACC",
+          "isTBD": false
+        },
+        {
+          "name": "Mississippi Valley State",
+          "conference": "SWAC",
+          "isTBD": false
+        },
+        {
+          "name": "Texas A&M",
+          "conference": "SEC",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 3,
+        "description": "3 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.218Z",
+        "section": 57
+      }
+    },
+    {
+      "name": "Cayman Islands Classic",
+      "dates": {
+        "start": "2025-11-23",
+        "end": "2025-11-25",
+        "raw": "Nov. 23–25"
+      },
+      "location": "George Town, Cayman Islands: 3 games",
+      "teams": [
+        {
+          "name": "George Washington",
+          "conference": "A 10",
+          "isTBD": false
+        },
+        {
+          "name": "McNeese",
+          "conference": "Southland",
+          "isTBD": false
+        },
+        {
+          "name": "Middle Tennessee",
+          "conference": "CUSA",
+          "isTBD": false
+        },
+        {
+          "name": "Murray State",
+          "conference": "MVC",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.218Z",
+        "section": 58
+      }
+    },
+    {
+      "name": "Jacksonville Classic",
+      "dates": {
+        "start": "2025-11-23",
+        "end": "2025-11-25",
+        "raw": "Nov. 23–25"
+      },
+      "location": "Jacksonville, Fla.",
+      "teams": [
+        {
+          "name": "Abilene Christian",
+          "conference": "WAC",
+          "isTBD": false
+        },
+        {
+          "name": "Delaware",
+          "conference": "CUSA",
+          "isTBD": false
+        },
+        {
+          "name": "Georgia Southern",
+          "conference": "Sun Belt",
+          "isTBD": false
+        },
+        {
+          "name": "Southern Illinois",
+          "conference": "MVC",
+          "isTBD": false
+        },
+        {
+          "name": "UAB",
+          "conference": "American",
+          "isTBD": false
+        },
+        {
+          "name": "UNCG",
+          "conference": "SoCon",
+          "isTBD": false
+        },
+        {
+          "name": "UTEP",
+          "conference": "CUSA",
+          "isTBD": false
+        },
+        {
+          "name": "UTSA",
+          "conference": "American",
+          "isTBD": false
+        },
+        {
+          "name": "William & Mary",
+          "conference": "CAA",
+          "isTBD": false
+        },
+        {
+          "name": "Youngstown State",
+          "conference": "Horizon",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.219Z",
+        "section": 59
+      }
+    },
+    {
+      "name": "Zoo Town Classic",
+      "dates": {
+        "start": "2025-11-23",
+        "end": "2025-11-25",
+        "raw": "Nov. 23–25"
+      },
+      "location": "Missoula, Mont.: 2 games",
+      "teams": [
+        {
+          "name": "Lamar",
+          "conference": "Southland",
+          "isTBD": false
+        },
+        {
+          "name": "Montana",
+          "conference": "Big Sky",
+          "isTBD": false
+        },
+        {
+          "name": "Oakland",
+          "conference": "Horizon",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.219Z",
+        "section": 60
+      }
+    },
+    {
+      "name": "FIU MTE",
+      "dates": {
+        "start": "2025-11-24",
+        "end": "2025-11-26",
+        "raw": "Nov. 24–26"
+      },
+      "location": "Miami",
+      "teams": [
+        {
+          "name": "FIU",
+          "conference": "CUSA",
+          "isTBD": false
+        },
+        {
+          "name": "James Madison",
+          "conference": "Sun Belt",
+          "isTBD": false
+        },
+        {
+          "name": "Omaha",
+          "conference": "Summit",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.219Z",
+        "section": 61
+      }
+    },
+    {
+      "name": "The Citadel MTE",
+      "dates": {
+        "start": "2025-11-24",
+        "end": "2025-11-26",
+        "raw": "Nov. 24–26"
+      },
+      "location": "Charleston, S.C.",
+      "teams": [
+        {
+          "name": "Bellarmine",
+          "conference": "ASUN",
+          "isTBD": false
+        },
+        {
+          "name": "Houston Christian",
+          "conference": "Southland",
+          "isTBD": false
+        },
+        {
+          "name": "The Citadel",
+          "conference": "SoCon",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.219Z",
+        "section": 62
+      }
+    },
+    {
+      "name": "Arizona/Wyoming MTE",
+      "dates": {
+        "start": "2025-11-24",
+        "end": "2025-11-29",
+        "raw": "Nov. 24–29"
+      },
+      "location": "campus sites",
+      "teams": [
+        {
+          "name": "Denver (Summit) and Norfolk State (MEAC) at Arizona (Big 12) and Wyoming",
+          "conference": "MW",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.219Z",
+        "section": 63
+      }
+    },
+    {
+      "name": "Northern Kentucky MTE",
+      "dates": {
+        "start": "2025-11-24",
+        "end": "2025-11-26",
+        "raw": "Nov. 24–26"
+      },
+      "location": "Highland Heights, Ky.",
+      "teams": [
+        {
+          "name": "Eastern Kentucky",
+          "conference": "ASUN",
+          "isTBD": false
+        },
+        {
+          "name": "Northern Kentucky",
+          "conference": "Horizon",
+          "isTBD": false
+        },
+        {
+          "name": "Wofford",
+          "conference": "SoCon",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.219Z",
+        "section": 64
+      }
+    },
+    {
+      "name": "FDU MTE",
+      "dates": {
+        "start": "2025-11-24",
+        "end": "2025-11-26",
+        "raw": "Nov. 24–26"
+      },
+      "location": "Hackensack, N.J.",
+      "teams": [
+        {
+          "name": "Army West Point",
+          "conference": "Patriot",
+          "isTBD": false
+        },
+        {
+          "name": "East Texas A&M",
+          "conference": "Southland",
+          "isTBD": false
+        },
+        {
+          "name": "Fairleigh Dickinson",
+          "conference": "NEC",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.219Z",
+        "section": 65
+      }
+    },
+    {
+      "name": "Northern Arizona MTE",
+      "dates": {
+        "start": "2025-11-24",
+        "end": "2025-11-26",
+        "raw": "Nov. 24–26"
+      },
+      "location": "Flagstaff, Ariz.",
+      "teams": [
+        {
+          "name": "Cal Poly",
+          "conference": "Big West",
+          "isTBD": false
+        },
+        {
+          "name": "Northern Arizona",
+          "conference": "Big Sky",
+          "isTBD": false
+        },
+        {
+          "name": "Southeast Missouri",
+          "conference": "OVC",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.219Z",
+        "section": 66
+      }
+    },
+    {
+      "name": "Southeastern Triangular 2",
+      "dates": {
+        "start": "2025-11-24",
+        "end": "2025-11-29",
+        "raw": "Nov. 24–29"
+      },
+      "location": "campus sites",
+      "teams": [
+        {
+          "name": "App State",
+          "conference": "Sun Belt",
+          "isTBD": false
+        },
+        {
+          "name": "Elon",
+          "conference": "CAA",
+          "isTBD": false
+        },
+        {
+          "name": "Mercer",
+          "conference": "SoCon",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.219Z",
+        "section": 67
+      }
+    },
+    {
+      "name": "Fort Myers Tip-Off Palms Division",
+      "dates": {
+        "start": "2025-11-24",
+        "end": "2025-11-26",
+        "raw": "Nov. 24 and 26"
+      },
+      "location": "Fort Myers, Fla.",
+      "teams": [
+        {
+          "name": "Bucknell (Patriot) and VMI (SoCon) vs. Bowling Green (MAC) and Buffalo",
+          "conference": "MAC",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.219Z",
+        "section": 68
+      }
+    },
+    {
+      "name": "Coconut Hoops Tarpon Bay Division",
+      "dates": {
+        "start": "2025-11-24",
+        "end": "2025-11-26",
+        "raw": "Nov. 24–26"
+      },
+      "location": "Fort Myers, Fla.",
+      "teams": [
+        {
+          "name": "FGCU",
+          "conference": "ASUN",
+          "isTBD": false
+        },
+        {
+          "name": "Kennesaw State",
+          "conference": "CUSA",
+          "isTBD": false
+        },
+        {
+          "name": "Oral Roberts",
+          "conference": "Summit",
+          "isTBD": false
+        },
+        {
+          "name": "Rice",
+          "conference": "American",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 3,
+        "description": "3 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.219Z",
+        "section": 69
+      }
+    },
+    {
+      "name": "Fort Myers Tip-Off Beach Division",
+      "dates": {
+        "start": "2025-11-25",
+        "end": "2025-11-27",
+        "raw": "Nov. 25 and 27"
+      },
+      "location": "Fort Myers, Fla.",
+      "teams": [
+        {
+          "name": "East Carolina (American) and North Carolina (ACC) vs. Michigan State (Big Ten) and St. Bonaventure",
+          "conference": "A 10",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.219Z",
+        "section": 70
+      }
+    },
+    {
+      "name": "Live Oak Bank Holiday Classic",
+      "dates": {
+        "start": "2025-11-26",
+        "end": "2025-11-29",
+        "raw": "Nov. 26, 28, and 29"
+      },
+      "location": "Wilmington, N.C.",
+      "teams": [
+        {
+          "name": "Gardner-Webb",
+          "conference": "Big South",
+          "isTBD": false
+        },
+        {
+          "name": "Navy",
+          "conference": "Patriot",
+          "isTBD": false
+        },
+        {
+          "name": "Southeastern Louisiana",
+          "conference": "Southland",
+          "isTBD": false
+        },
+        {
+          "name": "UNCW",
+          "conference": "CAA",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 3,
+        "description": "3 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.219Z",
+        "section": 71
+      }
+    },
+    {
+      "name": "Boise MTE",
+      "dates": {
+        "start": "2025-11-26",
+        "end": "2025-11-28",
+        "raw": "Nov. 26 and 28"
+      },
+      "location": "Boise, Idaho",
+      "teams": [
+        {
+          "name": "CSUN (Big West) and Sam Houston (CUSA) vs. Idaho and Idaho State",
+          "conference": "Big Sky",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.219Z",
+        "section": 72
+      }
+    },
+    {
+      "name": "Arkansas State MTE",
+      "dates": {
+        "start": "2025-11-26",
+        "end": "2025-11-28",
+        "raw": "Nov. 26–28; Jonesboro, Ark."
+      },
+      "location": "Palm Desert, Calif.",
+      "teams": [
+        {
+          "name": "Arkansas State",
+          "conference": "Sun Belt",
+          "isTBD": false
+        },
+        {
+          "name": "Jacksonville State",
+          "conference": "CUSA",
+          "isTBD": false
+        },
+        {
+          "name": "North Dakota State",
+          "conference": "Summit",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.219Z",
+        "section": 73
+      }
+    },
+    {
+      "name": "Louisiana Tech MTE",
+      "dates": {
+        "start": "2025-11-26",
+        "end": "2025-11-29",
+        "raw": "Nov. 26–29; Ruston, La."
+      },
+      "location": "Palm Desert, Calif.",
+      "teams": [
+        {
+          "name": "Alcorn State",
+          "conference": "SWAC",
+          "isTBD": false
+        },
+        {
+          "name": "Indiana State",
+          "conference": "MVC",
+          "isTBD": false
+        },
+        {
+          "name": "Louisiana Tech",
+          "conference": "CUSA",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.219Z",
+        "section": 74
+      }
+    },
+    {
+      "name": "American University MTE",
+      "dates": {
+        "start": "2025-11-28",
+        "end": "2025-11-30",
+        "raw": "Nov. 28–30"
+      },
+      "location": "Washington, D.C.",
+      "teams": [
+        {
+          "name": "American",
+          "conference": "Patriot",
+          "isTBD": false
+        },
+        {
+          "name": "Longwood",
+          "conference": "Big South",
+          "isTBD": false
+        },
+        {
+          "name": "Maine",
+          "conference": "AE",
+          "isTBD": false
+        },
+        {
+          "name": "Siena",
+          "conference": "MAAC",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 3,
+        "description": "3 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.219Z",
+        "section": 75
+      }
+    },
+    {
+      "name": "Cathedral of College Basketball Classic",
+      "dates": {
+        "start": "2025-11-28",
+        "end": "2025-11-30",
+        "raw": "Nov. 28–30"
+      },
+      "location": "Philadelphia",
+      "teams": [
+        {
+          "name": "Hofstra",
+          "conference": "CAA",
+          "isTBD": false
+        },
+        {
+          "name": "La Salle",
+          "conference": "A 10",
+          "isTBD": false
+        },
+        {
+          "name": "Merrimack",
+          "conference": "MAAC",
+          "isTBD": false
+        },
+        {
+          "name": "Penn",
+          "conference": "Ivy",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 3,
+        "description": "3 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.219Z",
+        "section": 76
+      }
+    },
+    {
+      "name": "Coke Zero Sugar Classic",
+      "dates": {
+        "start": "2025-11-28",
+        "end": "2025-11-30",
+        "raw": "Nov. 28–30"
+      },
+      "location": "Chattanooga, Tenn.",
+      "teams": [
+        {
+          "name": "Chattanooga",
+          "conference": "SoCon",
+          "isTBD": false
+        },
+        {
+          "name": "Tennessee State",
+          "conference": "OVC",
+          "isTBD": false
+        },
+        {
+          "name": "Tennessee Wesleyan",
+          "conference": "non-D1",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.219Z",
+        "section": 77
+      }
+    },
+    {
+      "name": "Lafayette Classic",
+      "dates": {
+        "start": "2025-11-28",
+        "end": "2025-11-30",
+        "raw": "Nov. 28–30"
+      },
+      "location": "Easton, Pa.",
+      "teams": [
+        {
+          "name": "Ball State",
+          "conference": "MAC",
+          "isTBD": false
+        },
+        {
+          "name": "Lafayette",
+          "conference": "Patriot",
+          "isTBD": false
+        },
+        {
+          "name": "Le Moyne",
+          "conference": "NEC",
+          "isTBD": false
+        },
+        {
+          "name": "Monmouth",
+          "conference": "CAA",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 3,
+        "description": "3 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.219Z",
+        "section": 78
+      }
+    },
+    {
+      "name": "Northern Classic",
+      "dates": {
+        "start": "2025-11-28",
+        "end": "2025-11-30",
+        "raw": "Nov. 28–30"
+      },
+      "location": "Laval, Que., Canada.",
+      "teams": [
+        {
+          "name": "Albany",
+          "conference": "AE",
+          "isTBD": false
+        },
+        {
+          "name": "Colgate",
+          "conference": "Patriot",
+          "isTBD": false
+        },
+        {
+          "name": "Fordham",
+          "conference": "A 10",
+          "isTBD": false
+        },
+        {
+          "name": "Franklin Pierce",
+          "conference": "non-D1",
+          "isTBD": false
+        },
+        {
+          "name": "SUNY Oneonta",
+          "conference": "non-D1",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 3,
+        "description": "3 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.219Z",
+        "section": 79
+      }
+    },
+    {
+      "name": "Urban-Bennett Invitational",
+      "dates": {
+        "start": "2025-11-28",
+        "end": "2025-11-30",
+        "raw": "Nov. 28–30"
+      },
+      "location": "Moon Township, Pa.",
+      "teams": [
+        {
+          "name": "Robert Morris",
+          "conference": "Horizon",
+          "isTBD": false
+        },
+        {
+          "name": "Southern Utah",
+          "conference": "Big Sky",
+          "isTBD": false
+        },
+        {
+          "name": "Stetson",
+          "conference": "ASUN",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.219Z",
+        "section": 80
+      }
+    },
+    {
+      "name": "Bedlam Series MTE",
+      "dates": {
+        "start": "2025-12-13",
+        "end": "2025-12-18",
+        "raw": "Dec. 18 and Dec. 13"
+      },
+      "location": "Oklahoma City",
+      "teams": [
+        {
+          "name": "Kansas City",
+          "conference": "Summit",
+          "isTBD": false
+        },
+        {
+          "name": "Oklahoma",
+          "conference": "SEC",
+          "isTBD": false
+        },
+        {
+          "name": "Oklahoma State",
+          "conference": "Big 12",
+          "isTBD": false
+        }
+      ],
+      "format": {
+        "gameCount": 2,
+        "description": "2 games"
+      },
+      "metadata": {
+        "sourceUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments",
+        "parsedAt": "2025-11-21T02:11:05.219Z",
+        "section": 81
+      }
+    }
+  ],
+  "errors": [],
+  "metadata": {
+    "totalTournaments": 83,
+    "parseDate": "2025-11-21T02:11:05.219Z",
+    "blogPostUrl": "https://www.bloggingthebracket.com/2025/4/8/24403878/2025-26-mens-college-basketball-exempt-multi-team-events-mte-thanksgiving-early-season-tournaments"
+  }
+}

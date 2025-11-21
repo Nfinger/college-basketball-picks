@@ -10,15 +10,21 @@ export default [
   
   layout("routes/layout.tsx", [
     index("routes/_index.tsx"),
-    route("injuries", "routes/injuries.tsx"),
+    route("updates", "routes/updates.tsx"),
     route("metrics", "routes/metrics.tsx"),
     route("mypicks", "routes/mypicks.tsx"),
-    route("rankings", "routes/rankings.tsx"),
-    route("rankings/me", "routes/rankings.me.tsx"),
-    route("rankings/:rankingId/edit", "routes/rankings.$rankingId.edit.tsx"),
-    route("fantasy", "routes/fantasy.tsx"),
-    route("news", "routes/news.tsx"),
+    route("rankings", "routes/rankings.tsx", [
+      route("me", "routes/rankings.me.tsx"),
+      route("bracketology", "routes/rankings.bracketology.tsx"),
+      route(":rankingId/edit", "routes/rankings.$rankingId.edit.tsx"),
+    ]),
+    route("daily", "routes/stat-chain.tsx"),
+    route("tournaments/:tournamentId", "routes/tournaments.$tournamentId.tsx"),
     route("admin/scrapers", "routes/admin.scrapers.tsx"),
+    route("admin/pipeline", "routes/admin.pipeline.tsx"),
+    route("admin/tournaments", "routes/admin.tournaments.tsx"),
+    route("admin/tournaments/:tournamentId/import", "routes/admin.tournaments.$tournamentId.import.tsx"),
+    route("admin/tournaments/:tournamentId/bracket", "routes/admin.tournaments.$tournamentId.bracket.tsx"),
   ]),
 
   // Inngest API route
@@ -26,6 +32,7 @@ export default [
 
   // API routes
   route("api/favorites", "routes/api.favorites.tsx"),
+  route("api/bracket-picks", "routes/api.bracket-picks.ts"),
   route("api/stats/:teamId", "routes/api.stats.$teamId.ts"),
   route("api/analyze-matchup", "routes/api.analyze-matchup.ts"),
   route("api/og/potd/:pickId", "routes/api.og.potd.$pickId.tsx"),

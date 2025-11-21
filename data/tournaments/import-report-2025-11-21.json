@@ -1,0 +1,422 @@
+{
+  "created": 0,
+  "skipped": 83,
+  "failed": 0,
+  "details": [
+    {
+      "name": "Shriners Hospitals Charleston Classic - Palmetto Bracket",
+      "status": "skipped",
+      "tournamentId": "aaf9aa85-433c-402a-8e14-1d1a9365efb6"
+    },
+    {
+      "name": "Shriners Hospitals Charleston Classic - Lowcountry Bracket",
+      "status": "skipped",
+      "tournamentId": "d179d9bf-9d0f-4813-b4ee-eb365a359197"
+    },
+    {
+      "name": "Baha Mar Bahamas Championship",
+      "status": "skipped",
+      "tournamentId": "31e7bf3d-e794-4729-98af-d99ccfd75e02"
+    },
+    {
+      "name": "Hall of Fame Classic",
+      "status": "skipped",
+      "tournamentId": "27a81eed-11c9-4ea6-8c0f-e94b04902406"
+    },
+    {
+      "name": "Boardwalk Battle",
+      "status": "skipped",
+      "tournamentId": "34acf513-b5e7-4ffe-bac5-202a1e77e83b"
+    },
+    {
+      "name": "U.S. Virgin Islands Paradise Jam",
+      "status": "skipped",
+      "tournamentId": "e0c04a9a-287d-4ea7-a9bf-e4e4ca1b4fc9"
+    },
+    {
+      "name": "Pensacola Bay Center MTE",
+      "status": "skipped",
+      "tournamentId": "f3c8e98b-0216-4e90-9269-0d3301f28467"
+    },
+    {
+      "name": "Sunshine Slam - Beach Bracket",
+      "status": "skipped",
+      "tournamentId": "ebbbd211-fead-40cc-80d7-ce0690c4ac4c"
+    },
+    {
+      "name": "Sunshine Slam - Ocean Bracket",
+      "status": "skipped",
+      "tournamentId": "87d9dc1a-644a-4b99-a538-4ea6cdfec2cd"
+    },
+    {
+      "name": "Coconut Hoops Royal Palm Division",
+      "status": "skipped",
+      "tournamentId": "6ba3e3a3-d65c-40b3-8035-697e35415dd0"
+    },
+    {
+      "name": "Southwest Maui Invitational",
+      "status": "skipped",
+      "tournamentId": "1df96be4-2814-48ca-97a6-09c8741263b9"
+    },
+    {
+      "name": "Players Era Festival",
+      "status": "skipped",
+      "tournamentId": "0db0f73f-8884-4e9d-a80f-0757ca1c8629"
+    },
+    {
+      "name": "Acrisure Series - Classic",
+      "status": "skipped",
+      "tournamentId": "fa50016c-8376-49b2-8f65-4ca7145f3937"
+    },
+    {
+      "name": "Acrisure Holiday Invitational",
+      "status": "skipped",
+      "tournamentId": "7b32840b-18ef-47c5-b274-ca27abc18196"
+    },
+    {
+      "name": "Acrisure Holiday Classic",
+      "status": "skipped",
+      "tournamentId": "01ffce6d-fc15-4d1b-8824-2c35f7892887"
+    },
+    {
+      "name": "Acrisure Invitational",
+      "status": "skipped",
+      "tournamentId": "5cf82cf2-9c8a-4cbc-80dd-dfee8fcb0dd0"
+    },
+    {
+      "name": "Battle 4 Atlantis",
+      "status": "skipped",
+      "tournamentId": "b435a154-8cf0-4245-a97d-88d128ae6f64"
+    },
+    {
+      "name": "ESPN Events Invitational - Adventure Bracket",
+      "status": "skipped",
+      "tournamentId": "cfced99f-3781-42fa-ab92-a136ae00da24"
+    },
+    {
+      "name": "ESPN Events Invitational - Imagination Bracket",
+      "status": "skipped",
+      "tournamentId": "b3730b95-2d66-4e8a-9a9b-fc3fef2191d7"
+    },
+    {
+      "name": "ESPN Events Invitational - Magic Bracket",
+      "status": "skipped",
+      "tournamentId": "a679d127-c82c-44fe-9df9-748be17df494"
+    },
+    {
+      "name": "Rady Children’s Invitational",
+      "status": "skipped",
+      "tournamentId": "99b81580-e73a-4c34-89ee-7ebf39af70f6"
+    },
+    {
+      "name": "Resorts World Las Vegas Classic",
+      "status": "skipped",
+      "tournamentId": "a1e2ae89-3afc-421a-8bd8-02821536aed0"
+    },
+    {
+      "name": "Emerald Coast Classic",
+      "status": "skipped",
+      "tournamentId": "f4c6d0d9-0185-4410-85b7-69f4a3c49f0b"
+    },
+    {
+      "name": "SMU MTE",
+      "status": "skipped",
+      "tournamentId": "f92c8cc5-4451-492e-8188-fab986568638"
+    },
+    {
+      "name": "UConn MTE",
+      "status": "skipped",
+      "tournamentId": "a67d4583-0144-4f7d-a922-7fa9d579690f"
+    },
+    {
+      "name": "Kentucky MTE",
+      "status": "skipped",
+      "tournamentId": "e4833efe-ee87-4b40-a99f-313d4829a5f8"
+    },
+    {
+      "name": "Field of 68 Tip-Off",
+      "status": "skipped",
+      "tournamentId": "33e5fb51-e70d-41cd-bae7-91152bfb3868"
+    },
+    {
+      "name": "Villanova MTE",
+      "status": "skipped",
+      "tournamentId": "e305f0e3-fb2f-47c4-8d5f-960e4ddf133c"
+    },
+    {
+      "name": "Gotham Classic",
+      "status": "skipped",
+      "tournamentId": "78c3b1b6-4564-4e3a-8f59-ba3ac5baee30"
+    },
+    {
+      "name": "Piedmont Triangular",
+      "status": "skipped",
+      "tournamentId": "7ea0f47c-5671-47d3-ba8c-a3ffa5b8d4d8"
+    },
+    {
+      "name": "Rainbow Classic",
+      "status": "skipped",
+      "tournamentId": "4a44c990-44ac-4246-9029-0ee58c21c263"
+    },
+    {
+      "name": "Showdown in St. Pete",
+      "status": "skipped",
+      "tournamentId": "467eade6-b982-491a-90bf-e4ad826df9c3"
+    },
+    {
+      "name": "Bulldog Bash",
+      "status": "skipped",
+      "tournamentId": "f2d643cd-a752-4f6b-b2af-efa445e97285"
+    },
+    {
+      "name": "Brown MTE",
+      "status": "skipped",
+      "tournamentId": "a2c63a17-6cbe-48b6-b57c-59896615a07a"
+    },
+    {
+      "name": "Greenbrier Tip-Off River Division",
+      "status": "skipped",
+      "tournamentId": "70259906-2094-446b-b8bc-9f7cbd67b72d"
+    },
+    {
+      "name": "Heritage Bank Arena MTE",
+      "status": "skipped",
+      "tournamentId": "8d01df0a-df94-41b5-af22-5dbe02dc28a0"
+    },
+    {
+      "name": "Fairfield MTE",
+      "status": "skipped",
+      "tournamentId": "84e13d1e-772e-4adb-a918-01b24eb4342a"
+    },
+    {
+      "name": "Empire Classic",
+      "status": "skipped",
+      "tournamentId": "d9fe86f0-279f-4f68-a041-aea195f635c5"
+    },
+    {
+      "name": "Southern Triangular",
+      "status": "skipped",
+      "tournamentId": "f18e7735-87d6-457f-bd85-3924c7364997"
+    },
+    {
+      "name": "Missouri MTE",
+      "status": "skipped",
+      "tournamentId": "5584cc9f-b619-4389-880a-37a23e8194ab"
+    },
+    {
+      "name": "Arkansas MTE",
+      "status": "skipped",
+      "tournamentId": "40585b8e-884a-4af4-9c57-ed1578bddbcf"
+    },
+    {
+      "name": "Long Beach State MTE",
+      "status": "skipped",
+      "tournamentId": "5ccbbf99-8b2c-498c-8081-ffbf9551718d"
+    },
+    {
+      "name": "Naismith Basketball Hall of Fame Showcase",
+      "status": "skipped",
+      "tournamentId": "c8d83ec4-f181-4cd9-9262-51b21feae7b4"
+    },
+    {
+      "name": "Cancún Challenge",
+      "status": "skipped",
+      "tournamentId": "b775c806-8286-49df-a08a-6b0fddabbda2"
+    },
+    {
+      "name": "Weber State Tournament",
+      "status": "skipped",
+      "tournamentId": "678b0d10-39d0-4c20-9190-dbde311fd19e"
+    },
+    {
+      "name": "Legends Classic",
+      "status": "skipped",
+      "tournamentId": "9fc6483d-a7bf-4005-aca0-af3a8d6959e6"
+    },
+    {
+      "name": "Ohio State MTE",
+      "status": "skipped",
+      "tournamentId": "a4bfedf9-30f9-433f-abb7-6d7dab29cf9e"
+    },
+    {
+      "name": "Marshall/Miami - Marshall/Miami",
+      "status": "skipped",
+      "tournamentId": "16c6b6f7-8043-4bff-b875-2de1bd1fee9f"
+    },
+    {
+      "name": "North Texas MTE",
+      "status": "skipped",
+      "tournamentId": "732bacf9-cd19-484d-895c-a5a2e31d2870"
+    },
+    {
+      "name": "Greenbrier Tip-Off Mountain Division",
+      "status": "skipped",
+      "tournamentId": "e2a10ca5-b2dd-45b4-8477-17afb6e3a390"
+    },
+    {
+      "name": "Brotherhood Run MTE",
+      "status": "skipped",
+      "tournamentId": "5c4a96b8-14a6-463a-ae93-6962833cf257"
+    },
+    {
+      "name": "ETSU MTE",
+      "status": "skipped",
+      "tournamentId": "321954f8-977f-418e-92d8-35d4753c0915"
+    },
+    {
+      "name": "Air Force Classic",
+      "status": "skipped",
+      "tournamentId": "30027113-76a6-4f7b-be10-d5e36ef2bd92"
+    },
+    {
+      "name": "Western Illinois MTE",
+      "status": "skipped",
+      "tournamentId": "d36d3735-1440-4190-9758-e23f519f8857"
+    },
+    {
+      "name": "Portland Invitational",
+      "status": "skipped",
+      "tournamentId": "625b4c52-f526-414f-b4f3-e8e725d433d2"
+    },
+    {
+      "name": "Mid-Atlantic Triangular",
+      "status": "skipped",
+      "tournamentId": "f44ff72a-2369-49f0-b6d7-59da9c491076"
+    },
+    {
+      "name": "Queen City Classic",
+      "status": "skipped",
+      "tournamentId": "d6a06920-b561-44c0-885c-41815566168c"
+    },
+    {
+      "name": "Illinois/Missouri State MTE",
+      "status": "skipped",
+      "tournamentId": "2c29ebd6-b267-4bee-81fc-162b156264d5"
+    },
+    {
+      "name": "Tampa MTE",
+      "status": "skipped",
+      "tournamentId": "cf35d57f-6b62-49b2-8fbf-8ad947c6e3cd"
+    },
+    {
+      "name": "Cayman Islands Classic",
+      "status": "skipped",
+      "tournamentId": "0f66a1ce-4bd6-41c0-9de7-dd296499e992"
+    },
+    {
+      "name": "Jacksonville Classic",
+      "status": "skipped",
+      "tournamentId": "717b084a-cb75-4136-b5cc-df3ecffcf628"
+    },
+    {
+      "name": "Zoo Town Classic",
+      "status": "skipped",
+      "tournamentId": "3efdbf82-e7bc-4cde-81c2-08a51ceaea80"
+    },
+    {
+      "name": "FIU MTE",
+      "status": "skipped",
+      "tournamentId": "a04b2dfb-d6f3-456a-8247-e8806b5c04cd"
+    },
+    {
+      "name": "The Citadel MTE",
+      "status": "skipped",
+      "tournamentId": "b3acc922-c135-4d06-9f6c-74e53821b7db"
+    },
+    {
+      "name": "Arizona/Wyoming MTE",
+      "status": "skipped",
+      "tournamentId": "512b8a26-7e0d-4efb-8b9c-1221d8a8ed51"
+    },
+    {
+      "name": "Northern Kentucky MTE",
+      "status": "skipped",
+      "tournamentId": "d275057e-6290-4a7c-a15e-f35d7aa93eae"
+    },
+    {
+      "name": "FDU MTE",
+      "status": "skipped",
+      "tournamentId": "ae9420e4-9da8-4063-8777-2b25505d8f8e"
+    },
+    {
+      "name": "Northern Arizona MTE",
+      "status": "skipped",
+      "tournamentId": "9408327a-5a97-4e0a-abf1-b6cef3ee7b71"
+    },
+    {
+      "name": "Southeastern Triangular 2",
+      "status": "skipped",
+      "tournamentId": "84c51796-d400-4cd5-bbc2-fe395ddb797e"
+    },
+    {
+      "name": "Fort Myers Tip-Off Palms Division",
+      "status": "skipped",
+      "tournamentId": "28b440ec-227f-432c-92d1-a9be634b9e8f"
+    },
+    {
+      "name": "Coconut Hoops Tarpon Bay Division",
+      "status": "skipped",
+      "tournamentId": "ff6e0ce9-40f3-4346-82bc-c1b90a1ae179"
+    },
+    {
+      "name": "Fort Myers Tip-Off Beach Division",
+      "status": "skipped",
+      "tournamentId": "57cfaacd-1791-4965-b14a-22eb6ccc001d"
+    },
+    {
+      "name": "Live Oak Bank Holiday Classic",
+      "status": "skipped",
+      "tournamentId": "120cfb39-f999-44c3-937e-abe2c208923c"
+    },
+    {
+      "name": "Boise MTE",
+      "status": "skipped",
+      "tournamentId": "ce91456f-f70d-4802-88f7-b3c8f9b46aba"
+    },
+    {
+      "name": "Arkansas State MTE",
+      "status": "skipped",
+      "tournamentId": "42bfe345-d2af-4552-a83a-5ddd3f2fccc3"
+    },
+    {
+      "name": "Louisiana Tech MTE",
+      "status": "skipped",
+      "tournamentId": "8832c31f-0e6a-4db4-8c10-c52008189d41"
+    },
+    {
+      "name": "American University MTE",
+      "status": "skipped",
+      "tournamentId": "353b7b8e-0c78-4d5e-bf98-6a4e3eb7f261"
+    },
+    {
+      "name": "Cathedral of College Basketball Classic",
+      "status": "skipped",
+      "tournamentId": "5ead5659-ceed-4c6a-9349-bb2005ded255"
+    },
+    {
+      "name": "Coke Zero Sugar Classic",
+      "status": "skipped",
+      "tournamentId": "78448480-9ce2-49db-a62a-67fb795aaf4f"
+    },
+    {
+      "name": "Lafayette Classic",
+      "status": "skipped",
+      "tournamentId": "3c4d5fcb-80af-48d9-b8a4-d6e07a3d59c7"
+    },
+    {
+      "name": "Northern Classic",
+      "status": "skipped",
+      "tournamentId": "fdd54e34-1a6a-4cec-a4af-30910dd41c32"
+    },
+    {
+      "name": "Urban-Bennett Invitational",
+      "status": "skipped",
+      "tournamentId": "e0c96f64-1824-4608-bd2c-97c19cee656f"
+    },
+    {
+      "name": "Bedlam Series MTE",
+      "status": "skipped",
+      "tournamentId": "f926f99f-6168-497e-ad2f-f3997ba21aa5"
+    }
+  ]
+}
